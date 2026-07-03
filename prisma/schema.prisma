@@ -1,0 +1,27 @@
+// ───────────────────────────────────────────────────────────────────────────
+// Study Workspace — Prisma schema
+//
+// PHASE 1: foundation only. No models yet — business entities (User, Todo,
+// FocusSession, Analytics, CodeforcesProfile, ...) will be added in later phases.
+// The datasource + generator blocks are enough to validate the DB connection
+// and run `prisma generate`.
+// ───────────────────────────────────────────────────────────────────────────
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Models will be defined here in subsequent phases, e.g.:
+//
+// model User {
+//   id        String   @id @default(uuid())
+//   email     String   @unique
+//   name      String?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
