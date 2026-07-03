@@ -1,10 +1,16 @@
 // ───────────────────────────────────────────────────────────────────────────
 // Study Workspace — Prisma schema
 //
-// PHASE 1: foundation only. No models yet — business entities (User, Todo,
-// FocusSession, Analytics, CodeforcesProfile, ...) will be added in later phases.
-// The datasource + generator blocks are enough to validate the DB connection
-// and run `prisma generate`.
+// Phase 2 — Core data model for a multi-user productivity SaaS.
+// Conventions:
+//   - UUID primary keys everywhere (`@id @default(uuid())`)
+//   - `createdAt` / `updatedAt` audit timestamps on every entity
+//   - One-to-many relations use `onDelete: Cascade` where the child is owned
+//     by the parent (deleting a user removes their data); referential fields
+//     that are merely linked (e.g. a PomodoroSession pointing to an optional
+//     Todo) use `SetNull` so the child survives.
+//   - Indexes target the access patterns of dashboards / analytics queries
+//     (per-user, per-day, per-status).
 // ───────────────────────────────────────────────────────────────────────────
 
 datasource db {
@@ -16,12 +22,251 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Models will be defined here in subsequent phases, e.g.:
-//
-// model User {
-//   id        String   @id @default(uuid())
-//   email     String   @unique
-//   name      String?
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+// ───────────────────────────────────────────────────────────────────────────
+// Enums
+// ───────────────────────────────────────────────────────────────────────────
+
+/// Account role for RBAC. `USER` is the default SaaS subscriber.
+enum Role {
+  USER
+  ADMIN
+}
+
+/// Todo priority for sorting / filtering.
+enum TodoPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+/// Lifecycle of a todo item.
+enum TodoStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
+
+/// Lifecycle shared by Pomodoro + Focus sessions.
+enum SessionStatus {
+  RUNNING
+  COMPLETED
+  ABANDONED
+  PAUSED
+}
+
+/// Type of deep-work container. STRICT blocks app/notifications distractions.
+enum FocusMode {
+  NORMAL
+  STRICT
+}
+
+/// Notification category for routing / user preferences.
+enum NotificationType {
+  FOCUS_REMINDER
+  BREAK_REMINDER
+  WATER_REMINDER
+  TODO_DUE
+  SYSTEM
+}
+
+/// How a Codeforces account was linked.
+enum AuthProvider {
+  LOCAL
+  CODEFORCES
+}
+
+/// Source backing the ambient music player.
+enum MusicSource {
+  NONE
+  LOFI
+  NATURE
+  WHITE_NOISE
+  CUSTOM
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Models
+// ───────────────────────────────────────────────────────────────────────────
+
+/// Core account. Owns all productivity data; deleting it cascades to children.
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  username        String    @unique
+  passwordHash    String
+  name            String?
+  avatarUrl       String?
+  role            Role      @default(USER)
+  isEmailVerified Boolean   @default(false)
+  /// Per-user default Pomodoro length in minutes (configurable later).
+  pomodoroLength  Int       @default(25)
+  /// Soft delete support without losing referential history.
+  isActive        Boolean   @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // ── Relations ──
+  refreshTokens     RefreshToken[]
+  todos             Todo[]
+  pomodoroSessions  PomodoroSession[]
+  focusSessions     FocusSession[]
+  notifications     Notification[]
+  musicPreference   MusicPreference?
+  codeforcesProfile CodeforcesProfile?
+
+  @@index([email])
+  @@index([isActive])
+}
+
+/// Server-side refresh-token store for JWT rotation + revocation.
+/// One user → many active sessions (devices). Token VALUES are hashed.
+model RefreshToken {
+  id        String   @id @default(uuid())
+  /// SHA-256 hash of the issued token; never store the raw token.
+  tokenHash String   @unique
+  userId    String
+  /// Best-effort device / UA label for the "logged in from" UI.
+  userAgent String?
+  ipAddress String?
+  isRevoked Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Actionable task. Optional link to focus sessions; survives independently.
+model Todo {
+  id          String       @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  priority    TodoPriority @default(MEDIUM)
+  status      TodoStatus   @default(TODO)
+  dueDate     DateTime?
+  /// Optional ordering hint for drag-and-drop boards.
+  sortOrder   Int          @default(0)
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pomodoroSessions PomodoroSession[]
+
+  @@index([userId, status])
+  @@index([userId, dueDate])
+  @@index([userId, sortOrder])
+}
+
+/// A single Pomodoro cycle (e.g. one 25-min work block).
+/// Granular unit of focus data and the primary analytics source.
+model PomodoroSession {
+  id             String        @id @default(uuid())
+  userId         String
+  /// Optional: which todo this cycle was spent on. SetNull if todo is deleted
+  /// so historical analytics survive.
+  todoId         String?
+  focusSessionId String?
+  plannedMinutes Int
+  actualMinutes  Int?
+  status         SessionStatus @default(RUNNING)
+  startedAt      DateTime      @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todo         Todo?         @relation(fields: [todoId], references: [id], onDelete: SetNull)
+  focusSession FocusSession? @relation(fields: [focusSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, startedAt])
+  @@index([todoId])
+  @@index([focusSessionId])
+}
+
+/// Aggregate deep-work block that may contain many Pomodoro cycles.
+/// Distinct from PomodoroSession: represents a full "focus session" with a
+/// mode (normal/strict) and overall duration, decoupled from individual cycles.
+model FocusSession {
+  id             String        @id @default(uuid())
+  userId         String
+  mode           FocusMode     @default(NORMAL)
+  status         SessionStatus @default(RUNNING)
+  goal           String?
+  plannedMinutes Int
+  actualMinutes  Int?
+  startedAt      DateTime      @default(now())
+  endedAt        DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pomodoroSessions PomodoroSession[]
+
+  @@index([userId, startedAt])
+  @@index([userId, status])
+}
+
+/// In-app notification (focus/break/water reminders, todo due alerts).
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  /// Has the user dismissed / acknowledged it?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+}
+
+/// Per-user ambient music config. 1:1 with User.
+model MusicPreference {
+  id                String      @id @default(uuid())
+  userId            String      @unique
+  source            MusicSource @default(NONE)
+  volume            Int         @default(50)
+  isAutoplay        Boolean     @default(false)
+  customPlaylistUrl String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Linked Codeforces account for coding-progress tracking. 1:1 with User.
+model CodeforcesProfile {
+  id               String       @id @default(uuid())
+  userId           String       @unique
+  provider         AuthProvider @default(CODEFORCES)
+  codeforcesHandle String       @unique
+  rating           Int?
+  maxRating        Int?
+  rank             String?
+  /// JSON blob of last-fetched solve counts / contest history (denormalized
+  /// cache; raw history is fetched from the CF API on demand).
+  statsJson        Json?
+  lastSyncedAt     DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([codeforcesHandle])
+}
