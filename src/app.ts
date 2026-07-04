@@ -2,8 +2,10 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 
 import healthRoutes from './routes/health.routes';
+import authRoutes from './routes/auth.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -17,9 +19,16 @@ export function createApp(): Express {
 
   // ── Global middleware ────────────────────────────────
   app.use(helmet());
-  app.use(cors());
+  // Cookies must be allowed for our auth flow when front-end runs elsewhere.
+  app.use(
+    cors({
+      origin: true, // dev: reflect origin; tighten in prod
+      credentials: true,
+    }),
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
   app.use(morgan('dev'));
 
   // ── API root ping (lightweight, no DB) ───────────────
@@ -35,6 +44,7 @@ export function createApp(): Express {
 
   // ── Feature routes ───────────────────────────────────
   app.use('/api', healthRoutes);
+  app.use('/api/auth', authRoutes);
 
   // ── Fallbacks ────────────────────────────────────────
   app.use(notFoundHandler);
