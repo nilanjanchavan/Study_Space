@@ -68,13 +68,41 @@ Generic Zod schema validator that can target `body`, `query`, or `params`.
 
 **Flow:**
 1. Parse the request target against the Zod schema
-2. Replace `req[target]` with the parsed/transformed value (trim, lowercase)
-3. On failure → 400 with field-level error details
+2. For `body`/`params`: replace `req[target]` with the parsed value
+3. For `query`: store the parsed value on `req.validatedQuery` (Express 5's `req.query` is a read-only getter and cannot be reassigned/mutated — controllers read from `req.validatedQuery`)
+4. On failure → 400 with field-level error details
 
 **Usage:**
 ```typescript
+// Body validation (auth register)
 router.post('/register', validate(registerSchema, 'body'), register);
+
+// Query validation (todo list with pagination/filtering)
+router.get('/', validate(listTodosQuerySchema, 'query'), list);
+// Inside controller: const query = req.validatedQuery as ListTodosQuery;
+
+// Params validation (todo id)
+router.get('/:id', validate(todoIdParamSchema, 'params'), getById);
 ```
+
+---
+
+## Todo Module
+
+### `todo.service.ts` — Todo Business Logic
+
+| Function | Purpose |
+|----------|---------|
+| `createTodo(userId, input)` | Create a todo scoped to the user |
+| `getTodoById(userId, todoId)` | Fetch a todo; 404 if not owned |
+| `listTodos(userId, query)` | Paginated list with filter (status/priority/completed) + sort (dueDate/createdAt/priority) |
+| `updateTodo(userId, todoId, input)` | Partial update; auto-manages `completedAt` on status transitions |
+| `deleteTodo(userId, todoId)` | Delete a todo; 404 if not owned |
+
+**Key design decisions:**
+- **Ownership enforcement**: every fetch/update/delete checks `todo.userId === userId` and throws `404 TODO_NOT_FOUND` (not `403`) to avoid leaking the existence of other users' todos.
+- **`completedAt` auto-management**: setting `status` to `DONE` stamps `completedAt` (only if not already set); changing to any other status clears it.
+- **Stable ordering**: non-`createdAt` sorts tie-break by `sortOrder ASC` for deterministic pagination.
 
 ---
 

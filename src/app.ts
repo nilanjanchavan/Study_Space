@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 
 import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
+import todoRoutes from './routes/todo.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -45,6 +46,7 @@ export function createApp(): Express {
   // ── Feature routes ───────────────────────────────────
   app.use('/api', healthRoutes);
   app.use('/api/auth', authRoutes);
+  app.use('/api/todos', todoRoutes);
 
   // ── Fallbacks ────────────────────────────────────────
   app.use(notFoundHandler);

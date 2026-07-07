@@ -1,20 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodObject, ZodError, z } from 'zod';
+import { ZodError, z } from 'zod';
 import { AppError } from '../utils/AppError';
 
 type ValidationTargets = 'body' | 'query' | 'params';
 
 /**
  * Validate a request target against a Zod schema.
+ * Accepts any Zod type (object, default-wrapped, optional, etc.) so that
+ * schemas like `z.object({...}).optional().default({})` work seamlessly.
  * On failure, throws a 400 with a structured `details` array of field errors.
+ *
+ * Note: In Express 5 / Node 24, `req.query` is exposed via a read-only
+ * getter that returns a fresh object on each access, so it cannot be
+ * reassigned or mutated. For the `query` target the parsed result is stored
+ * on `req.validatedQuery` instead.
  */
 export const validate =
-  (schema: ZodObject<z.ZodRawShape>, target: ValidationTargets = 'body') =>
+  (schema: z.ZodTypeAny, target: ValidationTargets = 'body') =>
   (req: Request, _res: Response, next: NextFunction) => {
     try {
       const parsed = schema.parse(req[target]);
-      // Replace with the parsed (trimmed/transformed) values.
-      (req[target] as unknown) = parsed;
+
+      if (target === 'query') {
+        req.validatedQuery = parsed as Record<string, unknown>;
+      } else {
+        (req[target] as unknown) = parsed;
+      }
       next();
     } catch (err) {
       if (err instanceof ZodError) {

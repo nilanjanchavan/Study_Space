@@ -332,6 +332,217 @@ curl http://localhost:4000/api/auth/me \
 
 ---
 
+## Todo Endpoints
+
+All Todo endpoints require authentication (`Authorization: Bearer <accessToken>`). Users can only access their own todos; another user's todo ID returns `404` (not `403`, to avoid leaking existence).
+
+### Todo Object
+
+```json
+{
+  "id": "6d6a190f-a92d-4b60-ba03-91778089116b",
+  "title": "Finish Phase 4 docs",
+  "description": "Write api.md updates",
+  "priority": "HIGH",
+  "status": "TODO",
+  "dueDate": "2026-07-10T00:00:00.000Z",
+  "sortOrder": 0,
+  "completedAt": null,
+  "createdAt": "2026-07-04T17:41:42.168Z",
+  "updatedAt": "2026-07-04T17:41:42.168Z"
+}
+```
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `priority` | enum | `LOW` \| `MEDIUM` (default) \| `HIGH` \| `URGENT` |
+| `status` | enum | `TODO` (default) \| `IN_PROGRESS` \| `DONE` \| `CANCELED` |
+| `dueDate` | string (ISO) \| null | Optional deadline |
+| `completedAt` | string (ISO) \| null | Auto-set when status becomes `DONE`; cleared otherwise |
+
+---
+
+### POST /api/todos
+
+Create a new todo.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/todos \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Finish Phase 4 docs",
+    "description": "Write api.md updates",
+    "priority": "HIGH",
+    "dueDate": "2026-07-10T00:00:00Z"
+  }'
+```
+
+| Field | Type | Required | Default | Rules |
+|-------|------|----------|---------|-------|
+| `title` | string | Yes | — | 1–500 chars |
+| `description` | string | No | `null` | max 5000 chars |
+| `priority` | enum | No | `MEDIUM` | `LOW` \| `MEDIUM` \| `HIGH` \| `URGENT` |
+| `status` | enum | No | `TODO` | `TODO` \| `IN_PROGRESS` \| `DONE` \| `CANCELED` |
+| `dueDate` | string (ISO date) | No | `null` | Must be in the future |
+| `sortOrder` | integer | No | `0` | ≥ 0 |
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "todo": {
+      "id": "6d6a190f-...",
+      "title": "Finish Phase 4 docs",
+      "description": "Write api.md updates",
+      "priority": "HIGH",
+      "status": "TODO",
+      "dueDate": "2026-07-10T00:00:00.000Z",
+      "sortOrder": 0,
+      "completedAt": null,
+      "createdAt": "2026-07-04T17:41:42.168Z",
+      "updatedAt": "2026-07-04T17:41:42.168Z"
+    }
+  }
+}
+```
+
+---
+
+### GET /api/todos
+
+List the authenticated user's todos with pagination, filtering, and sorting.
+
+**Query Parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page` | integer | `1` | Page number (≥ 1) |
+| `limit` | integer | `20` | Items per page (1–100) |
+| `status` | enum | — | Filter: `TODO` \| `IN_PROGRESS` \| `DONE` \| `CANCELED` |
+| `priority` | enum | — | Filter: `LOW` \| `MEDIUM` \| `HIGH` \| `URGENT` |
+| `completed` | boolean | — | Filter: `true` = done, `false` = not done |
+| `sortBy` | enum | `createdAt` | `createdAt` \| `dueDate` \| `priority` |
+| `sortOrder` | enum | `desc` | `asc` \| `desc` |
+
+**Examples:**
+```bash
+# Default list
+curl http://localhost:4000/api/todos -H "Authorization: Bearer <token>"
+
+# Filter by urgent + sort by priority descending
+curl "http://localhost:4000/api/todos?priority=URGENT&sortBy=priority&sortOrder=desc" \
+  -H "Authorization: Bearer <token>"
+
+# Only incomplete todos, page 2
+curl "http://localhost:4000/api/todos?completed=false&page=2&limit=10" \
+  -H "Authorization: Bearer <token>"
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "todos": [ { "id": "...", "title": "...", ... } ],
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "total": 42,
+      "totalPages": 3
+    }
+  }
+}
+```
+
+---
+
+### GET /api/todos/:id
+
+Get a single todo by ID. Returns `404` if the todo does not exist or belongs to another user.
+
+**Request:**
+```bash
+curl http://localhost:4000/api/todos/6d6a190f-a92d-4b60-ba03-91778089116b \
+  -H "Authorization: Bearer <token>"
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": { "todo": { "id": "...", "title": "...", ... } }
+}
+```
+
+---
+
+### PATCH /api/todos/:id
+
+Update a todo. Only provided fields are changed. Setting `status` to `DONE` automatically stamps `completedAt`; changing away from `DONE` clears it.
+
+**Request:**
+```bash
+curl -X PATCH http://localhost:4000/api/todos/6d6a190f-... \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "DONE",
+    "priority": "URGENT",
+    "dueDate": "null"
+  }'
+```
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `title` | string | 1–500 chars |
+| `description` | string \| null | Pass `""` or `"null"` to clear |
+| `priority` | enum | `LOW` \| `MEDIUM` \| `HIGH` \| `URGENT` |
+| `status` | enum | `TODO` \| `IN_PROGRESS` \| `DONE` \| `CANCELED` |
+| `dueDate` | ISO date \| `"null"` | Pass `"null"` to clear the due date |
+| `sortOrder` | integer | ≥ 0 |
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": { "todo": { "id": "...", "status": "DONE", "completedAt": "2026-07-04T18:30:39.324Z", ... } }
+}
+```
+
+---
+
+### DELETE /api/todos/:id
+
+Permanently delete a todo. Returns `404` if it does not exist or belongs to another user.
+
+**Request:**
+```bash
+curl -X DELETE http://localhost:4000/api/todos/6d6a190f-... \
+  -H "Authorization: Bearer <token>"
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": { "message": "Todo deleted successfully" }
+}
+```
+
+**Todo error responses:**
+
+| Status | Code | When |
+|--------|------|------|
+| 401 | `AUTH_TOKEN_MISSING` | No Bearer token |
+| 401 | `INVALID_ACCESS_TOKEN` | Token invalid or expired |
+| 404 | `TODO_NOT_FOUND` | Todo does not exist OR belongs to another user |
+| 400 | `VALIDATION_ERROR` | Invalid body, params, or query |
+
+---
+
 ## Global Error Codes
 
 | HTTP Status | Code | Description |
@@ -347,6 +558,7 @@ curl http://localhost:4000/api/auth/me \
 | 401 | `USER_NOT_FOUND` | User referenced by token doesn't exist |
 | 403 | `ACCOUNT_INACTIVE` | Account has been deactivated |
 | 404 | `ROUTE_NOT_FOUND` | No matching route (handled by notFound middleware) |
+| 404 | `TODO_NOT_FOUND` | Todo not found or owned by another user |
 | 409 | `EMAIL_TAKEN` | Email already registered |
 | 409 | `USERNAME_TAKEN` | Username already registered |
 | 409 | `DUPLICATE_FIELD` | Prisma unique constraint violation (mapped from P2002) |

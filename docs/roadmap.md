@@ -71,17 +71,21 @@ Delivered:
 
 ## Remaining Phases
 
-### Phase 4 — Todo Management
-**Goal:** Full CRUD for todos with real-time board support
+### Phase 4 ✅ — Todo Management
+**Status:** Complete
+**Goal:** Full CRUD for todos with filtering, sorting, and pagination
 
-Features:
-- `POST /api/todos` — Create todo
-- `GET /api/todos` — List user's todos (filter by status, priority, due date)
+Delivered:
+- `POST /api/todos` — Create todo (title, description, priority, status, dueDate, sortOrder)
+- `GET /api/todos` — List todos with pagination + filtering (status, priority, completed) + sorting (dueDate, createdAt, priority)
 - `GET /api/todos/:id` — Get single todo
-- `PATCH /api/todos/:id` — Update todo (status, priority, title, description)
-- `DELETE /api/todos/:id` — Delete todo (soft delete preferred)
-- `PATCH /api/todos/reorder` — Batch update sortOrder for drag-and-drop
-- Dashboard: overdue count, completion rate
+- `PATCH /api/todos/:id` — Update todo; status→DONE auto-stamps `completedAt`, reverting clears it
+- `DELETE /api/todos/:id` — Permanently delete todo
+- Zod validation on body, query, and params
+- Ownership enforcement — users get `404` for other users' todos (no existence leak)
+- Thin controllers + service layer + validators (testable structure)
+
+Files: `src/validators/todo.validators.ts`, `src/services/todo.service.ts`, `src/controllers/todo.controller.ts`, `src/routes/todo.routes.ts`
 
 ---
 
@@ -247,8 +251,8 @@ Tasks:
 | 2 | Database Design | ✅ Complete |
 | 3 | Authentication | ✅ Complete |
 | 3.5 | Project Documentation | ✅ Complete |
-| 4 | Todo Management | 🔜 Next |
-| 5 | Pomodoro Timer | Planned |
+| 4 | Todo Management | ✅ Complete |
+| 5 | Pomodoro Timer | 🔜 Next |
 | 6 | Analytics Dashboard | Planned |
 | 7 | Notification System | Planned |
 | 8 | Focus Mode (Strict) | Planned |
