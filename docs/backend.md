@@ -106,6 +106,31 @@ router.get('/:id', validate(todoIdParamSchema, 'params'), getById);
 
 ---
 
+## Pomodoro Module
+
+### `pomodoro.service.ts` — Pomodoro State Machine
+
+Implements a state machine with a **single-active-session invariant**: at most one session per user may be in RUNNING or PAUSED status.
+
+| Function | Transition | Purpose |
+|----------|------------|---------|
+| `startSession(userId, input)` | (none) → RUNNING | Create session; 409 if one is already active; resolves duration from user prefs |
+| `pauseSession(userId)` | RUNNING → PAUSED | Stamp `pausedAt` |
+| `resumeSession(userId)` | PAUSED → RUNNING | Fold pause into `accumulatedPausedMs`; clear `pausedAt` |
+| `completeSession(userId)` | RUNNING\|PAUSED → COMPLETED | Compute `actualMinutes` (excludes paused); set `endedAt` |
+| `cancelSession(userId)` | RUNNING\|PAUSED → CANCELLED | Same accounting as complete |
+| `getCurrentSession(userId)` | — | Returns the active session or null |
+| `getHistory(userId, query)` | — | Paginated history; filters by type/status/date range |
+
+**Key design decisions:**
+- **Single active session**: `findActive` queries for RUNNING/PAUSED; `start` rejects with `409 SESSION_ALREADY_ACTIVE` if one exists.
+- **Pause tracking**: uses two fields — `pausedAt` (the most recent pause timestamp) and `accumulatedPausedMs` (the running total). On resume, the just-ended pause is folded into the accumulator. This avoids a separate `PauseEvent` table while still supporting accurate `actualMinutes`.
+- **`actualMinutes`**: computed on terminal transitions as `(now - startedAt - accumulatedPausedMs) / 60000`, so paused time is never counted as focus time.
+- **Configurable durations**: `defaultDuration` reads the user's `pomodoroLength` / `shortBreakLength` / `longBreakLength` prefs; the client may override with `durationMinutes`.
+- **Todo ownership**: if `todoId` is provided, the service verifies it belongs to the user (404 otherwise) before linking.
+
+---
+
 ## Services
 
 ### `auth.service.ts` — Authentication Business Logic

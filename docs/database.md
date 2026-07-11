@@ -25,6 +25,8 @@ erDiagram
         Role role
         Boolean isEmailVerified
         Int pomodoroLength
+        Int shortBreakLength
+        Int longBreakLength
         Boolean isActive
         DateTime lastLoginAt
         DateTime createdAt
@@ -62,11 +64,14 @@ erDiagram
         UUID userId FK
         UUID todoId FK
         UUID focusSessionId FK
+        PomodoroType type
         Int plannedMinutes
         Int actualMinutes
         SessionStatus status
         DateTime startedAt
         DateTime endedAt
+        DateTime pausedAt
+        Int accumulatedPausedMs
         DateTime createdAt
         DateTime updatedAt
     }
@@ -171,6 +176,15 @@ Shared lifecycle for both Pomodoro and Focus sessions.
 | `COMPLETED` | Finished successfully |
 | `ABANDONED` | User quit early |
 | `PAUSED` | Temporarily paused |
+| `CANCELLED` | Cancelled by the user (terminal) |
+
+### `PomodoroType`
+Kind of Pomodoro session — a focus block or a rest break.
+| Value | Description |
+|-------|-------------|
+| `WORK` | Focus/work block (default) |
+| `SHORT_BREAK` | Short rest period |
+| `LONG_BREAK` | Long rest period |
 
 ### `FocusMode`
 | Value | Description |
@@ -219,7 +233,9 @@ The core account entity. Owns all other data via cascade relations.
 | `avatarUrl` | String? | — | Profile picture URL |
 | `role` | Role | default USER | RBAC role |
 | `isEmailVerified` | Boolean | default false | Email verification status |
-| `pomodoroLength` | Int | default 25 | Default timer length (minutes) |
+| `pomodoroLength` | Int | default 25 | Default WORK timer length (minutes) |
+| `shortBreakLength` | Int | default 5 | Default SHORT_BREAK length (minutes) |
+| `longBreakLength` | Int | default 15 | Default LONG_BREAK length (minutes) |
 | `isActive` | Boolean | default true | Soft-delete flag |
 | `lastLoginAt` | DateTime? | — | Last successful login |
 | `createdAt` | DateTime | auto | Account creation |
@@ -270,7 +286,7 @@ An actionable task with priority, status, and optional due date.
 ---
 
 ### PomodoroSession
-A single Pomodoro cycle (e.g. one 25-min work block). The primary analytics data source.
+A single Pomodoro cycle (e.g. one 25-min work block) or a break block. The primary analytics data source.
 
 | Field | Type | Constraints | Description |
 |-------|------|-------------|-------------|
@@ -278,15 +294,18 @@ A single Pomodoro cycle (e.g. one 25-min work block). The primary analytics data
 | `userId` | UUID | FK → User | Session owner |
 | `todoId` | UUID? | FK → Todo, SetNull | Optional linked todo |
 | `focusSessionId` | UUID? | FK → FocusSession, SetNull | Optional parent focus block |
-| `plannedMinutes` | Int | required | Planned work duration |
-| `actualMinutes` | Int? | — | Actual work duration |
+| `type` | PomodoroType | default WORK | Session kind (work or break) |
+| `plannedMinutes` | Int | required | Planned duration |
+| `actualMinutes` | Int? | — | Actual focus duration (excludes paused time) |
 | `status` | SessionStatus | default RUNNING | Session lifecycle |
 | `startedAt` | DateTime | auto | Session start |
-| `endedAt` | DateTime? | — | Session end |
+| `endedAt` | DateTime? | — | Session end (terminal states) |
+| `pausedAt` | DateTime? | — | Timestamp of the most recent pause; null when running/terminal |
+| `accumulatedPausedMs` | Int | default 0 | Total paused duration in ms (across all pause/resume cycles) |
 | `createdAt` | DateTime | auto | Record creation |
 | `updatedAt` | DateTime | auto | Last modification |
 
-**Indexes:** `(userId, startedAt)`, `(todoId)`, `(focusSessionId)`
+**Indexes:** `(userId, startedAt)`, `(userId, status)`, `(todoId)`, `(focusSessionId)`
 
 ---
 
@@ -404,6 +423,7 @@ Linked Codeforces account for coding progress tracking (1:1 with User).
 | Todo | `(userId, dueDate)` | Dashboard sort by deadline |
 | Todo | `(userId, sortOrder)` | Board drag-and-drop ordering |
 | PomodoroSession | `(userId, startedAt)` | Analytics: sessions per day |
+| PomodoroSession | `(userId, status)` | Find active sessions |
 | PomodoroSession | `(todoId)` | Per-todo focus time |
 | PomodoroSession | `(focusSessionId)` | Cycles within a focus block |
 | FocusSession | `(userId, startedAt)` | Analytics: focus time per day |

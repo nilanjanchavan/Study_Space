@@ -54,6 +54,14 @@ enum SessionStatus {
   COMPLETED
   ABANDONED
   PAUSED
+  CANCELLED
+}
+
+/// Type of Pomodoro session. WORK is the focus block; breaks are rest periods.
+enum PomodoroType {
+  WORK
+  SHORT_BREAK
+  LONG_BREAK
 }
 
 /// Type of deep-work container. STRICT blocks app/notifications distractions.
@@ -92,21 +100,25 @@ enum MusicSource {
 
 /// Core account. Owns all productivity data; deleting it cascades to children.
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  username        String    @unique
-  passwordHash    String
-  name            String?
-  avatarUrl       String?
-  role            Role      @default(USER)
-  isEmailVerified Boolean   @default(false)
-  /// Per-user default Pomodoro length in minutes (configurable later).
-  pomodoroLength  Int       @default(25)
+  id               String    @id @default(uuid())
+  email            String    @unique
+  username         String    @unique
+  passwordHash     String
+  name             String?
+  avatarUrl        String?
+  role             Role      @default(USER)
+  isEmailVerified  Boolean   @default(false)
+  /// Per-user default Pomodoro WORK length in minutes (configurable later).
+  pomodoroLength   Int       @default(25)
+  /// Per-user default SHORT_BREAK length in minutes.
+  shortBreakLength Int       @default(5)
+  /// Per-user default LONG_BREAK length in minutes.
+  longBreakLength  Int       @default(15)
   /// Soft delete support without losing referential history.
-  isActive        Boolean   @default(true)
-  lastLoginAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  isActive         Boolean   @default(true)
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   // ── Relations ──
   refreshTokens     RefreshToken[]
@@ -165,28 +177,35 @@ model Todo {
   @@index([userId, sortOrder])
 }
 
-/// A single Pomodoro cycle (e.g. one 25-min work block).
+/// A single Pomodoro cycle (e.g. one 25-min work block) or a break block.
 /// Granular unit of focus data and the primary analytics source.
 model PomodoroSession {
-  id             String        @id @default(uuid())
-  userId         String
+  id                  String        @id @default(uuid())
+  userId              String
   /// Optional: which todo this cycle was spent on. SetNull if todo is deleted
   /// so historical analytics survive.
-  todoId         String?
-  focusSessionId String?
-  plannedMinutes Int
-  actualMinutes  Int?
-  status         SessionStatus @default(RUNNING)
-  startedAt      DateTime      @default(now())
-  endedAt        DateTime?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  todoId              String?
+  focusSessionId      String?
+  /// Kind of session: a focus block or a rest break.
+  type                PomodoroType  @default(WORK)
+  plannedMinutes      Int
+  actualMinutes       Int?
+  status              SessionStatus @default(RUNNING)
+  startedAt           DateTime      @default(now())
+  endedAt             DateTime?
+  /// Timestamp of the most recent pause; null when RUNNING / terminal.
+  pausedAt            DateTime?
+  /// Accumulated paused duration in milliseconds (sum across pause/resume cycles).
+  accumulatedPausedMs Int           @default(0)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   todo         Todo?         @relation(fields: [todoId], references: [id], onDelete: SetNull)
   focusSession FocusSession? @relation(fields: [focusSessionId], references: [id], onDelete: SetNull)
 
   @@index([userId, startedAt])
+  @@index([userId, status])
   @@index([todoId])
   @@index([focusSessionId])
 }

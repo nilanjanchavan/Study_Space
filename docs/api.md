@@ -543,6 +543,176 @@ curl -X DELETE http://localhost:4000/api/todos/6d6a190f-... \
 
 ---
 
+## Pomodoro Endpoints
+
+All Pomodoro endpoints require authentication. At most **one active session** (RUNNING or PAUSED) is allowed per user; starting a second returns `409 SESSION_ALREADY_ACTIVE`.
+
+### Session Object
+
+```json
+{
+  "id": "fd2cd864-3795-458c-9696-e10f9936d585",
+  "type": "WORK",
+  "status": "RUNNING",
+  "plannedMinutes": 25,
+  "actualMinutes": null,
+  "startedAt": "2026-07-09T05:20:58.340Z",
+  "endedAt": null,
+  "pausedAt": null,
+  "accumulatedPausedMs": 0,
+  "todoId": null,
+  "elapsedMs": 49,
+  "focusMs": 49,
+  "createdAt": "2026-07-09T05:20:58.340Z",
+  "updatedAt": "2026-07-09T05:20:58.340Z"
+}
+```
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `type` | enum | `WORK` (default) \| `SHORT_BREAK` \| `LONG_BREAK` |
+| `status` | enum | `RUNNING` \| `PAUSED` \| `COMPLETED` \| `CANCELLED` \| `ABANDONED` |
+| `plannedMinutes` | int | From user prefs or `durationMinutes` override |
+| `actualMinutes` | int\|null | Computed on completion/cancel (excludes paused time) |
+| `pausedAt` | ISO\|null | Most recent pause timestamp; null when running/terminal |
+| `accumulatedPausedMs` | int | Total paused time in ms across all pause/resume cycles |
+| `elapsedMs` | int | Wall-clock ms since `startedAt` |
+| `focusMs` | int | `elapsedMs` minus all paused time |
+
+---
+
+### POST /api/pomodoro/start
+
+Start a new Pomodoro session. Fails with `409` if a session is already active.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/pomodoro/start \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"WORK","durationMinutes":30,"todoId":"<uuid>"}'
+```
+
+| Field | Type | Required | Default | Rules |
+|-------|------|----------|---------|-------|
+| `type` | enum | No | `WORK` | `WORK` \| `SHORT_BREAK` \| `LONG_BREAK` |
+| `durationMinutes` | int | No | User pref (25/5/15) | 1–180 |
+| `todoId` | UUID | No | `null` | Must belong to the user |
+
+**Response (201):** `{ "success": true, "data": { "session": { ... } } }`
+
+---
+
+### POST /api/pomodoro/pause
+
+Pause the active session (RUNNING → PAUSED). Returns `409` if already paused, `404` if no active session.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/pomodoro/pause -H "Authorization: Bearer <token>"
+```
+
+**Response (200):** `{ "success": true, "data": { "session": { "status": "PAUSED", "pausedAt": "..." } } }`
+
+---
+
+### POST /api/pomodoro/resume
+
+Resume a paused session (PAUSED → RUNNING). Folds the pause duration into `accumulatedPausedMs`.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/pomodoro/resume -H "Authorization: Bearer <token>"
+```
+
+**Response (200):** `{ "success": true, "data": { "session": { "status": "RUNNING", "pausedAt": null } } }`
+
+---
+
+### POST /api/pomodoro/complete
+
+Complete the active session (RUNNING or PAUSED → COMPLETED). Computes `actualMinutes` (excluding paused time) and sets `endedAt`.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/pomodoro/complete -H "Authorization: Bearer <token>"
+```
+
+**Response (200):** `{ "success": true, "data": { "session": { "status": "COMPLETED", "actualMinutes": 24, "endedAt": "..." } } }`
+
+---
+
+### POST /api/pomodoro/cancel
+
+Cancel the active session (RUNNING or PAUSED → CANCELLED). Computes `actualMinutes` and sets `endedAt`.
+
+**Request:**
+```bash
+curl -X POST http://localhost:4000/api/pomodoro/cancel -H "Authorization: Bearer <token>"
+```
+
+**Response (200):** `{ "success": true, "data": { "session": { "status": "CANCELLED", "actualMinutes": 3, "endedAt": "..." } } }`
+
+---
+
+### GET /api/pomodoro/current
+
+Get the user's single active session (RUNNING or PAUSED). Returns `null` if none is active.
+
+**Request:**
+```bash
+curl http://localhost:4000/api/pomodoro/current -H "Authorization: Bearer <token>"
+```
+
+**Response (200):** `{ "success": true, "data": { "session": { ... } | null } }`
+
+---
+
+### GET /api/pomodoro/history
+
+Paginated history of all sessions (including completed/cancelled). Supports filtering by type, status, and date range.
+
+**Query Parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `page` | int | `1` | Page number (≥ 1) |
+| `limit` | int | `20` | Items per page (1–100) |
+| `type` | enum | — | `WORK` \| `SHORT_BREAK` \| `LONG_BREAK` |
+| `status` | enum | — | `RUNNING` \| `PAUSED` \| `COMPLETED` \| `CANCELLED` \| `ABANDONED` |
+| `from` | ISO date | — | Inclusive lower bound on `startedAt` |
+| `to` | ISO date | — | Inclusive upper bound on `startedAt` |
+
+**Example:**
+```bash
+curl "http://localhost:4000/api/pomodoro/history?type=WORK&status=COMPLETED&page=1&limit=20" \
+  -H "Authorization: Bearer <token>"
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "sessions": [ { "id": "...", "type": "WORK", ... } ],
+    "pagination": { "page": 1, "limit": 20, "total": 4, "totalPages": 1 }
+  }
+}
+```
+
+**Pomodoro error responses:**
+
+| Status | Code | When |
+|--------|------|------|
+| 401 | `AUTH_TOKEN_MISSING` | No Bearer token |
+| 404 | `NO_ACTIVE_SESSION` | Pause/resume/complete/cancel with no active session |
+| 404 | `TODO_NOT_FOUND` | Linked todo doesn't exist or belongs to another user |
+| 409 | `SESSION_ALREADY_ACTIVE` | Starting a second active session |
+| 409 | `SESSION_ALREADY_PAUSED` | Pausing an already-paused session |
+| 409 | `SESSION_ALREADY_RUNNING` | Resuming an already-running session |
+
+---
+
 ## Global Error Codes
 
 | HTTP Status | Code | Description |
@@ -559,9 +729,13 @@ curl -X DELETE http://localhost:4000/api/todos/6d6a190f-... \
 | 403 | `ACCOUNT_INACTIVE` | Account has been deactivated |
 | 404 | `ROUTE_NOT_FOUND` | No matching route (handled by notFound middleware) |
 | 404 | `TODO_NOT_FOUND` | Todo not found or owned by another user |
+| 404 | `NO_ACTIVE_SESSION` | No active Pomodoro session to pause/resume/complete/cancel |
 | 409 | `EMAIL_TAKEN` | Email already registered |
-| 409 | `USERNAME_TAKEN` | Username already registered |
+| 409 | `USERNAME_TAKEN` | Username already taken |
 | 409 | `DUPLICATE_FIELD` | Prisma unique constraint violation (mapped from P2002) |
+| 409 | `SESSION_ALREADY_ACTIVE` | Attempted to start a second active Pomodoro session |
+| 409 | `SESSION_ALREADY_PAUSED` | Attempted to pause an already-paused session |
+| 409 | `SESSION_ALREADY_RUNNING` | Attempted to resume an already-running session |
 | 429 | `RATE_LIMIT_EXCEEDED` | Too many requests; try again later |
 | 500 | _(none)_ | Internal server error (generic message in production) |
 

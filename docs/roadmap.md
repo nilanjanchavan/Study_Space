@@ -89,18 +89,24 @@ Files: `src/validators/todo.validators.ts`, `src/services/todo.service.ts`, `src
 
 ---
 
-### Phase 5 — Pomodoro Timer
-**Goal:** Focus session management with real-time timer control
+### Phase 5 ✅ — Pomodoro Timer
+**Status:** Complete
+**Goal:** Pomodoro engine with full session lifecycle and state machine
 
-Features:
-- `POST /api/pomodoro/start` — Start a pomodoro cycle (link optional todo)
-- `POST /api/pomodoro/stop` — End current cycle (mark completed/abandoned)
-- `POST /api/pomodoro/pause` — Pause current cycle
-- `POST /api/focus/start` — Start a focus session (normal/strict mode)
-- `POST /api/focus/stop` — End focus session
-- `GET /api/pomodoro/current` — Get active session for the user
-- Link pomodoro cycles to focus sessions
-- Track planned vs actual minutes
+Delivered:
+- `POST /api/pomodoro/start` — Start a session (WORK/SHORT_BREAK/LONG_BREAK, optional todo link, optional duration override)
+- `POST /api/pomodoro/pause` — Pause a running session (RUNNING → PAUSED)
+- `POST /api/pomodoro/resume` — Resume a paused session (PAUSED → RUNNING; folds pause into `accumulatedPausedMs`)
+- `POST /api/pomodoro/complete` — Complete a session (→ COMPLETED; computes `actualMinutes` excluding paused time)
+- `POST /api/pomodoro/cancel` — Cancel a session (→ CANCELLED)
+- `GET /api/pomodoro/current` — Get the user's single active session (or null)
+- `GET /api/pomodoro/history` — Paginated history with filters (type, status, date range)
+- Single-active-session invariant (enforced; starting a second returns 409)
+- Configurable durations from user prefs (`pomodoroLength`, `shortBreakLength`, `longBreakLength`)
+- Pause tracking via `pausedAt` + `accumulatedPausedMs`; `actualMinutes` excludes paused time
+- Zod validation on all inputs; auth on all endpoints
+
+Files: `src/validators/pomodoro.validators.ts`, `src/services/pomodoro.service.ts`, `src/controllers/pomodoro.controller.ts`, `src/routes/pomodoro.routes.ts`
 
 ---
 
@@ -252,8 +258,8 @@ Tasks:
 | 3 | Authentication | ✅ Complete |
 | 3.5 | Project Documentation | ✅ Complete |
 | 4 | Todo Management | ✅ Complete |
-| 5 | Pomodoro Timer | 🔜 Next |
-| 6 | Analytics Dashboard | Planned |
+| 5 | Pomodoro Timer | ✅ Complete |
+| 6 | Analytics Dashboard | 🔜 Next |
 | 7 | Notification System | Planned |
 | 8 | Focus Mode (Strict) | Planned |
 | 9 | Codeforces Integration | Planned |
