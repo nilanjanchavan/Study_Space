@@ -131,6 +131,27 @@ Implements a state machine with a **single-active-session invariant**: at most o
 
 ---
 
+## Focus Session Module
+
+### `focus.service.ts` — Focus State Machine
+
+Aggregate deep-work container that may contain many PomodoroSessions. Single-active-session invariant (at most one RUNNING per user).
+
+| Function | Transition | Purpose |
+|----------|------------|---------|
+| `startFocus(userId, input)` | → RUNNING | Create; 409 if one already active; sets `strictModeEnabled` from mode |
+| `endFocus(userId)` | → COMPLETED | Compute stats from child pomodoros; set `endedAt` |
+| `cancelFocus(userId)` | → CANCELLED | Same stats computation; does NOT delete pomodoro history |
+| `getCurrentFocus` / `getFocusById` / `getFocusHistory` | — | Read (ownership-checked) |
+
+**Key design decisions:**
+- **Auto-association**: `pomodoro.service.startSession` queries for an active Focus Session and links every new pomodoro's `focusSessionId` to it.
+- **Stats computed on terminal transition** via `computeStats()`: counts COMPLETED WORK pomodoros + CANCELLED pomodoros; `actualMinutes` = sum of completed WORK `actualMinutes`.
+- **Strict mode**: `strictModeEnabled` is a denormalized boolean mirror of `mode==STRICT` for easy querying; frontend will use it for blocking UX (not implemented yet).
+- **Cancelling ≠ deletion**: pomodoro records survive with `focusSessionId` intact (FK is `onDelete: SetNull`, but cancel just sets the focus status without touching children).
+
+---
+
 ## Services
 
 ### `auth.service.ts` — Authentication Business Logic

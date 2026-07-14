@@ -214,17 +214,24 @@ model PomodoroSession {
 /// Distinct from PomodoroSession: represents a full "focus session" with a
 /// mode (normal/strict) and overall duration, decoupled from individual cycles.
 model FocusSession {
-  id             String        @id @default(uuid())
-  userId         String
-  mode           FocusMode     @default(NORMAL)
-  status         SessionStatus @default(RUNNING)
-  goal           String?
-  plannedMinutes Int
-  actualMinutes  Int?
-  startedAt      DateTime      @default(now())
-  endedAt        DateTime?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                 String        @id @default(uuid())
+  userId             String
+  mode               FocusMode     @default(NORMAL)
+  /// Denormalized boolean mirror of `mode == STRICT`, for easy querying.
+  /// The frontend will use this to drive browser-blocking / do-not-disturb UX.
+  strictModeEnabled  Boolean       @default(false)
+  status             SessionStatus @default(RUNNING)
+  goal               String?
+  plannedMinutes     Int
+  actualMinutes      Int?
+  /// Count of COMPLETED PomodoroSessions within this focus block.
+  completedPomodoros Int           @default(0)
+  /// Count of CANCELLED PomodoroSessions within this focus block.
+  cancelledPomodoros Int           @default(0)
+  startedAt          DateTime      @default(now())
+  endedAt            DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   pomodoroSessions PomodoroSession[]

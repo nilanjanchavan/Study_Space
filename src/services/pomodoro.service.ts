@@ -140,10 +140,18 @@ export async function startSession(
     }
   }
 
+  // Auto-associate with the active Focus Session, if one exists.
+  // WORK and break sessions alike are linked so analytics can attribute them.
+  const activeFocus = await prisma.focusSession.findFirst({
+    where: { userId, status: { in: ['RUNNING'] } },
+    select: { id: true },
+  });
+
   const session = await prisma.pomodoroSession.create({
     data: {
       userId,
       todoId: todoId ?? null,
+      focusSessionId: activeFocus?.id ?? null,
       type,
       plannedMinutes,
       status: 'RUNNING',

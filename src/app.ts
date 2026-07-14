@@ -8,6 +8,7 @@ import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
 import todoRoutes from './routes/todo.routes';
 import pomodoroRoutes from './routes/pomodoro.routes';
+import focusRoutes from './routes/focus.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -49,6 +50,7 @@ export function createApp(): Express {
   app.use('/api/auth', authRoutes);
   app.use('/api/todos', todoRoutes);
   app.use('/api/pomodoro', pomodoroRoutes);
+  app.use('/api/focus', focusRoutes);
 
   // ── Fallbacks ────────────────────────────────────────
   app.use(notFoundHandler);

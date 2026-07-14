@@ -80,10 +80,13 @@ erDiagram
         UUID id PK
         UUID userId FK
         FocusMode mode
+        Boolean strictModeEnabled
         SessionStatus status
         String goal
         Int plannedMinutes
         Int actualMinutes
+        Int completedPomodoros
+        Int cancelledPomodoros
         DateTime startedAt
         DateTime endedAt
         DateTime createdAt
@@ -317,10 +320,13 @@ An aggregate deep-work block spanning multiple Pomodoro cycles. Supports normal 
 | `id` | UUID | PK | Unique identifier |
 | `userId` | UUID | FK → User | Session owner |
 | `mode` | FocusMode | default NORMAL | Normal or strict |
+| `strictModeEnabled` | Boolean | default false | Denormalized `mode==STRICT`; drives frontend blocking |
 | `status` | SessionStatus | default RUNNING | Session lifecycle |
 | `goal` | String? | — | What the user aimed to accomplish |
 | `plannedMinutes` | Int | required | Planned total duration |
-| `actualMinutes` | Int? | — | Actual total duration |
+| `actualMinutes` | Int? | — | Computed on end/cancel (sum of completed WORK pomodoro minutes) |
+| `completedPomodoros` | Int | default 0 | Count of completed WORK pomodoros within this block |
+| `cancelledPomodoros` | Int | default 0 | Count of cancelled pomodoros within this block |
 | `startedAt` | DateTime | auto | Session start |
 | `endedAt` | DateTime? | — | Session end |
 | `createdAt` | DateTime | auto | Record creation |

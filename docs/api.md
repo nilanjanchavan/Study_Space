@@ -713,6 +713,42 @@ curl "http://localhost:4000/api/pomodoro/history?type=WORK&status=COMPLETED&page
 
 ---
 
+## Focus Session Endpoints
+
+All require authentication. At most **one active Focus Session** per user. Pomodoros started while a focus session is active are auto-associated with it. Cancelling a focus session does NOT delete its pomodoro history.
+
+### Session Object
+```json
+{
+  "id": "...", "mode": "STRICT", "strictModeEnabled": true, "status": "COMPLETED",
+  "goal": "Ship Phase 6", "plannedMinutes": 90, "actualMinutes": 25,
+  "completedPomodoros": 1, "cancelledPomodoros": 1,
+  "startedAt": "...", "endedAt": "...", "elapsedMs": 2611, "pomodoroCount": 2,
+  "createdAt": "...", "updatedAt": "..."
+}
+```
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `POST` | `/api/focus/start` | Start focus session (body: `mode`, `goal?`, `plannedMinutes`) → 201 |
+| `POST` | `/api/focus/end` | End active session → COMPLETED; computes stats |
+| `POST` | `/api/focus/cancel` | Cancel active session → CANCELLED; computes stats |
+| `GET` | `/api/focus/current` | Get active session or null |
+| `GET` | `/api/focus/history` | Paginated history (query: `page`, `limit`, `mode`, `status`, `from`, `to`) |
+| `GET` | `/api/focus/:id` | Get by ID (404 if not owned) |
+
+**Start body:** `{ "mode": "NORMAL"|"STRICT", "goal": "string (≤500)", "plannedMinutes": 1–720 }`
+
+**End/cancel response** includes computed `completedPomodoros`, `cancelledPomodoros`, `actualMinutes`.
+
+| Status | Code | When |
+|--------|------|------|
+| 404 | `NO_ACTIVE_FOCUS_SESSION` | End/cancel with no active session |
+| 404 | `FOCUS_SESSION_NOT_FOUND` | ID not found or owned by another user |
+| 409 | `FOCUS_SESSION_ALREADY_ACTIVE` | Starting a second active session |
+
+---
+
 ## Global Error Codes
 
 | HTTP Status | Code | Description |
