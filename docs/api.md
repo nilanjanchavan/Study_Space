@@ -749,6 +749,32 @@ All require authentication. At most **one active Focus Session** per user. Pomod
 
 ---
 
+## Analytics Endpoints
+
+All require authentication. All data is scoped to the authenticated user. Read-only aggregations over existing Todo, PomodoroSession, and FocusSession data.
+
+| Method | Route | Query | Purpose |
+|--------|-------|-------|---------|
+| `GET` | `/api/analytics/dashboard` | — | Todo/Pomodoro/Focus totals + current active sessions |
+| `GET` | `/api/analytics/daily` | `date?` | Today's focus minutes, pomodoros, todos, completion rate |
+| `GET` | `/api/analytics/weekly` | — | Last 7 days chart array (`date`, `focusMinutes`, `pomodoros`, `completedTodos`) |
+| `GET` | `/api/analytics/monthly` | `date?` | Monthly focus hours, totals, weekly breakdown |
+| `GET` | `/api/analytics/streak` | — | Current + longest streak (consecutive days with ≥1 COMPLETED WORK pomodoro) |
+
+**Dashboard response shape:**
+```json
+{
+  "todos": { "totalTodos": 3, "completedTodos": 1, "pendingTodos": 2, "overdueTodos": 0 },
+  "pomodoros": { "totalPomodoros": 3, "completedPomodoros": 2, "cancelledPomodoros": 1, "totalFocusMinutes": 50, "averagePomodoroLength": 38 },
+  "focusSessions": { "totalFocusSessions": 1, "completedFocusSessions": 1 },
+  "current": { "activePomodoro": null, "activeFocusSession": null }
+}
+```
+
+**Streak rule:** A streak day = at least one COMPLETED WORK pomodoro. Current streak counts back from today (or yesterday if nothing today); longest is computed across all history.
+
+---
+
 ## Global Error Codes
 
 | HTTP Status | Code | Description |
