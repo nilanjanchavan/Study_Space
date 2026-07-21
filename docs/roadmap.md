@@ -161,32 +161,33 @@ Features:
 
 ---
 
-### Phase 9 — Codeforces Integration
+### Phase 9 ✅ — Codeforces Integration
+**Status:** Complete (backend)
 **Goal:** Coding progress tracking via Codeforces API
 
-Features:
-- `POST /api/codeforces/link` — Link Codeforces account by handle
-- `DELETE /api/codeforces/unlink` — Unlink Codeforces account
-- `GET /api/codeforces/profile` — Get linked profile (rating, rank, contests)
-- `POST /api/codeforces/sync` — Trigger manual data sync from CF API
-- `GET /api/codeforces/stats` — Solve counts, rating history, contest results
-- Automated sync on schedule or on focus session end
-- Coding progress in analytics (problems solved during focus sessions)
-- Rating change alerts
+Delivered:
+- `GET /api/codeforces/profile` — Cached profile (or null)
+- `PUT /api/codeforces/profile` — Save/update handle (validated; no auto-sync)
+- `POST /api/codeforces/sync` — Fetch live from CF API; caches rating/maxRating/rank/maxRank/contribution/avatar/titlePhoto
+- `DELETE /api/codeforces/profile` — Unlink
+- Robust error handling: timeout (8s), network errors, malformed JSON, handle-not-found — never crashes
+- Zod handle validation (3–24 chars, alphanumeric + `_.-`)
+
+Files: `src/validators/codeforces.validators.ts`, `src/services/codeforces.service.ts`, `src/controllers/codeforces.controller.ts`, `src/routes/codeforces.routes.ts`
 
 ---
 
-### Phase 10 — Music & Ambient System
-**Goal:** Optional ambient sound integration for focus sessions
+### Phase 10 ✅ — Music & Ambient System
+**Status:** Complete (backend preferences only)
+**Goal:** Optional ambient sound preferences for focus sessions
 
-Features:
-- `GET /api/music/preferences` — Get user's music preference
-- `PUT /api/music/preferences` — Update music preference (source, volume, autoplay)
-- Built-in sources: lo-fi, nature, white noise
-- Custom playlist URL support
-- Auto-start music when focus session begins
-- Music preference per-session override
-- Integration with external audio APIs (future)
+Delivered:
+- `GET /api/music/preferences` — Auto-creates defaults on first access
+- `PATCH /api/music/preferences` — Partial update (source, volume, isAutoplay, customPlaylistUrl)
+- Validation: volume 0–100, source enum, URL format, non-empty body
+- Defaults: `NONE` / `50` / `false` / `null`
+
+Files: `src/validators/music.validators.ts`, `src/services/music.service.ts`, `src/controllers/music.controller.ts`, `src/routes/music.routes.ts`
 
 ---
 
@@ -265,8 +266,8 @@ Tasks:
 | 6 | Analytics Dashboard | ✅ Complete |
 | 7 | Notification System | Planned |
 | 8 | Focus Mode (Strict) | Planned |
-| 9 | Codeforces Integration | Planned |
-| 10 | Music & Ambient System | Planned |
+| 9 | Codeforces Integration | ✅ Complete |
+| 10 | Music & Ambient System | ✅ Complete |
 | 11 | User Profile & Settings | Planned |
 | 12 | Email Verification & Reset | Planned |
 | 13 | Frontend Application | Planned |

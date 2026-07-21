@@ -284,6 +284,14 @@ model CodeforcesProfile {
   rating           Int?
   maxRating        Int?
   rank             String?
+  /// Highest rank title ever achieved (from CF API).
+  maxRank          String?
+  /// Codeforces contribution score.
+  contribution     Int?
+  /// Avatar URL from CF API.
+  avatar           String?
+  /// Title photo URL from CF API.
+  titlePhoto       String?
   /// JSON blob of last-fetched solve counts / contest history (denormalized
   /// cache; raw history is fetched from the CF API on demand).
   statsJson        Json?

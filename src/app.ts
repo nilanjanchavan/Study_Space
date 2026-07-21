@@ -10,6 +10,8 @@ import todoRoutes from './routes/todo.routes';
 import pomodoroRoutes from './routes/pomodoro.routes';
 import focusRoutes from './routes/focus.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import codeforcesRoutes from './routes/codeforces.routes';
+import musicRoutes from './routes/music.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -53,6 +55,8 @@ export function createApp(): Express {
   app.use('/api/pomodoro', pomodoroRoutes);
   app.use('/api/focus', focusRoutes);
   app.use('/api/analytics', analyticsRoutes);
+  app.use('/api/codeforces', codeforcesRoutes);
+  app.use('/api/music', musicRoutes);
 
   // ── Fallbacks ────────────────────────────────────────
   app.use(notFoundHandler);

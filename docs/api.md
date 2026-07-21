@@ -775,6 +775,52 @@ All require authentication. All data is scoped to the authenticated user. Read-o
 
 ---
 
+## Codeforces Endpoints
+
+All require authentication. `GET` returns cached data; only `POST /sync` hits the live Codeforces API.
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `GET` | `/api/codeforces/profile` | Cached profile (or `null`) |
+| `PUT` | `/api/codeforces/profile` | Save/update handle (body: `{ "handle": "..." }`); no sync |
+| `POST` | `/api/codeforces/sync` | Fetch from CF API + cache (rating, maxRating, rank, maxRank, contribution, avatar, titlePhoto) |
+| `DELETE` | `/api/codeforces/profile` | Unlink profile |
+
+**Handle rules:** 3–24 chars, letters/digits/`_`/`.`/`-` only.
+
+| Status | Code | When |
+|--------|------|------|
+| 404 | `CF_PROFILE_NOT_FOUND` | Sync/delete with no handle saved |
+| 409 | `HANDLE_TAKEN` | Handle linked to another user |
+| 400 | `CF_API_TIMEOUT` | Codeforces API timed out (8s) |
+| 400 | `CF_API_UNAVAILABLE` | Network error reaching Codeforces |
+| 400 | `CF_API_HTTP_ERROR` | Non-200 from Codeforces |
+| 400 | `CF_API_MALFORMED` | Invalid JSON from Codeforces |
+| 400 | `CF_HANDLE_NOT_FOUND` | Codeforces reports handle doesn't exist |
+
+---
+
+## Music Endpoints
+
+All require authentication. `GET` auto-creates default preferences on first access.
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `GET` | `/api/music/preferences` | Get (auto-creates defaults if missing) |
+| `PATCH` | `/api/music/preferences` | Partial update |
+
+**Defaults:** `source=NONE`, `volume=50`, `isAutoplay=false`, `customPlaylistUrl=null`
+
+**Update body (any subset):**
+```json
+{ "source": "LOFI", "volume": 75, "isAutoplay": true, "customPlaylistUrl": "https://..." }
+```
+- `source`: `NONE` | `LOFI` | `NATURE` | `WHITE_NOISE` | `CUSTOM`
+- `volume`: 0–100 integer
+- `customPlaylistUrl`: valid URL or `""` to clear; at least one field required
+
+---
+
 ## Global Error Codes
 
 | HTTP Status | Code | Description |
