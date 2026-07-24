@@ -1,8 +1,10 @@
 "use client"
 
 import { type ReactNode, useState } from "react"
+import { useCurrentFocus } from "@/hooks/use-focus"
 import { Sidebar } from "./sidebar"
 import { Header } from "./header"
+import { FocusGuard } from "@/components/focus/focus-guard"
 import {
   Sheet,
   SheetContent,
@@ -11,6 +13,9 @@ import {
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { data } = useCurrentFocus()
+  const focusSession = data?.data.session ?? null
+  const focusActive = !!(focusSession && (focusSession.status === "RUNNING" || focusSession.status === "PAUSED"))
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -21,7 +26,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
             Study Workspace
           </span>
         </div>
-        <Sidebar className="flex-1 overflow-y-auto py-2" />
+        <Sidebar className="flex-1 overflow-y-auto py-2" focusActive={focusActive} />
       </aside>
 
       {/* Mobile sidebar */}
@@ -33,7 +38,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
               Study Workspace
             </span>
           </div>
-          <Sidebar onNavClick={() => setMobileOpen(false)} className="py-2" />
+          <Sidebar onNavClick={() => setMobileOpen(false)} className="py-2" focusActive={focusActive} />
         </SheetContent>
       </Sheet>
 
@@ -41,7 +46,9 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header onMenuClick={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
-          {children}
+          <FocusGuard focusSession={focusSession}>
+            {children}
+          </FocusGuard>
         </main>
       </div>
     </div>

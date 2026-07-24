@@ -128,3 +128,85 @@ export interface DashboardAnalytics {
     } | null
   }
 }
+
+export type PomodoroType = "WORK" | "SHORT_BREAK" | "LONG_BREAK"
+export type SessionStatus = "RUNNING" | "COMPLETED" | "ABANDONED" | "PAUSED" | "CANCELLED"
+
+export interface PomodoroSessionItem {
+  id: string
+  type: string
+  status: string
+  plannedMinutes: number
+  actualMinutes: number | null
+  startedAt: string
+  endedAt: string | null
+  pausedAt: string | null
+  accumulatedPausedMs: number
+  todoId: string | null
+  elapsedMs: number
+  focusMs: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface StartPomodoroRequest {
+  type?: PomodoroType
+  durationMinutes?: number
+  todoId?: string
+}
+
+export interface PomodoroHistoryParams {
+  page?: number
+  limit?: number
+  type?: PomodoroType
+  status?: SessionStatus
+}
+
+export interface PomodoroHistoryResponse {
+  success: boolean
+  data: {
+    sessions: PomodoroSessionItem[]
+    pagination: Pagination
+  }
+}
+
+export type FocusMode = "NORMAL" | "STRICT"
+
+export interface FocusSessionItem {
+  id: string
+  mode: string
+  strictModeEnabled: boolean
+  status: string
+  goal: string | null
+  plannedMinutes: number
+  actualMinutes: number | null
+  completedPomodoros: number
+  cancelledPomodoros: number
+  startedAt: string
+  endedAt: string | null
+  elapsedMs: number
+  pomodoroCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface StartFocusRequest {
+  mode?: FocusMode
+  goal?: string
+  plannedMinutes: number
+}
+
+export interface FocusHistoryParams {
+  page?: number
+  limit?: number
+  mode?: FocusMode
+  status?: SessionStatus
+}
+
+export interface FocusHistoryResponse {
+  success: boolean
+  data: {
+    sessions: FocusSessionItem[]
+    pagination: Pagination
+  }
+}

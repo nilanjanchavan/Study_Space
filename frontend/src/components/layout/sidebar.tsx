@@ -19,22 +19,30 @@ interface NavItem {
   disabled?: boolean
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Todos", href: "/todos", icon: CheckSquare },
-  { label: "Pomodoro", href: "/pomodoro", icon: Timer, disabled: true },
-  { label: "Focus", href: "/focus", icon: Focus, disabled: true },
-  { label: "Analytics", href: "/analytics", icon: BarChart3, disabled: true },
-  { label: "Settings", href: "/settings", icon: Settings, disabled: true },
+  { label: "Pomodoro", href: "/pomodoro", icon: Timer },
+  { label: "Focus", href: "/focus", icon: Focus},
+  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Settings", href: "/settings", icon: Settings },
 ]
+
+const FOCUS_LOCKED_ROUTES = ["/dashboard", "/todos", "/analytics", "/settings"]
 
 interface SidebarProps {
   className?: string
   onNavClick?: () => void
+  focusActive?: boolean
 }
 
-export function Sidebar({ className, onNavClick }: SidebarProps) {
+export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
   const pathname = usePathname()
+
+  const navItems = baseNavItems.map((item) => ({
+    ...item,
+    disabled: item.disabled || (focusActive === true && FOCUS_LOCKED_ROUTES.includes(item.href)),
+  }))
 
   return (
     <nav className={cn("flex flex-col gap-1 px-3 py-2", className)}>
@@ -43,8 +51,9 @@ export function Sidebar({ className, onNavClick }: SidebarProps) {
           pathname === item.href ||
           (item.href !== "/dashboard" && pathname.startsWith(item.href))
         const Icon = item.icon
+        const isLocked = focusActive === true && FOCUS_LOCKED_ROUTES.includes(item.href)
 
-        if (item.disabled) {
+        if (item.disabled && !isLocked) {
           return (
             <div
               key={item.href}
@@ -54,6 +63,22 @@ export function Sidebar({ className, onNavClick }: SidebarProps) {
               <span className="truncate">{item.label}</span>
               <span className="ml-auto text-[10px] font-medium text-muted-foreground/40 border border-border/50 rounded px-1.5 py-0.5">
                 Soon
+              </span>
+            </div>
+          )
+        }
+
+        if (isLocked) {
+          return (
+            <div
+              key={item.href}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/40 cursor-not-allowed"
+              title="Unavailable during focus session"
+            >
+              <Icon size={18} />
+              <span className="truncate">{item.label}</span>
+              <span className="ml-auto text-[10px] font-medium text-muted-foreground/30 border border-border/30 rounded px-1.5 py-0.5">
+                Locked
               </span>
             </div>
           )

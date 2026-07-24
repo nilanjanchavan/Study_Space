@@ -5,7 +5,6 @@ import type {
   UpdateTodoRequest,
   TodoListParams,
   TodoListResponse,
-  DashboardAnalytics,
 } from "@/types"
 
 function buildQueryString(params: TodoListParams): string {
@@ -48,12 +47,5 @@ export const todoApi = {
 
   async remove(id: string): Promise<void> {
     await api.delete(`/api/todos/${id}`)
-  },
-}
-
-export const analyticsApi = {
-  async dashboard(): Promise<{ success: boolean; data: DashboardAnalytics }> {
-    const response = await api.get("/api/analytics/dashboard")
-    return response.data
   },
 }

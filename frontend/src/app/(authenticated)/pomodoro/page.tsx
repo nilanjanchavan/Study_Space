@@ -1,5 +1,5 @@
-import { ComingSoonPage } from "@/components/common/coming-soon"
+import { PomodoroView } from "@/components/pomodoro/pomodoro-view"
 
 export default function PomodoroPage() {
-  return <ComingSoonPage title="Pomodoro" />
+  return <PomodoroView />
 }

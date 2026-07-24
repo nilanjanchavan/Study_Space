@@ -1,5 +1,5 @@
-import { ComingSoonPage } from "@/components/common/coming-soon"
+import { FocusView } from "@/components/focus/focus-view"
 
 export default function FocusPage() {
-  return <ComingSoonPage title="Focus Sessions" />
+  return <FocusView />
 }
