@@ -1,8 +1,9 @@
 "use client"
 
-import { createContext, useContext, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { useUser, useRefreshToken } from "@/hooks/use-auth"
+import { useUser, hydrateAuth } from "@/hooks/use-auth"
+import { PageLoading } from "@/components/common/page-loading"
 import type { User } from "@/types"
 
 interface AuthContextType {
@@ -22,52 +23,50 @@ const publicRoutes = ["/", "/login", "/register"]
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const refresh = useRefreshToken()
+  const [hydrated, setHydrated] = useState(false)
+  const [seededUser, setSeededUser] = useState<User | null>(null)
+  const hydrationRef = useRef(false)
 
-  const {
-    data: user,
-    isLoading: userLoading,
-    isError,
-    error,
-  } = useUser()
+  const { data: user, isLoading: userLoading } = useUser(hydrated)
 
   useEffect(() => {
-    if (isError && !userLoading) {
-      const axiosErr = error as { response?: { status?: number } }
-      const status = axiosErr?.response?.status
+    if (hydrationRef.current) return
+    hydrationRef.current = true
 
-      if (status === 401) {
-        console.log("[auth] /me returned 401, no session — treating as logged out")
-        return
-      }
+    hydrateAuth()
+      .then((user) => {
+        setSeededUser(user)
+        setHydrated(true)
+      })
+      .catch(() => {
+        setSeededUser(null)
+        setHydrated(true)
+      })
+  }, [])
 
-      if (status && status >= 500) {
-        console.log("[auth] /me returned server error, attempting refresh")
-        refresh().catch(() => {
-          console.log("[auth] refresh also failed, treating as logged out")
-        })
-      }
-    }
-  }, [isError, userLoading, error, refresh])
+  const effectiveUser = user === null ? null : (user ?? seededUser)
+  const isLoading = !hydrated || (hydrated && userLoading && !seededUser)
 
   useEffect(() => {
-    if (userLoading) return
+    if (isLoading) return
 
-    if (!user && !publicRoutes.includes(pathname)) {
+    if (!effectiveUser && !publicRoutes.includes(pathname)) {
       router.replace("/login")
-    } else if (user && (pathname === "/login" || pathname === "/register")) {
+    } else if (effectiveUser && (pathname === "/login" || pathname === "/register")) {
       router.replace("/dashboard")
     }
-  }, [user, userLoading, pathname, router])
+  }, [effectiveUser, isLoading, pathname, router])
 
-  const isLoading = userLoading
+  if (!hydrated) {
+    return <PageLoading text="Restoring session..." />
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        user: user ?? null,
+        user: effectiveUser ?? null,
         isLoading,
-        isAuthenticated: !!user,
+        isAuthenticated: !!effectiveUser,
       }}
     >
       {children}

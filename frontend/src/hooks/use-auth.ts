@@ -2,22 +2,58 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { authApi } from "@/services/auth"
-import { setAccessToken } from "@/lib/api"
-import type { LoginRequest, RegisterRequest } from "@/types"
-import { useCallback } from "react"
+import { setAccessToken, getAccessToken } from "@/lib/api"
+import type { LoginRequest, RegisterRequest, User } from "@/types"
 import axios from "axios"
 
-export function useUser() {
+/**
+ * Attempt to restore a session by calling POST /api/auth/refresh
+ * using the httpOnly refresh-token cookie. Returns the user on success,
+ * or null if no valid session exists.
+ *
+ * This is a plain async function — NOT a hook — so it can be called
+ * once during provider initialization without triggering re-renders.
+ */
+export async function hydrateAuth(): Promise<User | null> {
+  if (getAccessToken()) {
+    try {
+      const response = await authApi.getMe()
+      console.log("[auth] hydrated from existing token")
+      return response.data.user
+    } catch {
+      setAccessToken(null)
+    }
+  }
+
+  try {
+    console.log("[auth] attempting refresh on startup")
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
+      {},
+      { withCredentials: true }
+    )
+    const newToken: string = data.data.accessToken
+    const user: User = data.data.user
+    setAccessToken(newToken)
+    console.log("[auth] refresh succeeded, session restored")
+    return user
+  } catch {
+    console.log("[auth] no valid session")
+    setAccessToken(null)
+    return null
+  }
+}
+
+export function useUser(enabled: boolean) {
   return useQuery({
     queryKey: ["auth", "me"],
     queryFn: async () => {
-      console.log("[auth] GET /api/auth/me")
       const response = await authApi.getMe()
-      console.log("[auth] /api/auth/me → 200", response.data.user.username)
       return response.data.user
     },
     retry: false,
     staleTime: 5 * 60 * 1000,
+    enabled,
   })
 }
 
@@ -53,34 +89,6 @@ export function useLogout() {
     onSettled: () => {
       setAccessToken(null)
       queryClient.setQueryData(["auth", "me"], null)
-      queryClient.clear()
     },
   })
-}
-
-export function useRefreshToken() {
-  const queryClient = useQueryClient()
-
-  const refresh = useCallback(async () => {
-    try {
-      console.log("[auth] POST /api/auth/refresh (manual)")
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
-        {},
-        { withCredentials: true }
-      )
-      console.log("[auth] /api/auth/refresh → 200")
-      const newToken = data.data.accessToken
-      setAccessToken(newToken)
-      queryClient.setQueryData(["auth", "me"], data.data.user)
-      return newToken
-    } catch (err) {
-      console.error("[auth] /api/auth/refresh failed", err)
-      setAccessToken(null)
-      queryClient.setQueryData(["auth", "me"], null)
-      throw new Error("Refresh failed")
-    }
-  }, [queryClient])
-
-  return refresh
 }
