@@ -1,158 +1,386 @@
-# Study Workspace — Backend
+# 🎓 Study Workspace
 
-Multi-user productivity platform (Pomodoro, todos, analytics, Codeforces integration).
+> A modern, full-stack productivity platform designed to help students and professionals stay focused, build consistent study habits, and track their progress.
 
-**Phase 1 — Backend foundation.** This phase delivers a runnable Express + TypeScript
-server with a PostgreSQL connection via Prisma. No business features or auth yet.
+<p align="center">
+  <img src="./public/preview.png" alt="Study Workspace Preview" width="100%">
+</p>
 
----
+## ✨ Features
 
-## Tech Stack
-
-| Layer       | Choice            |
-|-------------|-------------------|
-| Runtime     | Node.js (≥ 20)    |
-| HTTP        | Express 5         |
-| Language    | TypeScript        |
-| Database    | PostgreSQL 17     |
-| ORM         | Prisma 6          |
+### 🔐 Authentication
+- Secure JWT authentication
+- Refresh token authentication using HttpOnly cookies
+- Persistent login sessions
+- Protected routes
+- User profile management
 
 ---
 
-## Prerequisites
+### ✅ Todo Management
 
-The following are already set up in this environment:
+Organize tasks with a clean productivity workflow.
 
-- **Node.js** v24.7.0, **npm** 11.5.1
-- **PostgreSQL 17** installed via winget, running as Windows service `postgresql-17`
-  - Superuser: `postgres` / password: `postgres`
-  - Port: `5432`
+- Create, edit and delete todos
+- Priority levels
+- Status tracking
+- Due dates
+- Progress tracking
+- Filtering & sorting
+- Responsive task board
 
-If you need to start/stop the DB service manually:
+---
+
+### 🍅 Pomodoro Timer
+
+A fully-featured customizable Pomodoro workspace.
+
+- Custom work & break durations
+- Auto-start work sessions
+- Auto-start breaks
+- Long break intervals
+- Daily Pomodoro goals
+- Session history
+- Motivational quotes
+- Ambient music integration
+- Progress ring timer
+- Browser notifications
+- Sound effects
+
+---
+
+### 🌲 Deep Focus Mode
+
+Inspired by Forest.
+
+A distraction-free workspace designed for long study sessions.
+
+Features include:
+
+- Strict Focus Mode
+- Multi-cycle Pomodoro support
+- Automatic break handling
+- Focus goals
+- Live progress tracking
+- Session timeline
+- Completion celebration
+- Music integration
+- Focus analytics
+
+---
+
+### 📊 Analytics
+
+Track your productivity over time.
+
+- Daily statistics
+- Weekly analytics
+- Monthly analytics
+- Productivity insights
+- Streak tracking
+- Focus time visualization
+- Completion rates
+- Activity history
+
+---
+
+### 🎵 Ambient Music
+
+Stay focused with built-in background sounds.
+
+- Rain
+- Forest
+- Ocean
+- Fireplace
+- Café
+- White Noise
+- Night Ambience
+- Wind
+
+Features:
+
+- Volume control
+- Loop playback
+- Auto play
+- Auto pause
+- Persistent playback
+- Music preferences
+
+---
+
+### ⚙️ Settings
+
+Customize your entire workspace.
+
+- Theme selection
+- Accent colors
+- Pomodoro settings
+- Notification preferences
+- Music preferences
+- Focus preferences
+- Codeforces integration
+- Account settings
+
+---
+
+### 🏆 Codeforces Integration
+
+Competitive programming support.
+
+- Link account
+- Sync profile
+- Display rating
+- Track progress
+- View contribution
+
+---
+
+### 🎨 Modern UI
+
+Designed with usability first.
+
+- Responsive layout
+- Dark / Light mode
+- Dynamic accent colors
+- Glassmorphism
+- Premium dashboard
+- Interactive cards
+- Animated progress indicators
+- Beautiful typography
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- Next.js 16
+- React
+- TypeScript
+- TailwindCSS v4
+- shadcn/ui
+- TanStack Query
+- Axios
+- React Hook Form
+- Zod
+- Recharts
+- Lucide Icons
+
+---
+
+### Backend
+
+- Node.js
+- Express.js
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- HttpOnly Refresh Tokens
+
+---
+
+### Database
+
+- PostgreSQL
+
+---
+
+## 📁 Project Structure
+
+```
+StudyWorkspace/
+│
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   ├── providers/
+│   ├── services/
+│   ├── lib/
+│   └── types/
+│
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   ├── services/
+│   │   ├── prisma/
+│   │   └── utils/
+│   │
+│   └── prisma/
+│
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Clone
 
 ```bash
-# Start
-powershell.exe -NoProfile -Command "Start-Service postgresql-17"
-# Stop
-powershell.exe -NoProfile -Command "Stop-Service postgresql-17"
+git clone https://github.com/yourusername/study-workspace.git
+cd study-workspace
 ```
 
 ---
 
-## Database
-
-An application role and database have been created to match `.env`:
-
-| Item              | Value              |
-|-------------------|--------------------|
-| Role (login)      | `studyuser`        |
-| Password          | `studypass`        |
-| Database          | `studyworkspace`   |
-| Schema            | `public`           |
-
-Connection string (`.env`):
-
-```
-DATABASE_URL="postgresql://studyuser:studypass@localhost:5432/studyworkspace?schema=public"
-```
-
----
-
-## Project Structure
-
-```
-study-workspace/
-├── prisma/
-│   ├── schema.prisma          # datasource + generator (no models yet)
-│   └── seed.ts                # no-op Phase 1 placeholder
-├── src/
-│   ├── app.ts                 # Express app factory + middleware wiring
-│   ├── server.ts              # bootstrap: connect DB → listen → graceful shutdown
-│   ├── config/
-│   │   ├── env.ts             # centralized env config
-│   │   └── prisma.ts          # PrismaClient singleton
-│   ├── controllers/
-│   │   └── health.controller.ts
-│   ├── middleware/
-│   │   ├── errorHandler.ts
-│   │   └── notFound.ts
-│   └── routes/
-│       └── health.routes.ts
-├── .env / .env.example
-├── package.json
-└── tsconfig.json
-```
-
----
-
-## Getting Started
+### Backend
 
 ```bash
-# Install dependencies (already done)
+cd backend
+
 npm install
 
-# Generate Prisma client (already done)
-npx prisma generate
+npx prisma migrate dev
 
-# Sync schema to DB (already done — schema has no models yet)
-npx prisma db push
-
-# Start the dev server (hot reload via ts-node-dev)
 npm run dev
 ```
 
-Server starts on **http://localhost:4000**.
+Runs on
 
-### Other scripts
-
-| Script                  | Purpose                                  |
-|-------------------------|------------------------------------------|
-| `npm run dev`           | Dev server with auto-reload              |
-| `npm run build`         | Compile TypeScript → `dist/`             |
-| `npm start`             | Run compiled server (`dist/server.js`)   |
-| `npm run prisma:studio` | Open Prisma Studio DB GUI                |
-| `npm run prisma:migrate`| Create + apply a migration               |
-| `npm run db:push`       | Push schema state to DB without history  |
-
----
-
-## API (Phase 1)
-
-| Method | Route           | Description                                      |
-|--------|-----------------|--------------------------------------------------|
-| GET    | `/api`          | API root — name + version (no DB)                |
-| GET    | `/api/health`   | Liveness + readiness; pings DB via `SELECT 1`    |
-
-### Example: health response
-
-```json
-{
-  "success": true,
-  "data": {
-    "status": "healthy",
-    "timestamp": "2026-07-03T19:53:21.374Z",
-    "uptimeSeconds": 97,
-    "environment": "development",
-    "db": { "status": "ok", "latencyMs": 5 },
-    "checkMs": 5
-  }
-}
+```
+http://localhost:4000
 ```
 
-If the DB is unreachable, `/api/health` returns HTTP `503` with `db.status: "error"`
-while the rest of the API stays up.
+---
+
+### Frontend
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Runs on
+
+```
+http://localhost:3000
+```
 
 ---
 
-## Verification Status (Phase 1 — COMPLETE)
+## 🔑 Environment Variables
 
-- [x] Node + TypeScript project scaffolded
-- [x] Express 5 server with `/api/health` route
-- [x] Folder structure (`routes`, `controllers`, `middleware`, `config`)
-- [x] Prisma schema + client generated (default location)
-- [x] PostgreSQL 17 provisioned; role + database created
-- [x] `prisma db push` — DB in sync with schema
-- [x] Server boots and connects to PostgreSQL
-- [x] `GET /api/health` returns `db.status: "ok"`
+### Backend
 
-**Next phase:** data models (User, Todo, FocusSession, ...) and authentication.
+```
+DATABASE_URL=
+
+JWT_SECRET=
+
+JWT_REFRESH_SECRET=
+
+PORT=4000
+```
+
+### Frontend
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+---
+
+## 📸 Screenshots
+
+| Dashboard | Pomodoro |
+|-----------|-----------|
+| Screenshot | Screenshot |
+
+| Focus | Analytics |
+|--------|-----------|
+| Screenshot | Screenshot |
+
+| Settings | Landing Page |
+|----------|--------------|
+| Screenshot | Screenshot |
+
+---
+
+## 🧠 Future Improvements
+
+- Study Rooms
+- Real-time collaboration
+- Shared Pomodoro sessions
+- AI Study Assistant
+- Calendar integration
+- Habit Tracker
+- Achievement System
+- Mobile application
+- Offline support
+- PWA support
+
+---
+
+## 📈 Project Status
+
+Current Version
+
+```
+v1.0
+```
+
+Status
+
+```
+Backend        ✅ Complete
+
+Authentication ✅
+
+Todos          ✅
+
+Pomodoro       ✅
+
+Deep Focus     ✅
+
+Analytics      ✅
+
+Music          ✅
+
+Settings       ✅
+
+Responsive UI  ✅
+
+Dashboard      ✅
+
+Landing Page   ✅
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions, ideas and suggestions are always welcome.
+
+Feel free to open an Issue or submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## ⭐ Acknowledgements
+
+Inspired by
+
+- Forest
+- Notion
+- Linear
+- Raycast
+- Rize
+- Sunsama
+
+---
+
+<p align="center">
+Built with ❤️ using Next.js, Express, Prisma and PostgreSQL.
+</p>
