@@ -41,9 +41,9 @@ export function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1.5 hover:bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-muted/60 outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring">
         <Avatar className="size-8">
-          <AvatarFallback className="text-xs font-medium bg-muted text-muted-foreground">
+          <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">
             {initials}
           </AvatarFallback>
         </Avatar>

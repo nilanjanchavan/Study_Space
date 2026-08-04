@@ -1,8 +1,9 @@
 "use client"
 
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/common/skeleton"
+import { GlassCard } from "@/components/design-system/glass-card"
+import { Skeleton } from "@/components/design-system/skeleton"
+import { SectionHeader } from "@/components/design-system/layout"
 import { AnalyticsBarChart } from "./charts/bar-chart"
 import type { MonthlyAnalytics } from "@/services/analytics"
 
@@ -21,33 +22,26 @@ export function MonthlyChart({ data, isLoading }: MonthlyChartProps) {
   }, [data])
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <CardTitle>Monthly Analytics</CardTitle>
-          {data && (
-            <div className="text-right shrink-0">
-              <p className="text-xs text-muted-foreground">Total Focus</p>
-              <p className="text-lg font-semibold text-foreground">{data.totalFocusHours}h</p>
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
+    <GlassCard className="p-4">
+      <SectionHeader
+        title="Monthly Analytics"
+        subtitle={data ? `${data.totalFocusHours}h total` : undefined}
+      />
+      <div className="mt-3">
         {isLoading ? (
-          <Skeleton className="w-full h-[250px] rounded-lg" />
+          <Skeleton className="w-full h-[220px] rounded-lg" />
         ) : chartData.length === 0 || chartData.every((d) => d["Focus Minutes"] === 0) ? (
-          <div className="flex h-[250px] items-center justify-center">
-            <p className="text-sm text-muted-foreground">No focus data this month.</p>
+          <div className="flex h-[220px] items-center justify-center">
+            <p className="text-sm text-muted-foreground/50">No focus data this month</p>
           </div>
         ) : (
           <AnalyticsBarChart
             data={chartData}
             bars={[{ key: "Focus Minutes", color: "hsl(var(--primary))" }]}
-            height={250}
+            height={220}
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </GlassCard>
   )
 }

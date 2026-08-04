@@ -111,16 +111,16 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="title">Title</Label>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="title" className="text-xs font-medium">Title</Label>
             <Input id="title" placeholder="What needs to be done?" {...register("title")} />
             {errors.title && (
               <p className="text-xs text-destructive">{errors.title.message}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Description</Label>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="description" className="text-xs font-medium">Description</Label>
             <Textarea
               id="description"
               placeholder="Optional details..."
@@ -132,9 +132,9 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <Label>Priority</Label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-xs font-medium">Priority</Label>
               <Select
                 value={priorityValue}
                 onValueChange={(v) => setValue("priority", v as TodoPriority)}
@@ -151,8 +151,8 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
               </Select>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label>Status</Label>
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-xs font-medium">Status</Label>
               <Select
                 value={statusValue}
                 onValueChange={(v) => setValue("status", v as TodoStatus)}
@@ -170,8 +170,8 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="dueDate">Due date</Label>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="dueDate" className="text-xs font-medium">Due date</Label>
             <Input id="dueDate" type="date" {...register("dueDate")} />
           </div>
 
@@ -185,8 +185,8 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
             >
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={isLoading}>
-              {isLoading && <Loader2Icon className="animate-spin" />}
+            <Button type="submit" size="sm" disabled={isLoading} className="gap-1.5">
+              {isLoading && <Loader2Icon className="animate-spin" size={14} />}
               {isEditing ? "Save changes" : "Create todo"}
             </Button>
           </DialogFooter>

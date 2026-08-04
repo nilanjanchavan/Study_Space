@@ -15,7 +15,7 @@ import {
 interface NavItem {
   label: string
   href: string
-  icon: React.ComponentType<{ size?: number }>
+  icon: React.ComponentType<{ size?: number; className?: string }>
   disabled?: boolean
 }
 
@@ -23,7 +23,7 @@ const baseNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Todos", href: "/todos", icon: CheckSquare },
   { label: "Pomodoro", href: "/pomodoro", icon: Timer },
-  { label: "Focus", href: "/focus", icon: Focus},
+  { label: "Focus", href: "/focus", icon: Focus },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },
 ]
@@ -45,7 +45,7 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
   }))
 
   return (
-    <nav className={cn("flex flex-col gap-1 px-3 py-2", className)}>
+    <nav className={cn("flex flex-col gap-0.5", className)}>
       {navItems.map((item) => {
         const isActive =
           pathname === item.href ||
@@ -57,11 +57,11 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
           return (
             <div
               key={item.href}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/50 cursor-default"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-muted-foreground/40 cursor-default select-none"
             >
-              <Icon size={18} />
-              <span className="truncate">{item.label}</span>
-              <span className="ml-auto text-[10px] font-medium text-muted-foreground/40 border border-border/50 rounded px-1.5 py-0.5">
+              <Icon size={16} className="shrink-0 opacity-40" />
+              <span className="truncate flex-1">{item.label}</span>
+              <span className="text-[10px] font-medium text-muted-foreground/30 border border-border/40 rounded-md px-1.5 py-0.5">
                 Soon
               </span>
             </div>
@@ -72,12 +72,12 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
           return (
             <div
               key={item.href}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/40 cursor-not-allowed"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-muted-foreground/30 cursor-not-allowed select-none"
               title="Unavailable during focus session"
             >
-              <Icon size={18} />
-              <span className="truncate">{item.label}</span>
-              <span className="ml-auto text-[10px] font-medium text-muted-foreground/30 border border-border/30 rounded px-1.5 py-0.5">
+              <Icon size={16} className="shrink-0 opacity-30" />
+              <span className="truncate flex-1">{item.label}</span>
+              <span className="text-[10px] font-medium text-muted-foreground/20 border border-border/20 rounded-md px-1.5 py-0.5">
                 Locked
               </span>
             </div>
@@ -90,14 +90,23 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
             href={item.href}
             onClick={onNavClick}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              "group relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-150",
               isActive
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-primary/[0.08] text-primary dark:bg-primary/[0.12] dark:text-primary"
+                : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
             )}
           >
-            <Icon size={18} />
+            <Icon
+              size={16}
+              className={cn(
+                "shrink-0 transition-colors duration-150",
+                isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-foreground/80"
+              )}
+            />
             <span className="truncate">{item.label}</span>
+            {isActive && (
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 rounded-full bg-primary" />
+            )}
           </Link>
         )
       })}

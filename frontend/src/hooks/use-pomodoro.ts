@@ -22,9 +22,12 @@ export function useCurrentPomodoro() {
 export function useStartPomodoro() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: StartPomodoroRequest) => pomodoroApi.start(data),
+    mutationFn: async (data: StartPomodoroRequest) => {
+      const result = await pomodoroApi.start(data)
+      return result
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pomodoro", "current"] })
+      queryClient.refetchQueries({ queryKey: ["pomodoro", "current"] })
     },
   })
 }
@@ -52,7 +55,10 @@ export function useResumePomodoro() {
 export function useCompletePomodoro() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => pomodoroApi.complete(),
+    mutationFn: async () => {
+      const result = await pomodoroApi.complete()
+      return result
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pomodoro", "current"] })
       queryClient.invalidateQueries({ queryKey: ["analytics"] })

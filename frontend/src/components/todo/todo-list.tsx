@@ -6,9 +6,10 @@ import { TodoCard } from "./todo-card"
 import { TodoForm } from "./todo-form"
 import { TodoFilters } from "./todo-filters"
 import { DeleteDialog } from "./delete-dialog"
-import { EmptyState } from "@/components/common/empty-state"
-import { PageHeader } from "@/components/common/page-header"
-import { LoadingSpinner } from "@/components/common/loading-spinner"
+import { EmptyState } from "@/components/design-system/empty-state"
+import { SectionHeader } from "@/components/design-system/layout"
+import { GlassCard } from "@/components/design-system/glass-card"
+import { Spinner } from "@/components/design-system/skeleton"
 import { Button } from "@/components/ui/button"
 import { PlusIcon, CheckSquareIcon } from "lucide-react"
 import { toast } from "sonner"
@@ -74,38 +75,40 @@ export function TodoList() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader
-        title="Todos"
-        description="Manage your tasks and stay on track."
-        actions={
-          <Button size="sm" onClick={() => setFormOpen(true)}>
-            <PlusIcon />
-            New todo
-          </Button>
-        }
-      />
+    <div className="flex flex-col gap-6 max-w-4xl">
+      <div className="flex items-start justify-between gap-4">
+        <SectionHeader
+          title="Todos"
+          subtitle={`${pagination?.total ?? 0} tasks`}
+        />
+        <Button size="sm" onClick={() => setFormOpen(true)} className="gap-1.5">
+          <PlusIcon size={14} />
+          New todo
+        </Button>
+      </div>
 
-      <TodoFilters params={params} onChange={setParams} />
+      <GlassCard className="p-4">
+        <TodoFilters params={params} onChange={setParams} />
+      </GlassCard>
 
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <LoadingSpinner />
+          <Spinner size={24} />
         </div>
       ) : todos.length === 0 ? (
-        <EmptyState
-          icon={<CheckSquareIcon size={40} />}
-          title="No todos yet"
-          description="Create your first todo to get started."
-          action={
-            <Button size="sm" onClick={() => setFormOpen(true)}>
-              <PlusIcon />
-              New todo
-            </Button>
-          }
-        />
+        <GlassCard className="p-4">
+          <EmptyState
+            icon={<CheckSquareIcon size={24} />}
+            title="No todos yet"
+            description="Create your first task to get started"
+            action={{
+              label: "Create todo",
+              onClick: () => setFormOpen(true),
+            }}
+          />
+        </GlassCard>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           {todos.map((todo) => (
             <TodoCard
               key={todo.id}
@@ -119,7 +122,7 @@ export function TodoList() {
 
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground tabular-nums">
             Page {pagination.page} of {pagination.totalPages} ({pagination.total} todos)
           </p>
           <div className="flex gap-2">

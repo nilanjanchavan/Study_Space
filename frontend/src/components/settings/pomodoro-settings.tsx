@@ -1,6 +1,6 @@
 "use client"
 
-import { SettingsSection } from "./settings-section"
+import { SettingsSection, SettingRow } from "./settings-section"
 import { usePomodoroSettings } from "@/hooks/use-settings"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,87 +12,49 @@ export function PomodoroSettings() {
   return (
     <SettingsSection
       title="Pomodoro"
-      description="Configure your focus and break intervals."
+      description="Configure your focus and break intervals"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="work-minutes">Work Duration (min)</Label>
-          <Input
-            id="work-minutes"
-            type="number"
-            min={1}
-            max={180}
-            value={settings.workMinutes}
-            onChange={(e) => updateSettings({ workMinutes: Number(e.target.value) })}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="short-break">Short Break (min)</Label>
-          <Input
-            id="short-break"
-            type="number"
-            min={1}
-            max={60}
-            value={settings.shortBreakMinutes}
-            onChange={(e) => updateSettings({ shortBreakMinutes: Number(e.target.value) })}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="long-break">Long Break (min)</Label>
-          <Input
-            id="long-break"
-            type="number"
-            min={1}
-            max={120}
-            value={settings.longBreakMinutes}
-            onChange={(e) => updateSettings({ longBreakMinutes: Number(e.target.value) })}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="long-interval">Long Break After</Label>
-          <Input
-            id="long-interval"
-            type="number"
-            min={1}
-            max={10}
-            value={settings.longBreakInterval}
-            onChange={(e) => updateSettings({ longBreakInterval: Number(e.target.value) })}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="daily-goal">Daily Goal</Label>
-          <Input
-            id="daily-goal"
-            type="number"
-            min={1}
-            max={20}
-            value={settings.dailyGoal}
-            onChange={(e) => updateSettings({ dailyGoal: Number(e.target.value) })}
-          />
-        </div>
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        {[
+          { id: "work-minutes", label: "Work", key: "workMinutes" as const, min: 1, max: 180 },
+          { id: "short-break", label: "Short Break", key: "shortBreakMinutes" as const, min: 1, max: 60 },
+          { id: "long-break", label: "Long Break", key: "longBreakMinutes" as const, min: 1, max: 120 },
+          { id: "long-interval", label: "After (pomodoros)", key: "longBreakInterval" as const, min: 1, max: 10 },
+          { id: "daily-goal", label: "Daily Goal", key: "dailyGoal" as const, min: 1, max: 20 },
+        ].map((field) => (
+          <div key={field.id} className="flex flex-col gap-1 min-w-0">
+            <Label htmlFor={field.id} className="text-xs truncate">{field.label}</Label>
+            <Input
+              id={field.id}
+              type="number"
+              min={field.min}
+              max={field.max}
+              value={settings[field.key]}
+              onChange={(e) => updateSettings({ [field.key]: Number(e.target.value) })}
+            />
+          </div>
+        ))}
       </div>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium">Auto-start Work</p>
-          <p className="text-xs text-muted-foreground">Automatically start work after a break.</p>
-        </div>
+      <SettingRow
+        label="Auto-start Work"
+        description="Start work after a break"
+      >
         <Switch
           checked={settings.autoStartWork}
           onCheckedChange={(v) => updateSettings({ autoStartWork: v })}
         />
-      </div>
+      </SettingRow>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium">Auto-start Breaks</p>
-          <p className="text-xs text-muted-foreground">Automatically start breaks after work.</p>
-        </div>
+      <SettingRow
+        label="Auto-start Breaks"
+        description="Start breaks after work"
+      >
         <Switch
           checked={settings.autoStartBreaks}
           onCheckedChange={(v) => updateSettings({ autoStartBreaks: v })}
         />
-      </div>
+      </SettingRow>
     </SettingsSection>
   )
 }

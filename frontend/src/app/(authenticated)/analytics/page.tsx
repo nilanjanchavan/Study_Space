@@ -1,14 +1,15 @@
 "use client"
 
 import { useDashboardAnalytics, useDailyAnalytics, useWeeklyAnalytics, useMonthlyAnalytics, useStreakAnalytics } from "@/hooks/use-analytics"
-import { PageHeader } from "@/components/common/page-header"
+import { SectionHeader } from "@/components/design-system/layout"
+import { GlassCard } from "@/components/design-system/glass-card"
+import { EmptyState } from "@/components/design-system/empty-state"
 import { TodayActivity } from "@/components/analytics/today-activity"
 import { StreakCard } from "@/components/analytics/streak-card"
 import { WeeklyChart } from "@/components/analytics/weekly-chart"
 import { MonthlyChart } from "@/components/analytics/monthly-chart"
 import { ProductivitySummary } from "@/components/analytics/productivity-summary"
 import { Insights } from "@/components/analytics/insights"
-import { Card, CardContent } from "@/components/ui/card"
 import { BarChart3Icon } from "lucide-react"
 
 export default function AnalyticsPage() {
@@ -29,44 +30,42 @@ export default function AnalyticsPage() {
   if (!isLoading && !hasAnyData) {
     return (
       <div className="flex flex-col gap-8 max-w-5xl">
-        <PageHeader
+        <SectionHeader
           title="Analytics"
-          description="Track your productivity over time."
+          subtitle="Track your productivity over time"
         />
-        <Card>
-          <CardContent className="py-16 text-center">
-            <BarChart3Icon size={40} className="mx-auto text-muted-foreground/30 mb-3" />
-            <h2 className="text-lg font-semibold text-foreground">No analytics yet</h2>
-            <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-              Start focusing, completing pomodoros, and checking off todos to see your productivity data here.
-            </p>
-          </CardContent>
-        </Card>
+        <GlassCard className="p-8">
+          <EmptyState
+            icon={<BarChart3Icon size={32} />}
+            title="No analytics yet"
+            description="Start focusing, completing pomodoros, and checking off todos to see your productivity data here"
+          />
+        </GlassCard>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-8 max-w-5xl">
-      <PageHeader
+    <div className="flex flex-col gap-6 max-w-5xl">
+      <SectionHeader
         title="Analytics"
-        description="Track your productivity over time."
+        subtitle="Track your productivity over time"
       />
 
       {/* Top row: Today + Streak */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <TodayActivity data={daily.data?.data} isLoading={daily.isLoading} />
         <StreakCard data={streak.data?.data} isLoading={streak.isLoading} />
       </div>
 
       {/* Charts row: Weekly + Monthly */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <WeeklyChart data={weekly.data?.data} isLoading={weekly.isLoading} />
         <MonthlyChart data={monthly.data?.data} isLoading={monthly.isLoading} />
       </div>
 
       {/* Bottom row: Productivity + Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <ProductivitySummary data={dashboard.data?.data} isLoading={dashboard.isLoading} />
         <Insights
           dashboard={dashboard.data?.data}

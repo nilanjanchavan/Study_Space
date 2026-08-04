@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import type { PomodoroSessionItem } from "@/types"
 
 interface TimerDisplayProps {
   session: PomodoroSessionItem | null
   plannedMinutes: number
   focusStartedAt?: string
+  onFinished?: () => void
 }
 
 function computeRemaining(session: PomodoroSessionItem, plannedMs: number, now: number, overrideStartedMs?: number): number {
@@ -41,16 +42,27 @@ function computeDisplay(session: PomodoroSessionItem | null, plannedMs: number, 
   return { remaining, progress }
 }
 
-export function TimerDisplay({ session, plannedMinutes, focusStartedAt }: TimerDisplayProps) {
+const RADIUS = 120
+const STROKE = 6
+const VIEWBOX_SIZE = (RADIUS + STROKE) * 2
+const CENTER = VIEWBOX_SIZE / 2
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+
+export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinished }: TimerDisplayProps) {
   const plannedMs = plannedMinutes * 60 * 1000
   const overrideStartedMs = focusStartedAt ? new Date(focusStartedAt).getTime() : undefined
   const [remaining, setRemaining] = useState(plannedMs)
   const [progress, setProgress] = useState(0)
 
+  const firedRef = useRef(false)
+  const firedSessionIdRef = useRef<string | null>(null)
+
   const isComplete = session?.status === "COMPLETED"
+  const isActive = session?.status === "RUNNING" || session?.status === "PAUSED"
+  const isPaused = session?.status === "PAUSED"
+  const strokeDashoffset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE
 
   useEffect(() => {
-    const isActive = session?.status === "RUNNING" || session?.status === "PAUSED"
     if (!isActive) {
       const rafId = requestAnimationFrame(() => {
         const d = computeDisplay(session, plannedMs, Date.now(), overrideStartedMs)
@@ -58,6 +70,11 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt }: TimerD
         setProgress(d.progress)
       })
       return () => cancelAnimationFrame(rafId)
+    }
+
+    if (session && session.id !== firedSessionIdRef.current) {
+      firedRef.current = false
+      firedSessionIdRef.current = session.id
     }
 
     let rafId: number
@@ -72,6 +89,10 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt }: TimerD
         setRemaining(d.remaining)
         setProgress(d.progress)
       }
+      if (session?.status === "RUNNING" && d.remaining <= 0 && !firedRef.current) {
+        firedRef.current = true
+        onFinished?.()
+      }
       rafId = requestAnimationFrame(tick)
     }
 
@@ -84,6 +105,10 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt }: TimerD
         lastSecond = Math.ceil(d.remaining / 1000)
         setRemaining(d.remaining)
         setProgress(d.progress)
+        if (session?.status === "RUNNING" && d.remaining <= 0 && !firedRef.current) {
+          firedRef.current = true
+          onFinished?.()
+        }
       }
     }
     document.addEventListener("visibilitychange", handleVisibility)
@@ -92,57 +117,89 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt }: TimerD
       cancelAnimationFrame(rafId)
       document.removeEventListener("visibilitychange", handleVisibility)
     }
-  }, [session, plannedMs, overrideStartedMs])
-
-  const circumference = 2 * Math.PI * 54
-  const strokeDashoffset = circumference - (progress / 100) * circumference
+  }, [session, plannedMs, overrideStartedMs, onFinished]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative flex items-center justify-center">
-        <svg width="140" height="140" viewBox="0 0 120 120">
-          <circle
-            cx="60"
-            cy="60"
-            r="54"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
-            className="text-border"
-          />
-          <circle
-            cx="60"
-            cy="60"
-            r="54"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
-            strokeLinecap="round"
-            className={
-              isComplete
-                ? "text-emerald-500 dark:text-emerald-400 transition-colors duration-300"
-                : "text-primary transition-all duration-1000 ease-linear"
-            }
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 60 60)"
-          />
-        </svg>
-        <span className="absolute text-4xl font-mono font-semibold tracking-tight text-foreground tabular-nums">
+    <div className="relative flex items-center justify-center">
+      {/* Outer glow for active sessions */}
+      {isActive && (
+        <div
+          className="absolute rounded-full transition-opacity duration-1000"
+          style={{
+            width: VIEWBOX_SIZE + 24,
+            height: VIEWBOX_SIZE + 24,
+            background: isPaused
+              ? "oklch(0.70 0.16 250 / 0.06)"
+              : "oklch(0.65 0.19 260 / 0.08)",
+          }}
+        />
+      )}
+
+      <svg
+        width={VIEWBOX_SIZE}
+        height={VIEWBOX_SIZE}
+        viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
+        className="relative -rotate-90"
+      >
+        {/* Background track */}
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={RADIUS}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={STROKE}
+          className="text-muted/30"
+        />
+        {/* Progress arc */}
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={RADIUS}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={STROKE}
+          strokeLinecap="round"
+          strokeDasharray={CIRCUMFERENCE}
+          strokeDashoffset={strokeDashoffset}
+          className={
+            isComplete
+              ? "text-green-500 dark:text-green-400"
+              : "text-primary"
+          }
+          style={{
+            transition: isActive ? "stroke-dashoffset 0.3s linear" : "stroke-dashoffset 0.6s ease-out, stroke 0.3s ease",
+          }}
+        />
+      </svg>
+
+      {/* Center content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span
+          className="font-mono font-bold tracking-tighter text-foreground tabular-nums select-none"
+          style={{ fontSize: "3.25rem", lineHeight: 1 }}
+        >
           {formatTime(remaining)}
         </span>
-        {isComplete && session && (
-          <div
-            key={session.id}
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{ animation: "timer-pulse 1.2s ease-out" }}
-          />
-        )}
       </div>
+
+      {/* Completion pulse */}
+      {isComplete && session && (
+        <div
+          key={session.id}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: VIEWBOX_SIZE,
+            height: VIEWBOX_SIZE,
+            animation: "timer-pulse 1.2s ease-out",
+          }}
+        />
+      )}
+
       <style>{`
         @keyframes timer-pulse {
           0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.35); }
-          70% { box-shadow: 0 0 0 20px rgba(34,197,94,0); }
+          70% { box-shadow: 0 0 0 24px rgba(34,197,94,0); }
           100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
       `}</style>

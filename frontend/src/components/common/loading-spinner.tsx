@@ -9,7 +9,7 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({ className, size = 20 }: LoadingSpinnerProps) {
   return (
     <Loader2Icon
-      className={cn("animate-spin text-muted-foreground", className)}
+      className={cn("animate-spin text-primary/60", className)}
       size={size}
     />
   )

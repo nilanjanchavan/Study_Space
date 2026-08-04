@@ -35,7 +35,7 @@ interface AnalyticsBarChartProps {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; color: string; value: number; name: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border bg-card px-3 py-2 shadow-md">
+    <div className="rounded-xl border border-border/50 bg-card/95 backdrop-blur-sm px-3 py-2 shadow-floating">
       <p className="text-xs font-medium text-foreground mb-1">{label}</p>
       {payload.map((entry) => (
         <p key={entry.dataKey} className="text-xs text-muted-foreground">

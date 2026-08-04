@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { RefreshCwIcon, LinkIcon, UnlinkIcon } from "lucide-react"
+import { RefreshCwIcon, LinkIcon, UnlinkIcon, CheckCircle2Icon } from "lucide-react"
 
 export function CodeforcesSettings() {
   const [settings, updateSettings] = useCodeforcesSettings()
@@ -63,44 +63,38 @@ export function CodeforcesSettings() {
   return (
     <SettingsSection
       title="Codeforces"
-      description="Track your competitive programming progress."
+      description="Track your competitive programming progress"
     >
       {profileLoading ? (
-        <div className="text-sm text-muted-foreground">Loading profile...</div>
+        <div className="text-sm text-muted-foreground py-2">Loading profile...</div>
       ) : profile ? (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <LinkIcon size={14} className="text-emerald-500" />
-              <span className="text-sm font-medium">Connected</span>
+              <CheckCircle2Icon size={14} className="text-success" />
+              <span className="text-sm font-medium text-foreground">Connected</span>
             </div>
-            <Badge variant="secondary">{profile.codeforcesHandle}</Badge>
+            <Badge variant="secondary" className="font-mono text-xs truncate max-w-[120px]">{profile.codeforcesHandle}</Badge>
           </div>
 
           {profile.rating !== null && (
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <span className="text-muted-foreground">Rating</span>
-                <span className="ml-2 font-medium">{profile.rating}</span>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Max Rating</span>
-                <span className="ml-2 font-medium">{profile.maxRating}</span>
-              </div>
-              {profile.rank && (
-                <div>
-                  <span className="text-muted-foreground">Rank</span>
-                  <span className="ml-2 font-medium">{profile.rank}</span>
-                </div>
-              )}
-              {profile.lastSyncedAt && (
-                <div>
-                  <span className="text-muted-foreground">Last Synced</span>
-                  <span className="ml-2 font-medium">
-                    {new Date(profile.lastSyncedAt).toLocaleDateString()}
-                  </span>
-                </div>
-              )}
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: "Rating", value: profile.rating },
+                { label: "Max Rating", value: profile.maxRating },
+                profile.rank && { label: "Rank", value: profile.rank },
+                profile.lastSyncedAt && {
+                  label: "Last Synced",
+                  value: new Date(profile.lastSyncedAt).toLocaleDateString(),
+                },
+              ]
+                .filter(Boolean)
+                .map((item) => item && (
+                  <div key={item.label} className="min-w-0 rounded-lg bg-muted/30 px-3 py-2">
+                    <p className="truncate text-[11px] text-muted-foreground">{item.label}</p>
+                    <p className="truncate text-sm font-medium text-foreground">{item.value}</p>
+                  </div>
+                ))}
             </div>
           )}
 
@@ -110,8 +104,9 @@ export function CodeforcesSettings() {
               size="sm"
               onClick={() => syncMutation.mutate()}
               disabled={syncMutation.isPending}
+              className="gap-1.5"
             >
-              <RefreshCwIcon size={14} className={syncMutation.isPending ? "animate-spin" : ""} />
+              <RefreshCwIcon size={13} className={syncMutation.isPending ? "animate-spin" : ""} />
               Sync Now
             </Button>
             <Button
@@ -119,8 +114,9 @@ export function CodeforcesSettings() {
               size="sm"
               onClick={() => deleteMutation.mutate()}
               disabled={deleteMutation.isPending}
+              className="gap-1.5"
             >
-              <UnlinkIcon size={14} />
+              <UnlinkIcon size={13} />
               Unlink
             </Button>
           </div>
@@ -130,7 +126,7 @@ export function CodeforcesSettings() {
           <p className="text-sm text-muted-foreground">No Codeforces handle linked.</p>
           <div className="flex items-end gap-2">
             <div className="flex-1">
-              <Label htmlFor="cf-handle">Codeforces Handle</Label>
+              <Label htmlFor="cf-handle" className="text-xs">Codeforces Handle</Label>
               <Input
                 id="cf-handle"
                 value={handleInput}
@@ -142,18 +138,19 @@ export function CodeforcesSettings() {
             <Button
               onClick={() => handleInput.trim() && upsertMutation.mutate(handleInput.trim())}
               disabled={!handleInput.trim() || upsertMutation.isPending}
+              className="gap-1.5"
             >
-              <LinkIcon size={14} />
+              <LinkIcon size={13} />
               Link
             </Button>
           </div>
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between py-1">
         <div>
           <p className="text-sm font-medium">Auto-sync</p>
-          <p className="text-xs text-muted-foreground">Automatically sync profile on login.</p>
+          <p className="text-xs text-muted-foreground">Sync profile on login</p>
         </div>
         <Switch
           checked={settings.autoSync}

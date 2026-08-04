@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { FilterIcon } from "lucide-react"
 import type { TodoListParams, TodoStatus, TodoPriority } from "@/types"
 
 interface TodoFiltersProps {
@@ -17,13 +18,18 @@ interface TodoFiltersProps {
 export function TodoFilters({ params, onChange }: TodoFiltersProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-1.5 text-muted-foreground/60 mr-1">
+        <FilterIcon size={13} />
+        <span className="text-xs font-medium">Filter</span>
+      </div>
+
       <Select
         value={params.status || "all"}
         onValueChange={(v) =>
           onChange({ ...params, status: v === "all" ? undefined : (v as TodoStatus), page: 1 })
         }
       >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
+        <SelectTrigger className="w-[120px] h-8 text-xs rounded-lg">
           <SelectValue placeholder="All statuses" />
         </SelectTrigger>
         <SelectContent>
@@ -41,7 +47,7 @@ export function TodoFilters({ params, onChange }: TodoFiltersProps) {
           onChange({ ...params, priority: v === "all" ? undefined : (v as TodoPriority), page: 1 })
         }
       >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
+        <SelectTrigger className="w-[120px] h-8 text-xs rounded-lg">
           <SelectValue placeholder="All priorities" />
         </SelectTrigger>
         <SelectContent>
@@ -53,6 +59,8 @@ export function TodoFilters({ params, onChange }: TodoFiltersProps) {
         </SelectContent>
       </Select>
 
+      <div className="w-px h-4 bg-border/50 mx-1" />
+
       <Select
         value={params.sortBy || "createdAt"}
         onValueChange={(v) =>
@@ -63,7 +71,7 @@ export function TodoFilters({ params, onChange }: TodoFiltersProps) {
           })
         }
       >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
+        <SelectTrigger className="w-[120px] h-8 text-xs rounded-lg">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -83,7 +91,7 @@ export function TodoFilters({ params, onChange }: TodoFiltersProps) {
           })
         }
       >
-        <SelectTrigger className="w-[100px] h-8 text-xs">
+        <SelectTrigger className="w-[90px] h-8 text-xs rounded-lg">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

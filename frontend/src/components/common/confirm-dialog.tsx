@@ -39,7 +39,7 @@ export function ConfirmDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription className="break-words">{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button

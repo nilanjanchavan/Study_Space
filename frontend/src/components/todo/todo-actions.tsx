@@ -33,7 +33,7 @@ export function TodoActions({ todo, onEdit, onDelete }: TodoActionsProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-xs" className="h-6 w-6" />
+          <Button variant="ghost" size="icon-xs" />
         }
       >
         <MoreHorizontal size={14} />

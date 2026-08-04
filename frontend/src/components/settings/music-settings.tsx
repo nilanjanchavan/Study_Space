@@ -29,7 +29,7 @@ export function MusicSettings() {
           value={settings.defaultTrack ?? undefined}
           onValueChange={(v) => updateSettings({ defaultTrack: v ?? "none" })}
         >
-          <SelectTrigger className="w-full max-w-[240px]">
+          <SelectTrigger className="w-full max-w-full sm:max-w-[240px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -63,16 +63,16 @@ export function MusicSettings() {
       </SettingRow>
 
       <SettingRow label="Volume">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <Input
             type="range"
             min={0}
             max={100}
             value={settings.volume}
             onChange={(e) => updateSettings({ volume: Number(e.target.value) })}
-            className="w-24 h-8"
+            className="w-20 sm:w-24 h-8"
           />
-          <span className="text-xs text-muted-foreground w-8 text-right tabular-nums">
+          <span className="text-xs text-muted-foreground w-7 sm:w-8 text-right tabular-nums shrink-0">
             {settings.volume}%
           </span>
         </div>

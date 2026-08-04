@@ -1,8 +1,9 @@
 "use client"
 
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/common/skeleton"
+import { GlassCard } from "@/components/design-system/glass-card"
+import { Skeleton } from "@/components/design-system/skeleton"
+import { SectionHeader } from "@/components/design-system/layout"
 import { LightbulbIcon } from "lucide-react"
 import type { DashboardAnalytics, WeeklyAnalytics, StreakAnalytics } from "@/services/analytics"
 
@@ -25,7 +26,6 @@ function generateInsights(
   const insights: Insight[] = []
   if (!dashboard && !weekly && !streak) return insights
 
-  // Streak insights
   if (streak) {
     if (streak.currentStreak >= 7) {
       insights.push({ text: `Amazing! You're on a ${streak.currentStreak}-day streak.` })
@@ -36,7 +36,6 @@ function generateInsights(
     }
   }
 
-  // Dashboard insights
   if (dashboard) {
     const { pomodoros, todos } = dashboard
 
@@ -67,14 +66,12 @@ function generateInsights(
     }
   }
 
-  // Weekly insights
   if (weekly && weekly.days.length > 0) {
     const totalWeekMinutes = weekly.days.reduce((sum, d) => sum + d.focusMinutes, 0)
     if (totalWeekMinutes > 0) {
       const avgDaily = Math.round(totalWeekMinutes / weekly.days.length)
       insights.push({ text: `You average ${avgDaily} minutes of focus per day this week.` })
 
-      // Find most productive day
       const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
       let maxDay = weekly.days[0]
       for (const d of weekly.days) {
@@ -94,11 +91,9 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
   const insights = useMemo(() => generateInsights(dashboard, weekly, streak), [dashboard, weekly, streak])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Insights</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <GlassCard className="p-4">
+      <SectionHeader title="Insights" />
+      <div className="mt-3">
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -109,20 +104,20 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
             ))}
           </div>
         ) : insights.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Keep using the app to generate insights.
+          <p className="text-sm text-muted-foreground/50 py-4 text-center">
+            Keep using the app to generate insights
           </p>
         ) : (
           <div className="space-y-3">
             {insights.map((insight, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <LightbulbIcon size={16} className="shrink-0 mt-0.5 text-amber-500 dark:text-amber-400" />
+                <LightbulbIcon size={14} className="shrink-0 mt-0.5 text-amber-500 dark:text-amber-400" />
                 <p className="text-sm text-foreground leading-relaxed">{insight.text}</p>
               </div>
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </GlassCard>
   )
 }
