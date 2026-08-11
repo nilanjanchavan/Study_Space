@@ -17,16 +17,54 @@ interface NavItem {
   href: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   disabled?: boolean
+  active: string
+  indicator: string
 }
 
 const baseNavItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Todos", href: "/todos", icon: CheckSquare },
-  { label: "Pomodoro", href: "/pomodoro", icon: Timer },
-  { label: "Focus", href: "/focus", icon: Focus },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Settings", href: "/settings", icon: Settings },
-]
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    active: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+    indicator: "bg-indigo-500 dark:bg-indigo-400",
+  },
+  {
+    label: "Todos",
+    href: "/todos",
+    icon: CheckSquare,
+    active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    indicator: "bg-emerald-500 dark:bg-emerald-400",
+  },
+  {
+    label: "Pomodoro",
+    href: "/pomodoro",
+    icon: Timer,
+    active: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    indicator: "bg-rose-500 dark:bg-rose-400",
+  },
+  {
+    label: "Focus",
+    href: "/focus",
+    icon: Focus,
+    active: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    indicator: "bg-violet-500 dark:bg-violet-400",
+  },
+  {
+    label: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    active: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    indicator: "bg-amber-500 dark:bg-amber-400",
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: Settings,
+    active: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
+    indicator: "bg-slate-500 dark:bg-slate-300",
+  },
+] as const
 
 const FOCUS_LOCKED_ROUTES = ["/dashboard", "/todos", "/analytics", "/settings"]
 
@@ -92,7 +130,7 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
             className={cn(
               "group relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-150",
               isActive
-                ? "bg-primary/[0.08] text-primary dark:bg-primary/[0.12] dark:text-primary"
+                ? item.active
                 : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
             )}
           >
@@ -100,12 +138,18 @@ export function Sidebar({ className, onNavClick, focusActive }: SidebarProps) {
               size={16}
               className={cn(
                 "shrink-0 transition-colors duration-150",
-                isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-foreground/80"
+                isActive ? "" : "text-muted-foreground/60 group-hover:text-foreground/80"
               )}
             />
             <span className="truncate">{item.label}</span>
             {isActive && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 rounded-full bg-primary" />
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full",
+                  item.indicator,
+                  "shadow-[0_0_8px_currentColor]"
+                )}
+              />
             )}
           </Link>
         )

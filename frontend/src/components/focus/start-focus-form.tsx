@@ -93,7 +93,7 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
     <div className="w-full max-w-lg mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-500 mb-4">
           <TargetIcon size={28} />
         </div>
         <h2 className="text-heading text-foreground">Start Deep Focus</h2>
@@ -138,10 +138,10 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
               key={m}
               type="button"
               onClick={() => setMinutes(m)}
-              className={`flex-1 h-9 rounded-lg border px-2 text-xs font-medium transition-all duration-150 ${
+              className={`flex-1 h-9 rounded-lg border px-2 text-xs font-medium tabular-nums transition-all duration-150 ${
                 minutes === m
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border/50 bg-muted/20 text-muted-foreground hover:border-border hover:bg-muted/40"
+                  ? "border-violet-500 bg-violet-500/10 text-violet-500"
+                  : "border-border/50 bg-muted/20 text-muted-foreground hover:border-violet-300/60 hover:bg-muted/40 dark:hover:border-violet-400/40"
               }`}
             >
               {m}m
@@ -153,12 +153,12 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
         <FloatingCard className="p-4" hover>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
-                <ShieldIcon size={18} />
-              </div>
               <div>
                 <p className="text-sm font-medium text-foreground">Strict Mode</p>
                 <p className="text-xs text-muted-foreground">Leaving the tab will end the session</p>
+              </div>
+              <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+                <ShieldIcon size={18} />
               </div>
             </div>
             <Switch
@@ -173,12 +173,14 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
         <GlassCard className="overflow-hidden">
           <button
             type="button"
-            className="flex items-center justify-between w-full px-4 py-3 text-sm"
+            className="flex items-center justify-between w-full px-4 py-3 text-sm transition-colors hover:bg-muted/40"
             onClick={() => setShowSettings(!showSettings)}
           >
             <div className="flex items-center gap-2">
-              <SettingsIcon size={14} className="text-muted-foreground" />
               <span className="font-medium text-foreground">Pomodoro Settings</span>
+              <span className="flex size-7 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500">
+                <SettingsIcon size={14} />
+              </span>
             </div>
             {showSettings ? <ChevronUpIcon size={14} className="text-muted-foreground" /> : <ChevronDownIcon size={14} className="text-muted-foreground" />}
           </button>
@@ -254,23 +256,23 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
 
         {/* Summary */}
         <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/60">
-          <span className="flex items-center gap-1">
-            <ClockIcon size={12} />
+          <span className="flex items-center gap-1 tabular-nums">
             {minutes} minutes
+            <ClockIcon size={12} />
           </span>
-          <span>~{estimatedPomodoros} pomodoro{estimatedPomodoros !== 1 ? "s" : ""}</span>
+          <span className="tabular-nums">~{estimatedPomodoros} pomodoro{estimatedPomodoros !== 1 ? "s" : ""}</span>
           {strictMode && (
             <span className="flex items-center gap-1 text-amber-500/70">
-              <ShieldIcon size={12} />
               Strict
+              <ShieldIcon size={12} />
             </span>
           )}
         </div>
 
         {/* Submit */}
         <Button type="submit" size="lg" disabled={isPending} className="w-full h-11 rounded-xl gap-2">
-          {isPending ? <Spinner size={18} /> : <PlayIcon size={18} />}
           {isPending ? "Starting..." : "Start Deep Focus"}
+          {isPending ? <Spinner size={18} /> : <PlayIcon size={18} />}
         </Button>
       </form>
     </div>

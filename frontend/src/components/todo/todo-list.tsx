@@ -76,16 +76,20 @@ export function TodoList() {
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl">
-      <div className="flex items-start justify-between gap-4">
-        <SectionHeader
-          title="Todos"
-          subtitle={`${pagination?.total ?? 0} tasks`}
-        />
-        <Button size="sm" onClick={() => setFormOpen(true)} className="gap-1.5">
-          <PlusIcon size={14} />
-          New todo
-        </Button>
-      </div>
+      <SectionHeader
+        title="Todos"
+        subtitle={`${pagination?.total ?? 0} tasks`}
+        accent={{
+          icon: <CheckSquareIcon size={14} />,
+          className: "bg-emerald-500/10 text-emerald-500",
+        }}
+        action={
+          <Button size="lg" onClick={() => setFormOpen(true)} className="gap-2">
+            New todo
+            <PlusIcon size={14} />
+          </Button>
+        }
+      />
 
       <GlassCard className="p-4">
         <TodoFilters params={params} onChange={setParams} />
@@ -101,6 +105,7 @@ export function TodoList() {
             icon={<CheckSquareIcon size={24} />}
             title="No todos yet"
             description="Create your first task to get started"
+            accent="bg-emerald-500/10 text-emerald-500"
             action={{
               label: "Create todo",
               onClick: () => setFormOpen(true),

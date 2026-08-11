@@ -185,9 +185,9 @@ export function TodoForm({ open, onOpenChange, todo, onSubmit, isLoading }: Todo
             >
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={isLoading} className="gap-1.5">
-              {isLoading && <Loader2Icon className="animate-spin" size={14} />}
+            <Button type="submit" size="lg" disabled={isLoading} className="gap-1.5">
               {isEditing ? "Save changes" : "Create todo"}
+              {isLoading && <Loader2Icon className="animate-spin" size={14} />}
             </Button>
           </DialogFooter>
         </form>

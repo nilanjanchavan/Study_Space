@@ -6,6 +6,7 @@ interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
   icon?: ReactNode
   title: string
   description?: string
+  accent?: string
   action?: {
     label: string
     onClick: () => void
@@ -13,26 +14,32 @@ interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
-  ({ className, icon, title, description, action, ...props }, ref) => (
+  ({ className, icon, title, description, accent = "bg-primary/[0.08] text-primary", action, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "flex flex-col items-center justify-center py-8 text-center",
+        "flex flex-col items-center justify-center py-10 text-center",
         className
       )}
       {...props}
     >
       {icon && (
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground">
+        <div
+          className={cn(
+            "mb-5 flex h-14 w-14 items-center justify-center rounded-2xl",
+            accent,
+            "shadow-[inset_0_1px_0_oklch(1_0_0/0.5)] ring-1 ring-black/[0.03] dark:ring-white/[0.06]"
+          )}
+        >
           {icon}
         </div>
       )}
       <h4 className="text-title text-foreground">{title}</h4>
       {description && (
-        <p className="mt-1 max-w-sm text-body text-muted-foreground">{description}</p>
+        <p className="mt-1.5 max-w-sm text-body text-muted-foreground">{description}</p>
       )}
       {action && (
-        <Button onClick={action.onClick} className="mt-4">
+        <Button onClick={action.onClick} className="mt-5">
           {action.label}
         </Button>
       )}

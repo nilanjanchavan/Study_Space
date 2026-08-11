@@ -30,8 +30,8 @@ export function AccountSettings() {
       description="Manage your account settings"
     >
       <div className="flex items-center gap-4">
-        <Avatar className="size-12 ring-2 ring-primary/10">
-          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+        <Avatar className="size-12 ring-2 ring-slate-500/15">
+          <AvatarFallback className="bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-300 font-semibold">
             {initials}
           </AvatarFallback>
         </Avatar>
@@ -50,9 +50,9 @@ export function AccountSettings() {
           { label: "Email Verified", value: user?.isEmailVerified ? "Yes" : "No" },
           { label: "Joined", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—" },
         ].map((item) => (
-          <div key={item.label} className="min-w-0 rounded-lg bg-muted/30 px-3 py-2.5">
+          <div key={item.label} className="min-w-0 rounded-lg border border-border/50 bg-card/50 px-3 py-2.5 dark:bg-white/[0.03]">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider truncate">{item.label}</p>
-            <p className="text-sm font-medium text-foreground mt-0.5 truncate">{item.value}</p>
+            <p className="text-sm font-medium text-foreground mt-0.5 truncate tabular-nums">{item.value}</p>
           </div>
         ))}
       </div>
@@ -61,10 +61,10 @@ export function AccountSettings() {
         variant="destructive"
         onClick={handleLogout}
         disabled={logoutMutation.isPending}
-        className="gap-1.5"
+        className="gap-2"
       >
-        <LogOutIcon size={14} />
         {logoutMutation.isPending ? "Logging out..." : "Log Out"}
+        <LogOutIcon size={14} />
       </Button>
 
       <div className="border-t border-border/50 pt-4">
@@ -72,15 +72,19 @@ export function AccountSettings() {
         <div className="grid grid-cols-2 gap-3">
           <SoftCard className="p-3 opacity-60">
             <div className="flex items-center gap-2 mb-1">
-              <LockIcon size={12} className="text-muted-foreground" />
               <p className="text-xs font-medium text-foreground">Change Password</p>
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-500/10 text-slate-500 dark:bg-slate-400/10 dark:text-slate-400">
+                <LockIcon size={12} />
+              </span>
             </div>
             <p className="text-[11px] text-muted-foreground">Coming soon</p>
           </SoftCard>
           <SoftCard className="p-3 opacity-60">
             <div className="flex items-center gap-2 mb-1">
-              <ImageIcon size={12} className="text-muted-foreground" />
               <p className="text-xs font-medium text-foreground">Edit Avatar</p>
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-500/10 text-slate-500 dark:bg-slate-400/10 dark:text-slate-400">
+                <ImageIcon size={12} />
+              </span>
             </div>
             <p className="text-[11px] text-muted-foreground">Coming soon</p>
           </SoftCard>

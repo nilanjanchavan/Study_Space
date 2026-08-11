@@ -22,7 +22,7 @@ export function PomodoroSettings() {
           { id: "long-interval", label: "After (pomodoros)", key: "longBreakInterval" as const, min: 1, max: 10 },
           { id: "daily-goal", label: "Daily Goal", key: "dailyGoal" as const, min: 1, max: 20 },
         ].map((field) => (
-          <div key={field.id} className="flex flex-col gap-1 min-w-0">
+          <div key={field.id} className="flex flex-col gap-1.5 min-w-0 rounded-lg border border-border/50 bg-card/50 px-2.5 py-2 dark:bg-white/[0.03]">
             <Label htmlFor={field.id} className="text-xs truncate">{field.label}</Label>
             <Input
               id={field.id}

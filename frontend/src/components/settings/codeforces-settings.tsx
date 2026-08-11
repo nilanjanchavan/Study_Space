@@ -71,8 +71,10 @@ export function CodeforcesSettings() {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon size={14} className="text-success" />
               <span className="text-sm font-medium text-foreground">Connected</span>
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-400">
+                <CheckCircle2Icon size={14} />
+              </span>
             </div>
             <Badge variant="secondary" className="font-mono text-xs truncate max-w-[120px]">{profile.codeforcesHandle}</Badge>
           </div>
@@ -90,9 +92,9 @@ export function CodeforcesSettings() {
               ]
                 .filter(Boolean)
                 .map((item) => item && (
-                  <div key={item.label} className="min-w-0 rounded-lg bg-muted/30 px-3 py-2">
+                  <div key={item.label} className="min-w-0 rounded-lg border border-border/50 bg-card/50 px-3 py-2 dark:bg-white/[0.03]">
                     <p className="truncate text-[11px] text-muted-foreground">{item.label}</p>
-                    <p className="truncate text-sm font-medium text-foreground">{item.value}</p>
+                    <p className="truncate text-sm font-medium text-foreground tabular-nums">{item.value}</p>
                   </div>
                 ))}
             </div>
@@ -104,20 +106,20 @@ export function CodeforcesSettings() {
               size="sm"
               onClick={() => syncMutation.mutate()}
               disabled={syncMutation.isPending}
-              className="gap-1.5"
+              className="gap-2"
             >
-              <RefreshCwIcon size={13} className={syncMutation.isPending ? "animate-spin" : ""} />
               Sync Now
+              <RefreshCwIcon size={13} className={syncMutation.isPending ? "animate-spin" : ""} />
             </Button>
             <Button
               variant="destructive"
               size="sm"
               onClick={() => deleteMutation.mutate()}
               disabled={deleteMutation.isPending}
-              className="gap-1.5"
+              className="gap-2"
             >
-              <UnlinkIcon size={13} />
               Unlink
+              <UnlinkIcon size={13} />
             </Button>
           </div>
         </div>
@@ -138,19 +140,19 @@ export function CodeforcesSettings() {
             <Button
               onClick={() => handleInput.trim() && upsertMutation.mutate(handleInput.trim())}
               disabled={!handleInput.trim() || upsertMutation.isPending}
-              className="gap-1.5"
+              className="gap-2"
             >
-              <LinkIcon size={13} />
               Link
+              <LinkIcon size={13} />
             </Button>
           </div>
         </div>
       )}
 
-      <div className="flex items-center justify-between py-1">
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 px-3 py-2.5 dark:bg-white/[0.03]">
         <div>
-          <p className="text-sm font-medium">Auto-sync</p>
-          <p className="text-xs text-muted-foreground">Sync profile on login</p>
+          <p className="text-sm font-medium text-foreground">Auto-sync</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Sync profile on login</p>
         </div>
         <Switch
           checked={settings.autoSync}

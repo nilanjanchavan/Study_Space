@@ -17,12 +17,12 @@ function StatCard({ icon, label, value, accent }: StatCardProps) {
   return (
     <FloatingCard className="p-4" hover>
       <div className="flex items-center gap-3">
-        <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", accent)}>
-          {icon}
-        </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-caption text-muted-foreground">{label}</p>
           <p className="text-lg font-semibold text-foreground tabular-nums leading-tight truncate">{value}</p>
+        </div>
+        <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", accent)}>
+          {icon}
         </div>
       </div>
     </FloatingCard>

@@ -1,6 +1,7 @@
 "use client"
 
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { ProgressBar } from "@/components/design-system/progress"
 import { CheckCircleIcon, XCircleIcon, ClockIcon, ZapIcon } from "lucide-react"
 import type { FocusSessionItem } from "@/types"
@@ -31,7 +32,10 @@ export function SessionProgress({
 
   return (
     <GlassCard className="p-4">
-      <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider mb-3">Session Progress</h3>
+      <SectionHeader
+        title="Session Progress"
+        accent={{ icon: <ZapIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
+      />
 
       {/* Overall progress */}
       <div className="mb-4">
@@ -96,12 +100,12 @@ function formatElapsed(ms: number): string {
 
 function StatRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-muted/30 px-2.5 py-2">
-      {icon}
+    <div className="flex items-center gap-2 rounded-lg bg-card/50 border border-border/50 px-2.5 py-2">
       <div className="flex flex-col">
         <span className="text-[10px] text-muted-foreground leading-none">{label}</span>
         <span className="text-sm font-semibold tabular-nums mt-0.5">{value}</span>
       </div>
+      {icon}
     </div>
   )
 }

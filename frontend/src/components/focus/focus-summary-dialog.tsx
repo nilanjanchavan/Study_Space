@@ -82,9 +82,9 @@ export function FocusSummaryDialog({
 
         <div className="flex flex-col gap-3">
           {session.goal && (
-            <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
-              <TargetIcon size={14} className="text-muted-foreground shrink-0" />
+            <div className="flex items-center gap-2 rounded-lg bg-violet-500/5 border border-violet-500/15 px-3 py-2">
               <span className="text-sm truncate">{session.goal}</span>
+              <TargetIcon size={14} className="text-violet-500 shrink-0" />
             </div>
           )}
 
@@ -111,32 +111,32 @@ export function FocusSummaryDialog({
             />
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+          <div className="flex items-center justify-between rounded-lg bg-card/50 border border-border/50 px-3 py-2">
             <div className="flex items-center gap-2">
-              <ClockIcon size={14} className="text-muted-foreground" />
               <span className="text-sm">Completed At</span>
+              <ClockIcon size={14} className="text-muted-foreground" />
             </div>
             <span className="text-sm font-medium tabular-nums">{formatCompletionTime(session)}</span>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+          <div className="flex items-center justify-between rounded-lg bg-card/50 border border-border/50 px-3 py-2">
             <div className="flex items-center gap-2">
-              <ShieldIcon size={14} className="text-muted-foreground" />
               <span className="text-sm">Strict Mode</span>
+              <ShieldIcon size={14} className="text-muted-foreground" />
             </div>
             <Badge variant={session.strictModeEnabled ? "default" : "secondary"} className="text-xs">
               {session.strictModeEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+          <div className="flex items-center justify-between rounded-lg bg-card/50 border border-border/50 px-3 py-2">
             <div className="flex items-center gap-2">
+              <span className="text-sm">Status</span>
               {endedBy === "natural" ? (
                 <CheckCircleIcon size={14} className={statusColor} />
               ) : (
                 <XCircleIcon size={14} className={statusColor} />
               )}
-              <span className="text-sm">Status</span>
             </div>
             <span className={`text-sm font-medium ${statusColor}`}>{status}</span>
           </div>
@@ -157,12 +157,12 @@ export function FocusSummaryDialog({
 
 function SummaryItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border px-3 py-2">
-      <span className="text-muted-foreground">{icon}</span>
+    <div className="flex items-center gap-2 rounded-lg bg-card/50 border border-border/50 px-3 py-2">
       <div className="flex flex-col">
         <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="text-sm font-medium">{value}</span>
+        <span className="text-sm font-medium tabular-nums">{value}</span>
       </div>
+      <span className="text-muted-foreground">{icon}</span>
     </div>
   )
 }

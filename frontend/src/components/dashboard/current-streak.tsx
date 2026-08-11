@@ -34,21 +34,23 @@ export function CurrentStreak() {
         </div>
       ) : (
         <div className="space-y-3">
-          <div
-            className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-xl",
-              current > 0
-                ? "bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-500 dark:from-orange-400/20 dark:to-amber-400/20 dark:text-orange-400"
-                : "bg-muted text-muted-foreground"
-            )}
-          >
-            <FlameIcon size={24} />
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-foreground tabular-nums">
-              {current} <span className="text-sm font-normal text-muted-foreground">day{current !== 1 ? "s" : ""}</span>
-            </p>
-            <p className="text-caption text-muted-foreground mt-0.5">{message}</p>
+          <div className="flex items-center gap-4">
+            <div>
+              <p className="text-2xl font-bold text-foreground tabular-nums">
+                {current} <span className="text-sm font-normal text-muted-foreground">day{current !== 1 ? "s" : ""}</span>
+              </p>
+              <p className="text-caption text-muted-foreground mt-0.5">{message}</p>
+            </div>
+            <div
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                current > 0
+                  ? "bg-gradient-to-br from-orange-500/20 to-amber-500/20 text-orange-500 dark:from-orange-400/20 dark:to-amber-400/20 dark:text-orange-400"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              <FlameIcon size={24} />
+            </div>
           </div>
           {longest > 0 && longest !== current && (
             <p className="text-[11px] text-muted-foreground/60">

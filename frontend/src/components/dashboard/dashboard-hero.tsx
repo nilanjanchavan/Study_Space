@@ -110,24 +110,24 @@ export function DashboardHero({ completedPomodoros, totalFocusMinutes, hasActive
           {/* Quick Stats Row */}
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-              <CheckCircle2Icon size={14} className="text-success shrink-0" />
               <span className="tabular-nums font-medium truncate">{completedPomodoros}</span>
               <span className="truncate">done</span>
+              <CheckCircle2Icon size={14} className="text-success shrink-0" />
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-              <TimerIcon size={14} className="text-primary shrink-0" />
               <span className="tabular-nums font-medium truncate">{totalFocusMinutes}</span>
               <span className="truncate">min</span>
+              <TimerIcon size={14} className="text-primary shrink-0" />
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-              <ListTodoIcon size={14} className="text-orange-500 shrink-0" />
               <span className="tabular-nums font-medium truncate">{pendingTodos}</span>
               <span className="truncate">todos</span>
+              <ListTodoIcon size={14} className="text-orange-500 shrink-0" />
             </div>
             {completedPomodoros > 0 && (
               <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-                <FlameIcon size={14} className="text-amber-500 shrink-0" />
                 <span className="tabular-nums font-medium truncate">{completionPct}%</span>
+                <FlameIcon size={14} className="text-amber-500 shrink-0" />
               </div>
             )}
           </div>
@@ -135,19 +135,19 @@ export function DashboardHero({ completedPomodoros, totalFocusMinutes, hasActive
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-2">
             {hasActiveSession ? (
-              <Button onClick={() => router.push("/pomodoro")} className="gap-1.5">
-                <ArrowRightIcon size={14} />
+              <Button onClick={() => router.push("/pomodoro")} className="gap-2">
                 Resume Session
+                <ArrowRightIcon size={14} />
               </Button>
             ) : (
               <>
-                <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-1.5">
-                  <PlayIcon size={14} />
+                <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2">
                   Start Pomodoro
+                  <PlayIcon size={14} />
                 </Button>
-                <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-1.5">
-                  <FocusIcon size={14} />
+                <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2">
                   Start Focus
+                  <FocusIcon size={14} />
                 </Button>
               </>
             )}

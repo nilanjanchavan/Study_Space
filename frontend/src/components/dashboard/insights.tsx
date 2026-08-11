@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { useDashboardAnalytics, useDailyAnalytics, useStreakAnalytics, useWeeklyAnalytics } from "@/hooks/use-analytics"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Skeleton } from "@/components/design-system/skeleton"
 import { LightbulbIcon, SparklesIcon } from "lucide-react"
 
@@ -146,10 +147,11 @@ export function Insights() {
   if (insights.length === 0) {
     return (
       <GlassCard className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <LightbulbIcon size={14} className="text-muted-foreground/40" />
-          <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Insights</h3>
-        </div>
+        <SectionHeader
+          title="Insights"
+          className="mb-2"
+          accent={{ icon: <LightbulbIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+        />
         <p className="text-sm text-muted-foreground/50">Complete activities to see personalized insights</p>
       </GlassCard>
     )
@@ -157,15 +159,16 @@ export function Insights() {
 
   return (
     <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <SparklesIcon size={14} className="text-muted-foreground/40" />
-        <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Insights</h3>
-      </div>
+      <SectionHeader
+        title="Insights"
+        className="mb-3"
+        accent={{ icon: <SparklesIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+      />
       <div className="space-y-2.5">
         {insights.map((insight, i) => (
           <div key={i} className="flex items-start gap-2.5">
-            <span className="mt-0.5 shrink-0">{insight.icon}</span>
             <p className="text-sm text-foreground/80 leading-relaxed">{insight.text}</p>
+            <span className="mt-0.5 shrink-0">{insight.icon}</span>
           </div>
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { ConstructionIcon } from "lucide-react"
+import { EmptyState } from "@/components/design-system/empty-state"
 
 interface ComingSoonPageProps {
   title: string
@@ -7,11 +8,12 @@ interface ComingSoonPageProps {
 export function ComingSoonPage({ title }: ComingSoonPageProps) {
   return (
     <div className="flex flex-1 items-center justify-center py-24">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <ConstructionIcon size={40} className="text-muted-foreground/30" />
-        <h1 className="text-lg font-semibold text-foreground">{title}</h1>
-        <p className="text-sm text-muted-foreground">Coming soon.</p>
-      </div>
+      <EmptyState
+        icon={<ConstructionIcon size={22} />}
+        title={title}
+        description="Coming soon."
+        accent="bg-muted text-muted-foreground"
+      />
     </div>
   )
 }

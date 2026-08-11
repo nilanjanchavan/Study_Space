@@ -129,8 +129,8 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
             width: VIEWBOX_SIZE + 24,
             height: VIEWBOX_SIZE + 24,
             background: isPaused
-              ? "oklch(0.70 0.16 250 / 0.06)"
-              : "oklch(0.65 0.19 260 / 0.08)",
+              ? "oklch(0.62 0.14 25 / 0.05)"
+              : "oklch(0.62 0.14 25 / 0.09)",
           }}
         />
       )}
@@ -157,7 +157,7 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
           cy={CENTER}
           r={RADIUS}
           fill="none"
-          stroke="currentColor"
+          stroke={isComplete ? "currentColor" : "url(#timerArcGradient)"}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
@@ -165,12 +165,18 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
           className={
             isComplete
               ? "text-green-500 dark:text-green-400"
-              : "text-primary"
+              : "text-rose-500"
           }
           style={{
             transition: isActive ? "stroke-dashoffset 0.3s linear" : "stroke-dashoffset 0.6s ease-out, stroke 0.3s ease",
           }}
         />
+        <defs>
+          <linearGradient id="timerArcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="oklch(0.712 0.13 25)" />
+            <stop offset="100%" stopColor="oklch(0.62 0.14 25)" />
+          </linearGradient>
+        </defs>
       </svg>
 
       {/* Center content */}

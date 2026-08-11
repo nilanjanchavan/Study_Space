@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/design-system/glass-card"
 import { Skeleton } from "@/components/design-system/skeleton"
 import { SectionHeader } from "@/components/design-system/layout"
 import { AnalyticsBarChart } from "./charts/bar-chart"
+import { CalendarRangeIcon } from "lucide-react"
 import type { MonthlyAnalytics } from "@/services/analytics"
 
 interface MonthlyChartProps {
@@ -26,6 +27,10 @@ export function MonthlyChart({ data, isLoading }: MonthlyChartProps) {
       <SectionHeader
         title="Monthly Analytics"
         subtitle={data ? `${data.totalFocusHours}h total` : undefined}
+        accent={{
+          icon: <CalendarRangeIcon size={14} />,
+          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+        }}
       />
       <div className="mt-3">
         {isLoading ? (
@@ -37,7 +42,7 @@ export function MonthlyChart({ data, isLoading }: MonthlyChartProps) {
         ) : (
           <AnalyticsBarChart
             data={chartData}
-            bars={[{ key: "Focus Minutes", color: "hsl(var(--primary))" }]}
+            bars={[{ key: "Focus Minutes", color: "oklch(0.68 0.15 80)" }]}
             height={220}
           />
         )}

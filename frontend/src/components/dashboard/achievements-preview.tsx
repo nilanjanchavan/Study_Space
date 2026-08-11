@@ -3,9 +3,10 @@
 import { useMemo } from "react"
 import { useDashboardAnalytics, useStreakAnalytics } from "@/hooks/use-analytics"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/design-system/skeleton"
-import { FlameIcon, TimerIcon, FocusIcon, ZapIcon, TrophyIcon, ArrowRightIcon } from "lucide-react"
+import { FlameIcon, TimerIcon, FocusIcon, ZapIcon, TrophyIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Achievement {
@@ -78,15 +79,16 @@ export function AchievementsPreview() {
 
   return (
     <GlassCard className="p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <TrophyIcon size={14} className="text-muted-foreground/40" />
-          <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Achievements</h3>
-        </div>
-        <Button variant="ghost" size="sm" className="gap-1">
-          View All <ArrowRightIcon size={10} />
-        </Button>
-      </div>
+      <SectionHeader
+        title="Achievements"
+        className="mb-3"
+        accent={{ icon: <TrophyIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+        action={
+          <Button variant="ghost" size="sm" className="gap-1">
+            View All 
+          </Button>
+        }
+      />
 
       <div className="space-y-2">
         {achievements.map((achievement, i) => (
@@ -94,9 +96,6 @@ export function AchievementsPreview() {
             "flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
             achievement.unlocked ? "opacity-100" : "opacity-40"
           )}>
-            <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", achievement.bgColor)}>
-              <span className={achievement.color}>{achievement.icon}</span>
-            </div>
             <div className="flex-1 min-w-0">
               <p className={cn(
                 "text-sm font-medium truncate",
@@ -111,6 +110,9 @@ export function AchievementsPreview() {
             {achievement.unlocked && (
               <span className="text-[10px] text-success font-medium">Unlocked</span>
             )}
+            <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", achievement.bgColor)}>
+              <span className={achievement.color}>{achievement.icon}</span>
+            </div>
           </div>
         ))}
       </div>

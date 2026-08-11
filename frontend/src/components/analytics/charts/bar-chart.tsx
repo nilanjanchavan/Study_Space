@@ -64,17 +64,17 @@ export function AnalyticsBarChart({
       <ResponsiveContainer width="100%" height={height}>
         <RechartsBarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
           {showGrid && (
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
           )}
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             tickFormatter={yFormatter}
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
           />
@@ -83,7 +83,7 @@ export function AnalyticsBarChart({
             <Bar
               key={bar.key}
               dataKey={bar.key}
-              fill={bar.color ?? "hsl(var(--primary))"}
+              fill={bar.color ?? "var(--primary)"}
               radius={[4, 4, 0, 0]}
               maxBarSize={40}
             />

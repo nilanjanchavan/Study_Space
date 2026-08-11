@@ -55,8 +55,8 @@ export function TimerControls({
         disabled={isBusy}
         className="h-11 px-6 rounded-xl gap-2"
       >
-        {isStarting ? <Spinner size={18} /> : <PlayIcon size={18} />}
         Start Session
+        {isStarting ? <Spinner size={18} /> : <PlayIcon size={18} />}
       </Button>
     )
   }
@@ -69,26 +69,26 @@ export function TimerControls({
           size="lg"
           onClick={onPause}
           disabled={isBusy}
-          className="h-10 sm:h-11 px-3 sm:px-5 rounded-xl gap-1.5 sm:gap-2 text-xs sm:text-sm"
+          className="h-11 px-4 sm:px-5 rounded-xl gap-2"
         >
-          {isPausing ? <Spinner size={14} /> : <PauseIcon size={14} />}
           Pause
+          {isPausing ? <Spinner size={14} /> : <PauseIcon size={14} />}
         </Button>
         <Button
           size="lg"
           onClick={onComplete}
           disabled={isBusy}
-          className="h-10 sm:h-11 px-3 sm:px-5 rounded-xl gap-1.5 sm:gap-2 text-xs sm:text-sm"
+          className="h-11 px-4 sm:px-5 rounded-xl gap-2"
         >
-          {isCompleting ? <Spinner size={14} /> : <CheckIcon size={14} />}
           Complete
+          {isCompleting ? <Spinner size={14} /> : <CheckIcon size={14} />}
         </Button>
         <Button
           variant="ghost"
           size="icon"
           onClick={onCancel}
           disabled={isBusy}
-          className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl text-muted-foreground hover:text-destructive"
+          className="h-11 w-11 rounded-xl text-muted-foreground hover:text-destructive"
           title="Cancel session"
         >
           {isCancelling ? <Spinner size={14} /> : <StopCircleIcon size={16} />}
@@ -106,8 +106,8 @@ export function TimerControls({
           disabled={isBusy}
           className="h-11 px-6 rounded-xl gap-2"
         >
-          {isResuming ? <Spinner size={16} /> : <PlayIcon size={16} />}
           Resume
+          {isResuming ? <Spinner size={16} /> : <PlayIcon size={16} />}
         </Button>
         <Button
           variant="ghost"
@@ -132,8 +132,8 @@ export function TimerControls({
         disabled={isBusy}
         className="h-11 px-6 rounded-xl gap-2"
       >
-        {isStarting ? <Spinner size={18} /> : <SkipForwardIcon size={18} />}
         {label}
+        {isStarting ? <Spinner size={18} /> : <SkipForwardIcon size={18} />}
       </Button>
     )
   }

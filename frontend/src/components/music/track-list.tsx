@@ -15,7 +15,7 @@ export function TrackList({ currentTrackId, isPlaying, onSelect, isLoading }: Tr
   if (isLoading) return <TrackListSkeleton />
 
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-1">
       {TRACKS.map((track) => (
         <TrackItem
           key={track.id}

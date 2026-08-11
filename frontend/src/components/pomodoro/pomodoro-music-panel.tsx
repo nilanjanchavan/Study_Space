@@ -2,6 +2,7 @@
 
 import { useMusic } from "@/providers/music-provider"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { TrackList } from "@/components/music/track-list"
 import { MusicPlayer } from "@/components/music/music-player"
 import { MusicIcon, WavesIcon } from "lucide-react"
@@ -23,27 +24,18 @@ export function PomodoroMusicPanel() {
   } = useMusic()
 
   return (
-    <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <div className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors",
-          isPlaying ? "bg-primary/10" : "bg-muted"
-        )}>
-          {isPlaying ? (
-            <WavesIcon size={14} className="text-primary animate-pulse" />
-          ) : (
-            <MusicIcon size={14} className="text-muted-foreground" />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-foreground truncate">Ambient Music</h3>
-          {currentTrack && (
-            <p className="text-[11px] text-muted-foreground truncate">
-              {isPlaying ? "Playing" : "Paused"} &middot; {currentTrack.name}
-            </p>
-          )}
-        </div>
-      </div>
+    <GlassCard tone="cyan" className="p-4">
+      <SectionHeader
+        title="Ambient Music"
+        subtitle={currentTrack ? `${isPlaying ? "Playing" : "Paused"} · ${currentTrack.name}` : undefined}
+        accent={{
+          icon: isPlaying ? <WavesIcon size={14} /> : <MusicIcon size={14} />,
+          className: cn(
+            "transition-colors",
+            isPlaying ? "bg-cyan-500/10 text-cyan-500" : "bg-cyan-500/5 text-cyan-500/60"
+          ),
+        }}
+      />
 
       <div className="max-h-[280px] overflow-y-auto -mx-1 px-1 mb-4">
         <TrackList

@@ -2,6 +2,7 @@
 
 import { useMusic } from "@/providers/music-provider"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Button } from "@/components/ui/button"
 import { PauseIcon, PlayIcon, MusicIcon, VolumeIcon, VolumeXIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -15,7 +16,7 @@ function MiniWaveform({ isPlaying }: { isPlaying: boolean }) {
           key={i}
           className={cn(
             "w-[3px] rounded-full transition-all duration-300",
-            isPlaying ? "bg-primary/70" : "bg-muted-foreground/20"
+            isPlaying ? "bg-cyan-500/70" : "bg-muted-foreground/20"
           )}
           style={{
             height: isPlaying ? `${height * 100}%` : "4px",
@@ -31,11 +32,14 @@ export function FocusMusicWidget() {
   const { currentTrack, isPlaying, pause, resume, volume, setVolume } = useMusic()
 
   return (
-    <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <MusicIcon size={14} className={cn("text-muted-foreground/40", isPlaying && "text-primary animate-pulse-soft")} />
-        <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Ambience</h3>
-      </div>
+    <GlassCard tone="cyan" className="p-4">
+      <SectionHeader
+        title="Ambience"
+        accent={{
+          icon: <MusicIcon size={14} />,
+          className: cn("transition-colors", isPlaying && "bg-cyan-500/10 text-cyan-500 animate-pulse-soft"),
+        }}
+      />
 
       {currentTrack ? (
         <div className="space-y-3">
@@ -70,7 +74,7 @@ export function FocusMusicWidget() {
                 max={100}
                 value={volume}
                 onChange={(e) => setVolume(Number(e.target.value))}
-                className="h-1.5 w-16 cursor-pointer appearance-none rounded-full bg-border/80 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-[0_0_0_3px_oklch(0_0_0/0.06)] [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                className="h-1.5 w-16 cursor-pointer appearance-none rounded-full bg-border/80 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-[0_0_0_3px_oklch(0_0_0/0.06)] [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
               />
               <span className="text-[10px] text-muted-foreground/60 tabular-nums w-6 text-right">{volume}%</span>
             </div>

@@ -65,13 +65,13 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-muted-foreground cursor-default">
-          <UserIcon />
           Profile
+          <UserIcon />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">
-          <LogOutIcon />
           Log out
+          <LogOutIcon />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -19,12 +19,12 @@ function StatItem({ icon, label, value, accent, iconColor, className }: StatItem
   return (
     <FloatingCard className={cn("p-4", className)} hover>
       <div className="flex items-center gap-3">
-        <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl", accent)}>
-          <span className={iconColor}>{icon}</span>
-        </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-caption text-muted-foreground">{label}</p>
           <p className="text-xl font-bold text-foreground tabular-nums leading-tight">{value}</p>
+        </div>
+        <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl", accent)}>
+          <span className={iconColor}>{icon}</span>
         </div>
       </div>
     </FloatingCard>

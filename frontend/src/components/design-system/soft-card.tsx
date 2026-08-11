@@ -8,10 +8,11 @@ const SoftCard = forwardRef<HTMLDivElement, SoftCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-xl bg-muted/50 p-4",
-        "border border-transparent",
+        "rounded-2xl bg-muted/45 p-4",
+        "border border-black/[0.04]",
+        "shadow-[inset_0_1px_0_oklch(1_0_0/0.6)]",
         "transition-all duration-200 ease-out",
-        "dark:bg-white/[0.03]",
+        "dark:bg-white/[0.03] dark:border-white/[0.05] dark:shadow-none",
         className
       )}
       {...props}

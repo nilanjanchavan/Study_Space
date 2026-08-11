@@ -33,23 +33,19 @@ export function ResumeSessionWidget() {
     const isPaused = pomSession.status === "PAUSED"
     return (
       <GlassCard className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
-              <TimerIcon size={20} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground truncate">Pomodoro in Progress</p>
-              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                {isPaused ? <BadgePaused>Paused</BadgePaused> : <BadgeRunning>Focusing</BadgeRunning>}
-                <span className="text-xs text-muted-foreground truncate">{pomSession.plannedMinutes}min session</span>
-              </div>
-            </div>
-          </div>
-          <Button onClick={() => router.push("/pomodoro")} className="gap-1.5 shrink-0">
-            <ArrowRightIcon size={14} />
-            Resume
-          </Button>
+        <SectionHeader
+          title="Pomodoro in Progress"
+          accent={{ icon: <TimerIcon size={14} />, className: "bg-orange-500/10 text-orange-500" }}
+          action={
+            <Button onClick={() => router.push("/pomodoro")} className="gap-2 shrink-0">
+              Resume
+              <ArrowRightIcon size={14} />
+            </Button>
+          }
+        />
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          {isPaused ? <BadgePaused>Paused</BadgePaused> : <BadgeRunning>Focusing</BadgeRunning>}
+          <span className="text-xs text-muted-foreground truncate">{pomSession.plannedMinutes}min session</span>
         </div>
       </GlassCard>
     )
@@ -59,23 +55,19 @@ export function ResumeSessionWidget() {
     const isPaused = focSession.status === "PAUSED"
     return (
       <GlassCard className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
-              <FocusIcon size={20} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground truncate">Focus Session</p>
-              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                {isPaused ? <BadgePaused>Paused</BadgePaused> : <BadgeRunning>Active</BadgeRunning>}
-                <span className="text-xs text-muted-foreground truncate">{focSession.goal || `${focSession.plannedMinutes}min focus`}</span>
-              </div>
-            </div>
-          </div>
-          <Button onClick={() => router.push("/focus")} className="gap-1.5 shrink-0">
-            <ArrowRightIcon size={14} />
-            Resume
-          </Button>
+        <SectionHeader
+          title="Focus Session"
+          accent={{ icon: <FocusIcon size={14} />, className: "bg-blue-500/10 text-blue-500" }}
+          action={
+            <Button onClick={() => router.push("/focus")} className="gap-2 shrink-0">
+              Resume
+              <ArrowRightIcon size={14} />
+            </Button>
+          }
+        />
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          {isPaused ? <BadgePaused>Paused</BadgePaused> : <BadgeRunning>Active</BadgeRunning>}
+          <span className="text-xs text-muted-foreground truncate">{focSession.goal || `${focSession.plannedMinutes}min focus`}</span>
         </div>
       </GlassCard>
     )
@@ -85,13 +77,13 @@ export function ResumeSessionWidget() {
     <GlassCard className="p-4">
       <SectionHeader title="Start Something" />
       <div className="mt-3 flex gap-2">
-        <Button onClick={() => router.push("/pomodoro")} variant="outline" className="flex-1 gap-1.5">
-          <PlayIcon size={14} />
+        <Button onClick={() => router.push("/pomodoro")} variant="outline" className="flex-1 gap-2">
           Pomodoro
+          <PlayIcon size={14} />
         </Button>
-        <Button onClick={() => router.push("/focus")} variant="outline" className="flex-1 gap-1.5">
-          <FocusIcon size={14} />
+        <Button onClick={() => router.push("/focus")} variant="outline" className="flex-1 gap-2">
           Focus
+          <FocusIcon size={14} />
         </Button>
       </div>
     </GlassCard>

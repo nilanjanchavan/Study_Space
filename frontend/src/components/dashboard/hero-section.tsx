@@ -63,11 +63,11 @@ function computeScore(dailyStats: DailyAnalytics | undefined, streak: number): n
 function HeroStat({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
   return (
     <div className="flex items-center gap-2 min-w-0">
-      <span className={cn("shrink-0", color)}>{icon}</span>
       <div className="min-w-0 flex items-baseline gap-1">
         <span className="text-sm font-semibold text-foreground tabular-nums truncate">{value}</span>
         <span className="text-xs text-muted-foreground truncate hidden sm:inline">{label}</span>
       </div>
+      <span className={cn("shrink-0", color)}>{icon}</span>
     </div>
   )
 }
@@ -119,14 +119,16 @@ export function HeroSection({
 
   return (
     <GlassCard className="p-5 sm:p-6 overflow-hidden relative">
-      <div className="flex flex-col sm:flex-row items-start gap-6">
+      <div aria-hidden className="pointer-events-none absolute -top-20 -right-16 h-56 w-56 rounded-full bg-indigo-500/[0.14] blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-violet-500/[0.1] blur-3xl" />
+      <div className="relative flex flex-col sm:flex-row items-start gap-6">
         {/* Left: Content */}
         <div className="flex-1 min-w-0 space-y-4">
           {/* Greeting + Date */}
           <div className="flex items-baseline justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-display font-heading text-foreground truncate">
-                {greeting}, {displayName}
+              <h1 className="text-display text-foreground truncate">
+                {greeting}, <span className="text-serif-accent">{displayName}</span>
               </h1>
               <p className="text-caption text-muted-foreground mt-0.5">{dateStr}</p>
             </div>
@@ -134,7 +136,6 @@ export function HeroSection({
 
           {/* Today's Mission */}
           <div className="flex items-center gap-2">
-            <TargetIcon size={14} className="text-primary shrink-0" />
             <p className="text-sm text-foreground/80">
               {hasActiveSession ? (
                 <span className="inline-flex items-center gap-1.5">
@@ -147,6 +148,7 @@ export function HeroSection({
                 <span><strong>{remainingPomodoros}</strong> pomodoro{remainingPomodoros !== 1 ? "s" : ""} to hit your daily goal</span>
               )}
             </p>
+            <TargetIcon size={14} className="text-primary shrink-0" />
           </div>
 
           {/* Quick Stats Row */}
@@ -163,23 +165,23 @@ export function HeroSection({
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
             {hasActiveSession ? (
-              <Button onClick={() => router.push("/pomodoro")} className="gap-1.5 h-9 px-4">
-                <ArrowRightIcon size={15} />
+              <Button onClick={() => router.push("/pomodoro")} className="gap-2 h-9 px-4">
                 Resume Session
+                <ArrowRightIcon size={15} />
               </Button>
             ) : (
-              <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-1.5 h-9 px-4">
-                <PlayIcon size={15} />
+              <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2 h-9 px-4">
                 Start Pomodoro
+                <PlayIcon size={15} />
               </Button>
             )}
-            <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-1.5 h-9 px-3 text-xs sm:text-sm">
-              <FocusIcon size={14} />
+            <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2 h-9 px-3 text-xs sm:text-sm">
               <span className="hidden sm:inline">Focus</span>
+              <FocusIcon size={14} />
             </Button>
-            <Button variant="outline" onClick={() => router.push("/todos")} className="gap-1.5 h-9 px-3 text-xs sm:text-sm">
-              <ListTodoIcon size={14} />
+            <Button variant="outline" onClick={() => router.push("/todos")} className="gap-2 h-9 px-3 text-xs sm:text-sm">
               <span className="hidden sm:inline">Todos</span>
+              <ListTodoIcon size={14} />
             </Button>
           </div>
         </div>
@@ -187,7 +189,7 @@ export function HeroSection({
         {/* Right: Progress Ring + Score */}
         <div className="flex w-full shrink-0 items-center justify-center gap-3 sm:w-auto sm:justify-start">
           <div className="relative">
-            <CircularProgress value={completionPct} size={96} strokeWidth={6} accentColor />
+            <CircularProgress value={completionPct} size={96} strokeWidth={6} accentColor gradient />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-lg font-bold text-foreground tabular-nums leading-none">{completedPomodoros}</span>
               <span className="text-[10px] text-muted-foreground mt-px">/ {dailyGoal}</span>

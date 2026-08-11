@@ -10,7 +10,7 @@ export function FocusSettings() {
   return (
     <SettingsSection
       title="Focus"
-      description="Customize the deep focus experience."
+      description="Tune the deep-focus experience to your workflow"
     >
       <SettingRow
         label="Default Strict Mode"

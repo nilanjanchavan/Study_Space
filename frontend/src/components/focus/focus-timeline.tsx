@@ -28,7 +28,7 @@ const EVENT_CONFIG: Record<TimelineEvent["type"], {
   icon: React.ComponentType<{ size?: number; className?: string }>
   dotColor: string
 }> = {
-  session_start: { icon: PlayIcon, dotColor: "bg-primary" },
+  session_start: { icon: PlayIcon, dotColor: "bg-violet-500" },
   pomodoro_complete: { icon: CheckCircle2Icon, dotColor: "bg-success" },
   break_start: { icon: CoffeeIcon, dotColor: "bg-emerald-500" },
   break_end: { icon: CoffeeIcon, dotColor: "bg-emerald-500/60" },
@@ -47,6 +47,7 @@ export function FocusTimeline({ events }: FocusTimelineProps) {
       <SectionHeader
         title="Session Timeline"
         subtitle={`${events.length} events`}
+        accent={{ icon: <TargetIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
       />
 
       <div className="mt-3">
@@ -65,12 +66,12 @@ export function FocusTimeline({ events }: FocusTimelineProps) {
                 <div key={event.id} className="flex gap-3">
                   <div className="flex flex-col items-center">
                     <div className={cn("mt-1 h-2.5 w-2.5 shrink-0 rounded-full", config.dotColor)} />
-                    {!isLast && <div className="mt-1 w-px flex-1 bg-border/40" />}
+                    {!isLast && <div className="mt-1 w-px flex-1 bg-border/50" />}
                   </div>
                   <div className="flex-1 pb-3 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Icon size={13} className="text-muted-foreground shrink-0" />
                       <p className="text-sm font-medium text-foreground">{event.label}</p>
+                      <Icon size={13} className="text-muted-foreground shrink-0" />
                     </div>
                     {event.detail && (
                       <p className="text-xs text-muted-foreground mt-0.5 ml-5 break-words">{event.detail}</p>

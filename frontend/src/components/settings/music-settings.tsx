@@ -23,7 +23,7 @@ export function MusicSettings() {
       title="Music"
       description="Configure ambient music playback."
     >
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5 rounded-lg border border-border/50 bg-card/50 px-2.5 py-2 dark:bg-white/[0.03]">
         <Label htmlFor="default-track">Default Ambient Track</Label>
         <Select
           value={settings.defaultTrack ?? undefined}
@@ -62,7 +62,7 @@ export function MusicSettings() {
         />
       </SettingRow>
 
-      <SettingRow label="Volume">
+      <SettingRow label="Volume" description="Adjust the playback volume">
         <div className="flex items-center gap-2 min-w-0">
           <Input
             type="range"

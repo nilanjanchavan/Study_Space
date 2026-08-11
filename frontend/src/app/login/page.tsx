@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Loader2Icon } from "lucide-react"
+import { GraduationCapIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 const loginSchema = z.object({
@@ -68,11 +68,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-background px-4 py-12">
-      <Card className="w-full max-w-md">
+    <div className="page-ambient module-indigo flex flex-1 items-center justify-center bg-background px-4 py-12">
+      <Card className="relative w-full max-w-md bg-white/[0.72] shadow-soft backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:rounded-t-2xl before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent dark:bg-white/[0.05] dark:shadow-soft dark:before:via-white/10">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Log in to your account</CardDescription>
+          <div className="mx-auto mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-violet-600 text-white shadow-soft ring-1 ring-white/10">
+            <GraduationCapIcon size={22} />
+          </div>
+          <CardTitle className="text-heading">Welcome back</CardTitle>
+          <CardDescription className="text-muted-size">Log in to your account</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="flex flex-col gap-4">
@@ -118,21 +121,24 @@ export default function LoginPage() {
           <CardFooter className="flex flex-col gap-4">
             <Button
               type="submit"
-              className="w-full"
+              className="h-11 w-full gap-2 rounded-xl px-6 shadow-soft"
               disabled={login.isPending}
             >
               {login.isPending ? (
                 <>
-                  <Loader2Icon className="animate-spin" />
                   Logging in...
+                  <Loader2Icon className="animate-spin" />
                 </>
               ) : (
                 "Log in"
               )}
             </Button>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-foreground hover:underline">
+              <Link
+                href="/register"
+                className="font-medium text-foreground underline-offset-2 hover:underline"
+              >
                 Sign up
               </Link>
             </p>

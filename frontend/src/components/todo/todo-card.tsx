@@ -51,12 +51,12 @@ export function TodoCard({ todo, onEdit, onDelete }: TodoCardProps) {
       <button
         onClick={handleStatusToggle}
         className={cn(
-          "mt-0.5 shrink-0 transition-all duration-150 rounded-full",
+          "mt-0.5 shrink-0 rounded-full transition-all duration-150",
           isDone
             ? "text-success hover:text-success/70"
             : isInProgress
               ? "text-blue-500 hover:text-blue-400"
-              : "text-muted-foreground/40 hover:text-foreground/60"
+              : "border-2 border-transparent text-muted-foreground/40 hover:border-emerald-400/60 hover:bg-emerald-500/[0.06] hover:text-emerald-500/60"
         )}
         aria-label={isDone ? "Mark as todo" : "Mark as done"}
       >
@@ -101,8 +101,8 @@ export function TodoCard({ todo, onEdit, onDelete }: TodoCardProps) {
                 isOverdue ? "text-destructive font-medium" : "text-muted-foreground/60"
               )}
             >
-              <CalendarIcon size={10} />
               {format(new Date(todo.dueDate), "MMM d")}
+              <CalendarIcon size={10} />
             </span>
           )}
         </div>

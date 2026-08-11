@@ -4,6 +4,7 @@ import { usePomodoroSettings } from "@/hooks/use-settings"
 import { useDailyAnalytics, useDashboardAnalytics } from "@/hooks/use-analytics"
 import { GlassCard } from "@/components/design-system/glass-card"
 import { ProgressBar } from "@/components/design-system/progress"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Skeleton } from "@/components/design-system/skeleton"
 import { TargetIcon, CalendarDaysIcon } from "lucide-react"
 
@@ -36,21 +37,22 @@ export function WeeklyGoals() {
 
   return (
     <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <TargetIcon size={14} className="text-muted-foreground/40" />
-        <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Goals</h3>
-      </div>
+      <SectionHeader
+        title="Goals"
+        className="mb-3"
+        accent={{ icon: <TargetIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+      />
 
       <div className="space-y-3">
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-1.5 text-sm">
-              <CalendarDaysIcon size={13} className="text-primary" />
               <span className="font-medium text-foreground">Daily</span>
+              <CalendarDaysIcon size={13} className="text-indigo-500" />
             </div>
             <span className="text-xs text-muted-foreground tabular-nums">{completedToday}/{dailyGoal}</span>
           </div>
-          <ProgressBar value={completedToday} max={dailyGoal} size="sm" />
+          <ProgressBar value={completedToday} max={dailyGoal} size="sm" gradient />
           {remainingDaily > 0 && (
             <p className="text-[11px] text-muted-foreground/60 mt-1">{remainingDaily} remaining</p>
           )}
@@ -59,12 +61,12 @@ export function WeeklyGoals() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-1.5 text-sm">
-              <TargetIcon size={13} className="text-violet-500" />
               <span className="font-medium text-foreground">Weekly</span>
+              <TargetIcon size={13} className="text-indigo-500/70" />
             </div>
             <span className="text-xs text-muted-foreground tabular-nums">{completedAll}/{weeklyGoal}</span>
           </div>
-          <ProgressBar value={completedAll} max={weeklyGoal} size="sm" />
+          <ProgressBar value={completedAll} max={weeklyGoal} size="sm" gradient />
           {remainingWeekly > 0 && (
             <p className="text-[11px] text-muted-foreground/60 mt-1">{remainingWeekly} sessions to go</p>
           )}

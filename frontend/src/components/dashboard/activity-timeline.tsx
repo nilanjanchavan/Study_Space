@@ -42,13 +42,13 @@ function ActivityRow({ item, isLast }: { item: ActivityItem; isLast: boolean }) 
       </div>
       <div className="flex-1 pb-3 min-w-0">
         <div className="flex items-center gap-2">
-          {ICON_MAP[item.type]}
           <p className="text-sm text-foreground truncate">{item.title}</p>
+          {ICON_MAP[item.type]}
         </div>
         {item.detail && (
-          <p className="text-xs text-muted-foreground truncate mt-0.5 ml-5">{item.detail}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{item.detail}</p>
         )}
-        <p className="text-[11px] text-muted-foreground/60 tabular-nums mt-0.5 ml-5">
+        <p className="text-[11px] text-muted-foreground/60 tabular-nums mt-0.5">
           {formatDistanceToNow(new Date(item.time), { addSuffix: true })}
         </p>
       </div>

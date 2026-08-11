@@ -5,14 +5,15 @@ import { usePathname } from "next/navigation"
 import { UserMenu } from "./user-menu"
 import { Button } from "@/components/ui/button"
 import { MenuIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-const PAGE_META: Record<string, { title: string; description?: string }> = {
-  "/dashboard": { title: "Dashboard" },
-  "/todos": { title: "Todos", description: "Manage your tasks" },
-  "/pomodoro": { title: "Pomodoro", description: "Focus timer" },
-  "/focus": { title: "Focus", description: "Deep focus sessions" },
-  "/analytics": { title: "Analytics", description: "Your productivity insights" },
-  "/settings": { title: "Settings", description: "Customize your workspace" },
+const PAGE_META: Record<string, { title: string; description?: string; dot: string }> = {
+  "/dashboard": { title: "Dashboard", description: "Your day at a glance", dot: "bg-indigo-500" },
+  "/todos": { title: "Todos", description: "Manage your tasks", dot: "bg-emerald-500" },
+  "/pomodoro": { title: "Pomodoro", description: "Focus timer", dot: "bg-rose-500" },
+  "/focus": { title: "Focus", description: "Deep focus sessions", dot: "bg-violet-500" },
+  "/analytics": { title: "Analytics", description: "Your productivity insights", dot: "bg-amber-500" },
+  "/settings": { title: "Settings", description: "Customize your workspace", dot: "bg-slate-500" },
 }
 
 function useCurrentTime() {
@@ -41,9 +42,9 @@ function usePageMeta(pathname: string) {
   const segment = pathname.split("/").filter(Boolean).pop()
   if (segment) {
     const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ")
-    return { title: label }
+    return { title: label, description: undefined, dot: "bg-primary" }
   }
-  return { title: "Study Workspace" }
+  return { title: "Study Workspace", description: undefined, dot: "bg-primary" }
 }
 
 interface HeaderProps {
@@ -52,11 +53,11 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const pathname = usePathname()
-  const { title, description } = usePageMeta(pathname)
+  const { title, description, dot } = usePageMeta(pathname)
   const time = useCurrentTime()
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 px-4 lg:px-6">
+    <header className="relative z-10 flex h-14 shrink-0 items-center gap-3 px-4 lg:px-6">
       <Button
         variant="ghost"
         size="icon"
@@ -68,20 +69,23 @@ export function Header({ onMenuClick }: HeaderProps) {
       </Button>
 
       <div className="flex flex-1 items-center gap-3 min-w-0">
-        <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-foreground truncate tracking-tight">
-            {title}
-          </h2>
-          {description && (
-            <p className="text-xs text-muted-foreground/70 truncate hidden sm:block">
-              {description}
-            </p>
-          )}
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className={cn("size-1.5 shrink-0 rounded-full shadow-[0_0_8px_currentColor]", dot)} />
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold text-foreground tracking-tight">
+              {title}
+            </h2>
+            {description && (
+              <p className="hidden truncate text-xs text-muted-foreground/70 sm:block">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="flex items-center gap-1.5 shrink-0">
-        <span className="text-xs text-muted-foreground/50 tabular-nums hidden sm:block mr-1">
+        <span className="numeric mr-1 hidden text-xs text-muted-foreground/50 sm:block">
           {time}
         </span>
         <UserMenu />

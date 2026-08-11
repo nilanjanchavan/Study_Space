@@ -101,6 +101,7 @@ export function TodaysTasks() {
       <SectionHeader
         title="Today's Tasks"
         subtitle={todos.length > 0 ? `${completedCount} of ${todos.length} done` : undefined}
+        accent={{ icon: <ListTodoIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
         action={
           <Link href="/todos">
             <Button variant="ghost" size="sm" className="text-xs h-6 px-2">View all</Button>
@@ -110,7 +111,7 @@ export function TodaysTasks() {
 
       {todos.length > 0 && (
         <div className="mt-2 mb-3">
-          <ProgressBar value={completedCount} max={todos.length} size="sm" />
+          <ProgressBar value={completedCount} max={todos.length} size="sm" gradient />
         </div>
       )}
 

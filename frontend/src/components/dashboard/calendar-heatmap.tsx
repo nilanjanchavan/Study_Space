@@ -5,15 +5,16 @@ import { useWeeklyAnalytics } from "@/hooks/use-analytics"
 import { GlassCard } from "@/components/design-system/glass-card"
 import { SectionHeader } from "@/components/design-system/layout"
 import { Skeleton } from "@/components/design-system/skeleton"
+import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function getColorIntensity(minutes: number, maxMinutes: number): string {
   if (minutes === 0) return "bg-muted/40 dark:bg-white/[0.04]"
   const ratio = maxMinutes > 0 ? minutes / maxMinutes : 0
-  if (ratio >= 0.75) return "bg-success dark:bg-success/80"
-  if (ratio >= 0.5) return "bg-success/70 dark:bg-success/60"
-  if (ratio >= 0.25) return "bg-success/40 dark:bg-success/35"
-  return "bg-success/20 dark:bg-success/20"
+  if (ratio >= 0.75) return "bg-indigo-500 dark:bg-indigo-400"
+  if (ratio >= 0.5) return "bg-indigo-500/75 dark:bg-indigo-400/75"
+  if (ratio >= 0.25) return "bg-indigo-500/45 dark:bg-indigo-400/45"
+  return "bg-indigo-500/25 dark:bg-indigo-400/25"
 }
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"]
@@ -34,6 +35,7 @@ export function CalendarHeatmap() {
       <SectionHeader
         title="This Week"
         subtitle={`${totalActiveDays} active days`}
+        accent={{ icon: <CalendarIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
       />
 
       <div className="mt-3">

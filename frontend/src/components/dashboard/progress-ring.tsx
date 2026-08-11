@@ -20,9 +20,9 @@ export function ProgressRing({ value, max, size = 120, strokeWidth = 8, classNam
   const offset = circumference * (1 - progress)
 
   const color = useMemo(() => {
-    if (progress >= 1) return "oklch(0.62 0.19 155)"
-    if (progress >= 0.5) return "oklch(0.65 0.19 260)"
-    return "oklch(0.55 0.18 260)"
+    if (progress >= 1) return "oklch(0.6 0.12 160)"
+    if (progress >= 0.5) return "oklch(0.64 0.11 110)"
+    return "oklch(0.6 0.13 45)"
   }, [progress])
 
   return (

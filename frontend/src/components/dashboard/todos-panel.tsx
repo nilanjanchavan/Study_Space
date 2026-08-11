@@ -108,6 +108,7 @@ export function TodosPanel() {
       <SectionHeader
         title="Today's Todos"
         subtitle={todos.length > 0 ? `${completedCount} / ${todos.length} completed` : undefined}
+        accent={{ icon: <ListTodoIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
         action={
           <Link href="/todos">
             <Button variant="ghost" size="sm" className="text-xs h-6 px-2">

@@ -41,7 +41,7 @@ export function NotificationSettings() {
         />
       </SettingRow>
 
-      <SettingRow label="Volume">
+      <SettingRow label="Volume" description="Adjust the playback volume">
         <div className="flex items-center gap-2 min-w-0">
           <Input
             type="range"
@@ -57,7 +57,7 @@ export function NotificationSettings() {
         </div>
       </SettingRow>
 
-      <SettingRow label="Notification Sound">
+      <SettingRow label="Notification Sound" description="Choose the sound played for alerts">
         <Select
           value={settings.notificationSound ?? undefined}
           onValueChange={(v) => updateSettings({ notificationSound: v ?? "notification" })}

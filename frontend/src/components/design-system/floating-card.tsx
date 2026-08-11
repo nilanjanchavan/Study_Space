@@ -10,14 +10,15 @@ const FloatingCard = forwardRef<HTMLDivElement, FloatingCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-xl bg-card text-card-foreground",
-        "shadow-floating ring-1 ring-foreground/[0.04]",
+        "relative rounded-2xl bg-card text-card-foreground",
+        "shadow-card ring-1 ring-black/[0.04]",
         "dark:shadow-none dark:ring-white/[0.06]",
-        "transition-all duration-250 ease-out",
+        "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:rounded-t-2xl before:bg-gradient-to-r before:from-transparent before:via-black/[0.04] before:to-transparent dark:before:via-white/10",
+        "transition-all duration-300 ease-out",
         hover && [
-          "hover:shadow-[0_8px_32px_oklch(0_0_0/0.12)]",
-          "dark:hover:shadow-[0_8px_32px_oklch(0_0_0/0.4)]",
-          "hover:ring-foreground/[0.08] dark:hover:ring-white/[0.1]",
+          "hover:shadow-floating",
+          "dark:hover:shadow-[0_16px_44px_-16px_oklch(0_0_0/0.65)]",
+          "hover:ring-black/[0.08] dark:hover:ring-white/[0.1]",
           "hover:-translate-y-1",
         ],
         className

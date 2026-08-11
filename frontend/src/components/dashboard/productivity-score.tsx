@@ -4,8 +4,9 @@ import { useMemo } from "react"
 import { useDashboardAnalytics, useDailyAnalytics, useStreakAnalytics, useMonthlyAnalytics } from "@/hooks/use-analytics"
 import { FloatingCard } from "@/components/design-system/floating-card"
 import { CircularProgress } from "@/components/design-system/progress"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Skeleton } from "@/components/design-system/skeleton"
-import { TrendingUpIcon, TrendingDownIcon, MinusIcon } from "lucide-react"
+import { TrendingUpIcon, TrendingDownIcon, MinusIcon, ZapIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function computeProductivityScore(
@@ -78,24 +79,28 @@ export function ProductivityScore() {
 
   return (
     <FloatingCard className="p-4">
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground">Productivity Score</h3>
-        <div className={cn(
-          "flex items-center gap-1 text-xs font-medium",
-          trend.direction === "up" ? "text-success" :
-          trend.direction === "down" ? "text-destructive" :
-          "text-muted-foreground"
-        )}>
-          {trend.direction === "up" ? <TrendingUpIcon size={14} /> :
-           trend.direction === "down" ? <TrendingDownIcon size={14} /> :
-           <MinusIcon size={14} />}
-          {trend.direction !== "flat" && `${trend.value}%`}
-        </div>
-      </div>
+      <SectionHeader
+        className="mb-4"
+        title="Productivity Score"
+        accent={{ icon: <ZapIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+        action={
+          <div className={cn(
+            "flex items-center gap-1 text-xs font-medium",
+            trend.direction === "up" ? "text-success" :
+            trend.direction === "down" ? "text-destructive" :
+            "text-muted-foreground"
+          )}>
+            {trend.direction !== "flat" && `${trend.value}%`}
+            {trend.direction === "up" ? <TrendingUpIcon size={14} /> :
+             trend.direction === "down" ? <TrendingDownIcon size={14} /> :
+             <MinusIcon size={14} />}
+          </div>
+        }
+      />
 
       <div className="flex items-center gap-5">
         <div className="relative shrink-0">
-          <CircularProgress value={score} size={88} strokeWidth={6} />
+          <CircularProgress value={score} size={88} strokeWidth={6} gradient />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-2xl font-bold text-foreground tabular-nums">{score}</span>
           </div>

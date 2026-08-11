@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { QuoteIcon } from "lucide-react"
 
 const QUOTES = [
@@ -30,10 +31,11 @@ export function DailyQuote() {
 
   return (
     <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <QuoteIcon size={14} className="text-muted-foreground/40" />
-        <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Daily Quote</h3>
-      </div>
+      <SectionHeader
+        title="Daily Quote"
+        className="mb-3"
+        accent={{ icon: <QuoteIcon size={14} />, className: "bg-indigo-500/10 text-indigo-500" }}
+      />
       <blockquote className="text-sm text-foreground/80 leading-relaxed italic break-words">
         &ldquo;{quote.text}&rdquo;
       </blockquote>

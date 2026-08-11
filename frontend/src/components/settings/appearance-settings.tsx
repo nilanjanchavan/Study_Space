@@ -23,9 +23,9 @@ export function AppearanceSettings() {
   return (
     <SettingsSection
       title="Appearance"
-      description="Customize how the application looks"
+      description="Customize how the application looks and feels"
     >
-      <SettingRow label="Theme">
+      <SettingRow label="Theme" description="Choose how the app appears on this device">
         <Select
           value={theme ?? settings.theme}
           onValueChange={(v) => {

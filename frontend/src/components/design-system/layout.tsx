@@ -33,19 +33,36 @@ interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
   title: string
   subtitle?: string
   action?: ReactNode
+  accent?: {
+    icon?: ReactNode
+    className?: string
+  }
 }
 
 const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
-  ({ className, title, subtitle, action, ...props }, ref) => (
+  ({ className, title, subtitle, action, accent, ...props }, ref) => (
     <div
       ref={ref}
       className={cn("flex items-start justify-between gap-4", className)}
       {...props}
     >
-      <div className="min-w-0">
-        <h3 className="text-title font-heading text-foreground">{title}</h3>
-        {subtitle && (
-          <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>
+      <div className="flex min-w-0 items-start gap-3">
+        <div className="min-w-0">
+          <h3 className="text-title font-heading text-foreground">{title}</h3>
+          {subtitle && (
+            <p className="mt-0.5 text-caption text-muted-foreground">{subtitle}</p>
+          )}
+        </div>
+        {accent?.icon && (
+          <span
+            className={cn(
+              "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl",
+              "bg-primary/[0.08] text-primary ring-1 ring-black/[0.03] dark:ring-white/[0.06]",
+              accent.className
+            )}
+          >
+            {accent.icon}
+          </span>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}

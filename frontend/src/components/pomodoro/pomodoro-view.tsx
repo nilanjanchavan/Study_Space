@@ -20,7 +20,7 @@ import { SessionInfo } from "./session-info"
 import { SessionHistory } from "./session-history"
 import { Spinner } from "@/components/design-system/skeleton"
 import { GlassCard } from "@/components/design-system/glass-card"
-import { Badge } from "@/components/ui/badge"
+import { BadgeWork, BadgeBreak } from "@/components/design-system/premium-badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -204,26 +204,20 @@ export function PomodoroView() {
     <div className="flex flex-col items-center gap-8 py-4">
       {/* Center: Timer */}
       <div className="flex flex-col items-center gap-5">
-        <Badge
-          variant="secondary"
-          className={cn(
-            "text-xs font-medium px-3 py-1 rounded-full",
-            isWorkMode
-              ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20"
-              : "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
-          )}
-        >
-          {MODE_LABELS[displayMode]}
-        </Badge>
+        {isWorkMode ? (
+          <BadgeWork className="px-3 py-1">{MODE_LABELS[displayMode]}</BadgeWork>
+        ) : (
+          <BadgeBreak className="px-3 py-1">{MODE_LABELS[displayMode]}</BadgeBreak>
+        )}
 
         <TimerDisplay session={session} plannedMinutes={displayMinutes} onFinished={handleComplete} />
 
         {/* Motivational quote */}
         <div className="flex items-center gap-2 max-w-xs text-center px-4">
-          <QuoteIcon size={12} className="text-muted-foreground/40 shrink-0" />
           <p className="text-xs text-muted-foreground italic leading-relaxed">
             &ldquo;{quote.text}&rdquo;
           </p>
+          <QuoteIcon size={12} className="text-muted-foreground/40 shrink-0" />
         </div>
 
         <TimerControls
@@ -248,10 +242,15 @@ export function PomodoroView() {
             {(["WORK", "SHORT_BREAK", "LONG_BREAK"] as const).map((m) => (
               <Button
                 key={m}
-                variant={mode === m ? "default" : "outline"}
+                variant="outline"
                 size="sm"
                 onClick={() => handleModeChange(m)}
-                className="rounded-lg h-7 text-[11px] sm:text-xs px-2 sm:px-3"
+                className={cn(
+                  "rounded-lg text-[11px] sm:text-xs px-2 sm:px-3 tabular-nums",
+                  mode === m
+                    ? "border-rose-500/60 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15 hover:text-rose-500 hover:border-rose-500/60"
+                    : "hover:border-border"
+                )}
               >
                 {getDurationForType(settings, m)}m
               </Button>
@@ -264,12 +263,14 @@ export function PomodoroView() {
           <GlassCard className="w-full max-w-sm overflow-hidden p-0">
             <button
               type="button"
-              className="flex w-full items-center justify-between px-4 py-3 text-sm"
+              className="flex w-full items-center justify-between px-4 py-3 text-sm transition-colors hover:bg-muted/40"
               onClick={() => setShowSettings(!showSettings)}
             >
               <div className="flex items-center gap-2">
-                <SettingsIcon size={14} className="text-muted-foreground" />
                 <span className="font-medium text-foreground">Settings</span>
+                <span className="flex size-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
+                  <SettingsIcon size={14} />
+                </span>
               </div>
               {showSettings ? <ChevronUpIcon size={14} className="text-muted-foreground shrink-0" /> : <ChevronDownIcon size={14} className="text-muted-foreground shrink-0" />}
             </button>

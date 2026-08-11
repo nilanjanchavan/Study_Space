@@ -23,8 +23,8 @@ const STATUS_CONFIG: Record<FocusStatus, {
     icon: TargetIcon,
     title: "Deep Focus Active",
     subtitle: "Stay in the zone",
-    gradient: "from-primary/10 to-primary/5",
-    iconColor: "text-primary",
+    gradient: "from-violet-500/10 to-violet-500/5 dark:from-violet-400/10 dark:to-violet-400/5",
+    iconColor: "text-violet-500 dark:text-violet-400",
   },
   BREAK: {
     icon: CoffeeIcon,
@@ -56,21 +56,21 @@ export function DeepFocusStatus({ status, phase, goal }: DeepFocusStatusProps) {
   return (
     <FloatingCard className={cn("p-4 bg-gradient-to-br", config.gradient)}>
       <div className="flex items-center gap-4">
-        <div className={cn(
-          "flex size-12 items-center justify-center rounded-2xl",
-          status === "WORKING" && "bg-primary/10",
-          status === "BREAK" && "bg-emerald-500/10",
-          status === "COMPLETE" && "bg-amber-500/10",
-          status === "STRICT_FAIL" && "bg-destructive/10"
-        )}>
-          <Icon size={24} className={config.iconColor} />
-        </div>
         <div className="min-w-0">
           <h3 className="text-lg font-bold text-foreground">{config.title}</h3>
           <p className="text-sm text-muted-foreground">{config.subtitle}</p>
           {phase && (
             <p className="text-xs text-muted-foreground/60 mt-0.5">Current phase: {phase}</p>
           )}
+        </div>
+        <div className={cn(
+          "flex size-12 shrink-0 items-center justify-center rounded-2xl",
+          status === "WORKING" && "bg-violet-500/10",
+          status === "BREAK" && "bg-emerald-500/10",
+          status === "COMPLETE" && "bg-amber-500/10",
+          status === "STRICT_FAIL" && "bg-destructive/10"
+        )}>
+          <Icon size={24} className={config.iconColor} />
         </div>
       </div>
       {goal && (

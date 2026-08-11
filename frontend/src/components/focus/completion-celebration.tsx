@@ -40,7 +40,7 @@ function ConfettiDot({ delay, x, y, color }: { delay: number; x: number; y: numb
   )
 }
 
-const CONFETTI_COLORS = ["oklch(0.7 0.15 250)", "oklch(0.7 0.15 150)", "oklch(0.8 0.12 80)", "oklch(0.7 0.15 330)"]
+const CONFETTI_COLORS = ["oklch(0.68 0.1 155)", "oklch(0.68 0.11 110)", "oklch(0.76 0.13 80)", "oklch(0.68 0.13 45)"]
 
 const CONFETTI_DOTS = Array.from({ length: 20 }, (_, i) => ({
   id: i,
@@ -78,7 +78,7 @@ export function CompletionCelebration({
         <div className={cn(
           "mx-auto flex size-20 items-center justify-center rounded-2xl mb-6",
           isCompleted
-            ? "bg-gradient-to-br from-success/20 to-success/10 text-success"
+            ? "bg-gradient-to-br from-violet-500/20 to-violet-500/10 text-violet-500"
             : "bg-gradient-to-br from-destructive/20 to-destructive/10 text-destructive"
         )}>
           <PartyPopperIcon size={40} />
@@ -114,12 +114,12 @@ export function CompletionCelebration({
         {/* Actions */}
         <div className="flex items-center justify-center gap-3">
           <Button onClick={onStartAgain} size="lg" className="gap-2">
-            <RotateCcwIcon size={16} />
             Start Again
+            <RotateCcwIcon size={16} />
           </Button>
           <Button onClick={onGoHome} variant="outline" size="lg" className="gap-2">
-            <HomeIcon size={16} />
             Dashboard
+            <HomeIcon size={16} />
           </Button>
         </div>
       </div>
@@ -129,7 +129,7 @@ export function CompletionCelebration({
 
 function StatBox({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-muted/40 px-3 py-3">
+    <div className="rounded-xl bg-card/50 border border-border/50 px-3 py-3">
       <div className="flex justify-center mb-1.5 text-muted-foreground">{icon}</div>
       <p className="text-xl font-bold text-foreground tabular-nums">{value}</p>
       <p className="text-[11px] text-muted-foreground mt-0.5">{label}</p>

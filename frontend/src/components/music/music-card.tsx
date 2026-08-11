@@ -22,11 +22,13 @@ export function MusicCard() {
   } = useMusic()
 
   return (
-    <Card className="h-fit">
+    <Card className="h-fit transition-all duration-300 hover:-translate-y-0.5 hover:shadow-medium hover:ring-foreground/[0.08] dark:hover:ring-white/[0.1]">
       <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <MusicIcon size={16} className="text-muted-foreground" />
+        <div className="flex items-center gap-2.5">
           <CardTitle className="text-sm">Ambient Music</CardTitle>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/15 via-cyan-400/10 to-sky-400/15 text-cyan-500 ring-1 ring-cyan-500/20">
+            <MusicIcon size={15} />
+          </span>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

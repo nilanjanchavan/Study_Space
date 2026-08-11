@@ -65,17 +65,17 @@ export function AnalyticsLineChart({
       <ResponsiveContainer width="100%" height={height}>
         <RechartsLineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
           {showGrid && (
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
           )}
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             tickFormatter={yFormatter}
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
           />
@@ -85,10 +85,10 @@ export function AnalyticsLineChart({
               key={line.key}
               type="monotone"
               dataKey={line.key}
-              stroke={line.color ?? "hsl(var(--primary))"}
+              stroke={line.color ?? "var(--primary)"}
               strokeWidth={line.strokeWidth ?? 2}
               dot={false}
-              activeDot={{ r: 4, fill: line.color ?? "hsl(var(--primary))" }}
+              activeDot={{ r: 4, fill: line.color ?? "var(--primary)" }}
             />
           ))}
         </RechartsLineChart>

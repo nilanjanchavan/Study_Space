@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/design-system/glass-card"
 import { Skeleton } from "@/components/design-system/skeleton"
 import { SectionHeader } from "@/components/design-system/layout"
 import { AnalyticsBarChart } from "./charts/bar-chart"
+import { CalendarDaysIcon } from "lucide-react"
 import type { WeeklyAnalytics } from "@/services/analytics"
 import { format, parseISO } from "date-fns"
 
@@ -29,6 +30,10 @@ export function WeeklyChart({ data, isLoading }: WeeklyChartProps) {
       <SectionHeader
         title="Weekly Analytics"
         subtitle={totalMinutes > 0 ? `${Math.round(totalMinutes / 60 * 10) / 10}h total` : undefined}
+        accent={{
+          icon: <CalendarDaysIcon size={14} />,
+          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+        }}
       />
       <div className="mt-3">
         {isLoading ? (
@@ -40,7 +45,7 @@ export function WeeklyChart({ data, isLoading }: WeeklyChartProps) {
         ) : (
           <AnalyticsBarChart
             data={chartData}
-            bars={[{ key: "Focus Minutes", color: "hsl(var(--primary))" }]}
+            bars={[{ key: "Focus Minutes", color: "oklch(0.68 0.15 80)" }]}
             height={220}
           />
         )}

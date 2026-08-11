@@ -70,16 +70,16 @@ export function QuickActions() {
             key={i}
             onClick={action.onClick}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-xl p-3 transition-all duration-200",
+              "flex items-center justify-center gap-2 rounded-xl p-3 transition-all duration-200",
               "hover:shadow-medium hover:-translate-y-0.5 cursor-pointer",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
               "bg-card border border-border/60 shadow-soft"
             )}
           >
+            <span className="text-[11px] font-medium text-foreground text-center leading-tight">{action.label}</span>
             <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", action.bgColor)}>
               <span className={action.color}>{action.icon}</span>
             </div>
-            <span className="text-[11px] font-medium text-foreground text-center leading-tight">{action.label}</span>
           </button>
         ))}
       </div>

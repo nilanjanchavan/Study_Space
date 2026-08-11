@@ -92,14 +92,20 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
 
   return (
     <GlassCard className="p-4">
-      <SectionHeader title="Insights" />
+      <SectionHeader
+        title="Insights"
+        accent={{
+          icon: <LightbulbIcon size={14} />,
+          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+        }}
+      />
       <div className="mt-3">
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <Skeleton className="size-4 shrink-0 rounded mt-0.5" />
-                <Skeleton className="h-4 flex-1" />
+                <Skeleton className="size-6 shrink-0 rounded-md" />
+                <Skeleton className="h-4 flex-1 mt-0.5" />
               </div>
             ))}
           </div>
@@ -110,9 +116,11 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
         ) : (
           <div className="space-y-3">
             {insights.map((insight, i) => (
-              <div key={i} className="flex items-start gap-2.5">
-                <LightbulbIcon size={14} className="shrink-0 mt-0.5 text-amber-500 dark:text-amber-400" />
-                <p className="text-sm text-foreground leading-relaxed">{insight.text}</p>
+              <div key={i} className="flex items-start gap-3 rounded-xl border border-border/50 bg-card/50 px-3 py-2.5 transition-colors hover:bg-muted/30 dark:bg-white/[0.03]">
+                <p className="text-sm text-foreground leading-relaxed flex-1">{insight.text}</p>
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400">
+                  <LightbulbIcon size={13} />
+                </span>
               </div>
             ))}
           </div>

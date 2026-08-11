@@ -23,7 +23,7 @@ const HeroTimer = forwardRef<HTMLDivElement, HeroTimerProps>(
         {/* Glow effect when running */}
         {isRunning && (
           <div
-            className="absolute inset-0 rounded-full animate-pulse-soft bg-primary/[0.08]"
+            className="absolute inset-0 rounded-full animate-pulse-soft bg-violet-500/10"
             style={{ filter: "blur(40px)" }}
           />
         )}
@@ -52,22 +52,28 @@ const HeroTimer = forwardRef<HTMLDivElement, HeroTimerProps>(
               cy={size / 2}
               r={radius}
               fill="none"
-              stroke="currentColor"
+              stroke={accentColor ? "url(#heroTimerGradient)" : "currentColor"}
               strokeWidth={strokeWidth}
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={offset}
               className={cn(
                 "transition-all duration-1000 ease-linear",
-                accentColor ? "text-primary" : "text-muted-foreground/30"
+                accentColor ? "text-violet-500" : "text-muted-foreground/30"
               )}
             />
+            <defs>
+              <linearGradient id="heroTimerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="oklch(0.72 0.115 45)" />
+                <stop offset="100%" stopColor="oklch(0.63 0.125 45)" />
+              </linearGradient>
+            </defs>
           </svg>
 
           {/* Time display centered */}
           <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
             <span
-              className="font-mono font-bold tracking-tighter text-foreground leading-none"
+              className="font-mono font-bold tracking-tighter text-foreground leading-none numeric"
               style={{ fontSize: `clamp(1.5rem, ${size * 0.2}px, 4rem)` }}
             >
               {timeDisplay}

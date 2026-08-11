@@ -33,32 +33,32 @@ export function TodoActions({ todo, onEdit, onDelete }: TodoActionsProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-xs" />
+          <Button variant="ghost" size="icon" />
         }
       >
         <MoreHorizontal size={14} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem onClick={() => onEdit(todo)}>
-          <PencilIcon />
           Edit
+          <PencilIcon />
         </DropdownMenuItem>
         {todo.status !== "TODO" && (
           <DropdownMenuItem onClick={() => handleStatusChange("TODO")}>
-            <RotateCcwIcon />
             Mark as Todo
+            <RotateCcwIcon />
           </DropdownMenuItem>
         )}
         {todo.status !== "IN_PROGRESS" && (
           <DropdownMenuItem onClick={() => handleStatusChange("IN_PROGRESS")}>
-            <ClockIcon />
             Mark In Progress
+            <ClockIcon />
           </DropdownMenuItem>
         )}
         {todo.status !== "DONE" && (
           <DropdownMenuItem onClick={() => handleStatusChange("DONE")}>
-            <CheckIcon />
             Mark Complete
+            <CheckIcon />
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -66,8 +66,8 @@ export function TodoActions({ todo, onEdit, onDelete }: TodoActionsProps) {
           onClick={() => onDelete(todo)}
           className="text-destructive focus:text-destructive"
         >
-          <Trash2Icon />
           Delete
+          <Trash2Icon />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

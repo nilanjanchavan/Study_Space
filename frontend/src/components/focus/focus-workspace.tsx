@@ -16,6 +16,7 @@ import { FocusQuotes } from "./focus-quotes"
 import { ConfirmDialog } from "@/components/common/confirm-dialog"
 import { FocusSummaryDialog } from "./focus-summary-dialog"
 import { Button } from "@/components/ui/button"
+import { BadgeWork, BadgeBreak } from "@/components/design-system/premium-badge"
 import { toast } from "sonner"
 import { ShieldIcon, XCircleIcon } from "lucide-react"
 import type { FocusSessionItem } from "@/types"
@@ -194,13 +195,15 @@ export function FocusWorkspace({ session, startNewSession }: FocusWorkspaceProps
               <div className="flex items-center gap-2">
                 {session.strictModeEnabled && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                    <ShieldIcon size={10} />
                     Strict Mode
+                    <ShieldIcon size={10} />
                   </span>
                 )}
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary border border-primary/20">
-                  {currentPhase}
-                </span>
+                {isPreparing || pomodoro?.type === "WORK" ? (
+                  <BadgeWork className="px-2.5 py-1">{currentPhase}</BadgeWork>
+                ) : (
+                  <BadgeBreak className="px-2.5 py-1">{currentPhase}</BadgeBreak>
+                )}
                 <span className="text-xs text-muted-foreground/50 tabular-nums">
                   {currentCycle}/{totalCycles} cycles
                 </span>
@@ -213,10 +216,10 @@ export function FocusWorkspace({ session, startNewSession }: FocusWorkspaceProps
                   size="lg"
                   onClick={() => setGiveUpOpen(true)}
                   disabled={isBusy}
-                  className="gap-1.5"
+                  className="gap-2"
                 >
-                  <XCircleIcon size={16} />
                   End Session
+                  <XCircleIcon size={16} />
                 </Button>
               </div>
             </div>

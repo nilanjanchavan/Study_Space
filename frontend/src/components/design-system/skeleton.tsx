@@ -6,6 +6,10 @@ function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
     <div
       className={cn(
         "animate-pulse-soft rounded-lg bg-muted/60 dark:bg-white/[0.06]",
+        "relative overflow-hidden",
+        "after:absolute after:inset-0 after:-translate-x-full after:animate-shimmer",
+        "after:bg-gradient-to-r after:from-transparent after:via-black/[0.05] after:to-transparent",
+        "dark:after:via-white/[0.06]",
         className
       )}
       {...props}
@@ -16,7 +20,10 @@ function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 function SkeletonCard({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-xl border border-border/40 bg-card p-4 space-y-3", className)}
+      className={cn(
+        "rounded-2xl border border-black/[0.05] bg-card p-4 space-y-3 shadow-soft dark:border-white/[0.06]",
+        className
+      )}
       {...props}
     >
       <Skeleton className="h-4 w-1/3" />
@@ -33,7 +40,10 @@ function SkeletonChart({ className, ...props }: HTMLAttributes<HTMLDivElement>) 
   const heights = [45, 72, 58, 85, 35, 68, 50]
   return (
     <div
-      className={cn("rounded-xl border border-border/40 bg-card p-4 space-y-3", className)}
+      className={cn(
+        "rounded-2xl border border-black/[0.05] bg-card p-4 space-y-3 shadow-soft dark:border-white/[0.06]",
+        className
+      )}
       {...props}
     >
       <Skeleton className="h-4 w-1/4" />
@@ -53,7 +63,10 @@ function SkeletonChart({ className, ...props }: HTMLAttributes<HTMLDivElement>) 
 function SkeletonTable({ rows = 5, className, ...props }: HTMLAttributes<HTMLDivElement> & { rows?: number }) {
   return (
     <div
-      className={cn("rounded-xl border border-border/40 bg-card overflow-hidden", className)}
+      className={cn(
+        "rounded-2xl border border-black/[0.05] bg-card overflow-hidden shadow-soft dark:border-white/[0.06]",
+        className
+      )}
       {...props}
     >
       <div className="border-b border-border/40 px-4 py-3">

@@ -2,6 +2,7 @@
 
 import { useMusic } from "@/providers/music-provider"
 import { GlassCard } from "@/components/design-system/glass-card"
+import { SectionHeader } from "@/components/design-system/layout"
 import { Button } from "@/components/ui/button"
 import { PauseIcon, PlayIcon, MusicIcon, VolumeIcon, VolumeXIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,10 +35,14 @@ export function MusicWidget() {
 
   return (
     <GlassCard className="p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <MusicIcon size={14} className={cn("text-muted-foreground/40", isPlaying && "text-primary animate-pulse-soft")} />
-        <h3 className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">Ambience</h3>
-      </div>
+      <SectionHeader
+        title="Ambience"
+        className="mb-3"
+        accent={{
+          icon: <MusicIcon size={14} className={isPlaying ? "animate-pulse-soft" : undefined} />,
+          className: "bg-cyan-500/10 text-cyan-500",
+        }}
+      />
 
       {currentTrack ? (
         <div className="space-y-3">
