@@ -26,12 +26,24 @@ export function createApp(): Express {
   // ── Global middleware ────────────────────────────────
   app.use(helmet());
   // Cookies must be allowed for our auth flow when front-end runs elsewhere.
-  app.use(
-    cors({
-      origin: true, // dev: reflect origin; tighten in prod
-      credentials: true,
-    }),
-  );
+  const allowedOrigins = [
+  'http://localhost:3000',
+  'https://study-space-pink.vercel.app',
+];
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  }),
+);
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
