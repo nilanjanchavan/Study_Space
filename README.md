@@ -1,152 +1,81 @@
 # 🎓 Study Workspace
 
-> A modern, full-stack productivity platform designed to help students and professionals stay focused, build consistent study habits, and track their progress.
+> A full-stack productivity workspace built for focused study — combining task management, Pomodoro sessions, deep focus, productivity analytics, ambient music, and competitive programming tracking in one place.
 
 <p align="center">
-  <img src="./public/preview.png" alt="Study Workspace Preview" width="100%">
+  <a href="https://study-space-pink.vercel.app"><strong>🌐 Live Demo</strong></a>
+  &nbsp; • &nbsp;
+  <a href="https://github.com/nilanjanchavan/Study_Space"><strong>GitHub Repository</strong></a>
 </p>
+
+Study Workspace brings the tools needed for productive study into a single connected application. Instead of switching between a task manager, focus timer, analytics dashboard, and background music player, users can manage their entire study workflow from one workspace.
+
+---
 
 ## ✨ Features
 
-### 🔐 Authentication
-- Secure JWT authentication
-- Refresh token authentication using HttpOnly cookies
-- Persistent login sessions
-- Protected routes
-- User profile management
+### 🍅 Focus & Pomodoro
 
----
-
-### ✅ Todo Management
-
-Organize tasks with a clean productivity workflow.
-
-- Create, edit and delete todos
-- Priority levels
-- Status tracking
-- Due dates
-- Progress tracking
-- Filtering & sorting
-- Responsive task board
-
----
-
-### 🍅 Pomodoro Timer
-
-A fully-featured customizable Pomodoro workspace.
-
-- Custom work & break durations
-- Auto-start work sessions
-- Auto-start breaks
-- Long break intervals
+- Customizable work and break durations
+- Short and long break cycles
+- Auto-start sessions and breaks
 - Daily Pomodoro goals
-- Session history
-- Motivational quotes
-- Ambient music integration
-- Progress ring timer
-- Browser notifications
-- Sound effects
+- Session history and progress tracking
+- Browser notifications and sound effects
+- Integrated ambient music
 
----
+### 🌲 Deep Focus
 
-### 🌲 Deep Focus Mode
+A distraction-free workspace designed for longer study sessions.
 
-Inspired by Forest.
-
-A distraction-free workspace designed for long study sessions.
-
-Features include:
-
+- Focus goals and custom durations
 - Strict Focus Mode
 - Multi-cycle Pomodoro support
-- Automatic break handling
-- Focus goals
-- Live progress tracking
+- Live session and cycle progress
 - Session timeline
-- Completion celebration
-- Music integration
+- Completion tracking and celebrations
 - Focus analytics
 
----
+### ✅ Task Management
 
-### 📊 Analytics
+- Create, edit, complete, and delete todos
+- Priority and status management
+- Due dates
+- Filtering and sorting
+- Task completion tracking
+- Dashboard task overview
 
-Track your productivity over time.
+### 📊 Productivity Analytics
 
-- Daily statistics
-- Weekly analytics
-- Monthly analytics
+- Daily, weekly, and monthly analytics
+- Focus-time visualization
+- Pomodoro statistics
+- Task completion rates
 - Productivity insights
-- Streak tracking
-- Focus time visualization
-- Completion rates
 - Activity history
-
----
+- Streak tracking
 
 ### 🎵 Ambient Music
 
-Stay focused with built-in background sounds.
+Built-in background audio for distraction-free work.
 
-- Rain
-- Forest
-- Ocean
-- Fireplace
-- Café
-- White Noise
-- Night Ambience
-- Wind
-
-Features:
-
+- Rain, Forest, Ocean, Fireplace and Café ambience
+- White noise, Night ambience and Wind
 - Volume control
 - Loop playback
-- Auto play
-- Auto pause
-- Persistent playback
-- Music preferences
+- Persistent music preferences
+- Integration with Pomodoro and Deep Focus
 
----
 
-### ⚙️ Settings
+### 🔐 Authentication & Personalization
 
-Customize your entire workspace.
-
-- Theme selection
-- Accent colors
-- Pomodoro settings
-- Notification preferences
-- Music preferences
-- Focus preferences
-- Codeforces integration
-- Account settings
-
----
-
-### 🏆 Codeforces Integration
-
-Competitive programming support.
-
-- Link account
-- Sync profile
-- Display rating
-- Track progress
-- View contribution
-
----
-
-### 🎨 Modern UI
-
-Designed with usability first.
-
-- Responsive layout
-- Dark / Light mode
-- Dynamic accent colors
-- Glassmorphism
-- Premium dashboard
-- Interactive cards
-- Animated progress indicators
-- Beautiful typography
+- JWT authentication
+- Rotating HttpOnly refresh tokens
+- Persistent login sessions
+- Protected routes
+- Light and dark themes
+- Custom accent colors
+- Pomodoro, focus, notification and music preferences
 
 ---
 
@@ -154,63 +83,54 @@ Designed with usability first.
 
 ### Frontend
 
-- Next.js 16
-- React
-- TypeScript
-- TailwindCSS v4
-- shadcn/ui
-- TanStack Query
-- Axios
-- React Hook Form
-- Zod
-- Recharts
-- Lucide Icons
-
----
+**Next.js 16** • **React** • **TypeScript** • **Tailwind CSS v4** • **shadcn/ui** • **TanStack Query** • **Axios** • **React Hook Form** • **Zod** • **Recharts**
 
 ### Backend
 
-- Node.js
-- Express.js
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT Authentication
-- HttpOnly Refresh Tokens
+**Node.js** • **Express.js** • **TypeScript** • **Prisma ORM** • **JWT**
 
----
+### Database & Deployment
 
-### Database
-
-- PostgreSQL
+**PostgreSQL (Neon)** • **Vercel** • **Render**
 
 ---
 
 ## 📁 Project Structure
 
-```
-StudyWorkspace/
+The Express backend lives at the repository root, while the Next.js frontend is located inside `frontend/`.
+
+```text
+Study_Space/
+│
+├── src/                         # Express backend
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── routes/
+│   ├── services/
+│   ├── utils/
+│   ├── validators/
+│   ├── app.ts
+│   └── server.ts
+│
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
 │
 ├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── hooks/
-│   ├── providers/
-│   ├── services/
-│   ├── lib/
-│   └── types/
+│   ├── public/
+│   └── src/
+│       ├── app/
+│       ├── components/
+│       ├── hooks/
+│       ├── lib/
+│       ├── providers/
+│       ├── services/
+│       └── types/
 │
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   ├── services/
-│   │   ├── prisma/
-│   │   └── utils/
-│   │
-│   └── prisma/
-│
+├── package.json
+├── tsconfig.json
 └── README.md
 ```
 
@@ -218,169 +138,148 @@ StudyWorkspace/
 
 ## 🚀 Getting Started
 
-### Clone
+### Prerequisites
+
+- Node.js 20+
+- npm
+- PostgreSQL
+- Git
+
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/study-workspace.git
-cd study-workspace
+git clone https://github.com/nilanjanchavan/Study_Space.git
+cd Study_Space
 ```
 
----
+### 2. Backend Setup
 
-### Backend
+Install dependencies from the repository root:
 
 ```bash
-cd backend
-
 npm install
+```
 
+Create a `.env` file:
+
+```env
+NODE_ENV=development
+PORT=4000
+
+DATABASE_URL="your-postgresql-connection-string"
+
+JWT_ACCESS_SECRET="your-access-secret"
+JWT_REFRESH_SECRET="your-refresh-secret"
+
+JWT_ACCESS_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_DAYS="30"
+
+AUTH_RATE_WINDOW_MS="900000"
+AUTH_RATE_MAX="10"
+```
+
+Set up Prisma:
+
+```bash
+npx prisma generate
 npx prisma migrate dev
+```
 
+Start the backend:
+
+```bash
 npm run dev
 ```
 
-Runs on
+The API runs at:
 
-```
+```text
 http://localhost:4000
 ```
 
----
+### 3. Frontend Setup
 
-### Frontend
+Open another terminal:
 
 ```bash
 cd frontend
-
 npm install
+```
 
+Create `frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+Start the frontend:
+
+```bash
 npm run dev
 ```
 
-Runs on
+The application runs at:
 
-```
+```text
 http://localhost:3000
 ```
 
 ---
 
-## 🔑 Environment Variables
+## 🌐 Deployment
 
-### Backend
+Study Workspace is deployed using a three-service architecture:
 
+```text
+┌──────────────────┐
+│      Vercel      │
+│ Next.js Frontend │
+└────────┬─────────┘
+         │ HTTPS
+         ▼
+┌──────────────────┐
+│      Render      │
+│   Express API    │
+└────────┬─────────┘
+         │ Prisma
+         ▼
+┌──────────────────┐
+│       Neon       │
+│    PostgreSQL    │
+└──────────────────┘
 ```
-DATABASE_URL=
 
-JWT_SECRET=
 
-JWT_REFRESH_SECRET=
-
-PORT=4000
-```
-
-### Frontend
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:4000
-```
+> The backend currently uses Render's free tier, so the first request after a period of inactivity may take longer while the service wakes up.
 
 ---
 
-## 📸 Screenshots
 
-| Dashboard | Pomodoro |
-|-----------|-----------|
-| Screenshot | Screenshot |
+## 🔮 Future Improvements
 
-| Focus | Analytics |
-|--------|-----------|
-| Screenshot | Screenshot |
-
-| Settings | Landing Page |
-|----------|--------------|
-| Screenshot | Screenshot |
-
----
-
-## 🧠 Future Improvements
-
-- Study Rooms
+- Study Rooms and shared focus sessions
 - Real-time collaboration
-- Shared Pomodoro sessions
-- AI Study Assistant
 - Calendar integration
-- Habit Tracker
-- Achievement System
+- Habit tracking
+- Expanded achievement system
+- More ambient soundscapes
+- PWA and offline support
 - Mobile application
-- Offline support
-- PWA support
-
----
-
-## 📈 Project Status
-
-Current Version
-
-```
-v1.0
-```
-
-Status
-
-```
-Backend        ✅ Complete
-
-Authentication ✅
-
-Todos          ✅
-
-Pomodoro       ✅
-
-Deep Focus     ✅
-
-Analytics      ✅
-
-Music          ✅
-
-Settings       ✅
-
-Responsive UI  ✅
-
-Dashboard      ✅
-
-Landing Page   ✅
-```
+- Remaining codeforces integration
+- Background images in pomodoro sessions
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, ideas and suggestions are always welcome.
-
-Feel free to open an Issue or submit a Pull Request.
-
----
+Contributions, suggestions, and ideas are welcome. Feel free to open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
----
-
-## ⭐ Acknowledgements
-
-Inspired by
-
-- Forest
-- Notion
-- Linear
-- Raycast
-- Rize
-- Sunsama
+This project is licensed under the **MIT License**.
 
 ---
 
 <p align="center">
-Built with ❤️ using Next.js, Express, Prisma and PostgreSQL.
+  Built with Next.js, Express, Prisma & PostgreSQL.
 </p>
