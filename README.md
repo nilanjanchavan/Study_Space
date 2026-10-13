@@ -59,12 +59,24 @@ A distraction-free workspace designed for longer study sessions.
 
 Built-in background audio for distraction-free work.
 
-- Rain, Forest, Ocean, Fireplace and Café ambience
-- White noise, Night ambience and Wind
-- Volume control
-- Loop playback
-- Persistent music preferences
-- Integration with Pomodoro and Deep Focus
+- Rain against window, Forest birds, Ocean waves, Crackling fireplace, and Café chatter
+- White noise, Peaceful night traffic, and Terrace wind
+- Infinite seamless looping with master volume controls
+- 2-second alert alarms on session transitions (session complete, break start/end)
+- Integration with Pomodoro, Deep Focus, and Settings
+
+### 🏆 Codeforces Hub
+
+Track your competitive programming momentum directly in your study workspace.
+
+- **Profile & Live Sync**: Current rating, peak rating, rank badge, and contribution score synced from official Codeforces APIs
+- **Questions Solved Calendar Heatmap**: 52-week activity heatmap styled with dynamic theme-aware intensity shading
+- **Daily Question Goal & Streak Tracker**: Customizable daily problem target (`X/day`) with live progress and consecutive streak flame counters
+- **Rating Trajectory Map**: Interactive line chart showing rating progression across contests with peak markers and contest rank tooltips
+- **Difficulty & Topic Breakdown**: Distribution bar charts across rating brackets (`800–1000` to `2100+`) and dominant topic category meters (DP, Greedy, Math, Graphs)
+- **Recently Solved Problems Feed**: Verified accepted submissions with problem codes, rating stars, topic chips, and direct problem links
+- **Upcoming Contests**: Schedule of official rounds with live countdowns and direct registration links
+- **Dashboard Widget**: Quick-glance daily solved counter and streak indicator on the main dashboard
 
 
 ### 🔐 Authentication & Personalization
@@ -265,7 +277,6 @@ Study Workspace is deployed using a three-service architecture:
 - More ambient soundscapes
 - PWA and offline support
 - Mobile application
-- Remaining codeforces integration
 - Background images in pomodoro sessions
 
 ---
