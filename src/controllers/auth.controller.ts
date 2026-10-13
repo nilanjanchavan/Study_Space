@@ -5,7 +5,9 @@ import {
   refreshTokens,
   logoutUser,
   getUserById,
+  handleGoogleAuth,
 } from '../services/auth.service';
+import { env } from '../config/env';
 import { sendSuccess } from '../utils/apiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/AppError';
@@ -75,4 +77,40 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
   }
   const user = await getUserById(req.user.id);
   return sendSuccess(res, { user });
+});
+
+// ── GET /api/auth/google ───────────────────────────────────────────────────
+export const googleRedirect = asyncHandler(async (_req: Request, res: Response) => {
+  if (!env.google.clientId) {
+    return res.redirect(`${env.frontendUrl}/login?error=GOOGLE_NOT_CONFIGURED`);
+  }
+  const params = new URLSearchParams({
+    client_id: env.google.clientId,
+    redirect_uri: env.google.callbackUrl,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'select_account',
+  });
+  return res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+});
+
+// ── GET /api/auth/google/callback ──────────────────────────────────────────
+export const googleCallback = asyncHandler(async (req: Request, res: Response) => {
+  const code = req.query.code as string | undefined;
+  const error = req.query.error as string | undefined;
+
+  if (error || !code) {
+    return res.redirect(`${env.frontendUrl}/login?error=${encodeURIComponent(error || 'ACCESS_DENIED')}`);
+  }
+
+  try {
+    const result = await handleGoogleAuth(code, reqMeta(req));
+    const maxAge = result.refreshToken.expiresAt.getTime() - Date.now();
+    res.cookie(REFRESH_COOKIE_NAME, result.refreshToken.token, refreshCookieOptions(maxAge));
+    return res.redirect(`${env.frontendUrl}/login/callback?token=${encodeURIComponent(result.accessToken)}`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Authentication failed';
+    return res.redirect(`${env.frontendUrl}/login?error=${encodeURIComponent(message)}`);
+  }
 });

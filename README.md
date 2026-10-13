@@ -81,6 +81,7 @@ Track your competitive programming momentum directly in your study workspace.
 
 ### 🔐 Authentication & Personalization
 
+- Google OAuth 2.0 Single Sign-On (SSO)
 - JWT authentication
 - Rotating HttpOnly refresh tokens
 - Persistent login sessions
@@ -188,6 +189,12 @@ JWT_REFRESH_EXPIRES_DAYS="30"
 
 AUTH_RATE_WINDOW_MS="900000"
 AUTH_RATE_MAX="10"
+
+# Google OAuth 2.0 (Optional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:4000/api/auth/google/callback"
+FRONTEND_URL="http://localhost:3000"
 ```
 
 Set up Prisma:

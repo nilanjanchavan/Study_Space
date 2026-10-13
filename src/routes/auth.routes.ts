@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import { register, login, refresh, logout, me } from '../controllers/auth.controller';
+import {
+  register,
+  login,
+  refresh,
+  logout,
+  me,
+  googleRedirect,
+  googleCallback,
+} from '../controllers/auth.controller';
 import { validate } from '../middleware/validate';
 import { authenticate } from '../middleware/authenticate';
 import { authRateLimiter } from '../middleware/rateLimit';
@@ -19,6 +27,10 @@ router.post('/register', authRateLimiter, validate(registerSchema, 'body'), regi
 router.post('/login', authRateLimiter, validate(loginSchema, 'body'), login);
 router.post('/refresh', validate(refreshSchema, 'body'), refresh);
 router.post('/logout', logout);
+
+// Google OAuth routes
+router.get('/google', googleRedirect);
+router.get('/google/callback', googleCallback);
 
 // Authenticated user info.
 router.get('/me', authenticate, me);

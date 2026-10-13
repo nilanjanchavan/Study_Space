@@ -79,9 +79,10 @@ enum NotificationType {
   SYSTEM
 }
 
-/// How a Codeforces account was linked.
+/// How an account was authenticated.
 enum AuthProvider {
   LOCAL
+  GOOGLE
   CODEFORCES
 }
 
@@ -100,14 +101,16 @@ enum MusicSource {
 
 /// Core account. Owns all productivity data; deleting it cascades to children.
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
-  username         String    @unique
-  passwordHash     String
+  id               String       @id @default(uuid())
+  email            String       @unique
+  username         String       @unique
+  passwordHash     String?
+  googleId         String?      @unique
+  provider         AuthProvider @default(LOCAL)
   name             String?
   avatarUrl        String?
-  role             Role      @default(USER)
-  isEmailVerified  Boolean   @default(false)
+  role             Role         @default(USER)
+  isEmailVerified  Boolean      @default(false)
   /// Per-user default Pomodoro WORK length in minutes (configurable later).
   pomodoroLength   Int       @default(25)
   /// Per-user default SHORT_BREAK length in minutes.

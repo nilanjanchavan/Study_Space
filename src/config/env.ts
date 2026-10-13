@@ -27,6 +27,15 @@ export const env = {
     authWindowMs: parseInt(process.env.AUTH_RATE_WINDOW_MS ?? String(15 * 60 * 1000), 10),
     authMax: parseInt(process.env.AUTH_RATE_MAX ?? '10', 10),
   },
+
+  // ── Google OAuth ─────────────────────────────────────────
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL ?? 'http://localhost:4000/api/auth/google/callback',
+  },
+
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:3000',
 } as const;
 
 export type Env = typeof env;

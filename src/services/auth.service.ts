@@ -1,4 +1,5 @@
 import { prisma } from '../config/prisma';
+import { env } from '../config/env';
 import { AppError } from '../utils/AppError';
 import { hashPassword, verifyPassword } from '../utils/hash';
 import { signAccessToken } from '../utils/jwt';
@@ -104,6 +105,10 @@ export async function loginUser(
   }
   if (!user.isActive) {
     throw AppError.forbidden('Account is deactivated', 'ACCOUNT_INACTIVE');
+  }
+
+  if (!user.passwordHash) {
+    throw AppError.unauthorized('This account was registered with Google. Please log in with Google.', 'USE_GOOGLE_LOGIN');
   }
 
   const ok = await verifyPassword(password, user.passwordHash);
@@ -213,4 +218,128 @@ export async function getUserById(id: string): Promise<PublicUser> {
     throw AppError.notFound('User not found', 'USER_NOT_FOUND');
   }
   return toPublicUser(user);
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Google OAuth Flow
+// ───────────────────────────────────────────────────────────────────────────
+
+interface GoogleTokenResponse {
+  access_token: string;
+  id_token: string;
+  expires_in: number;
+  token_type: string;
+  scope: string;
+  refresh_token?: string;
+}
+
+interface GoogleUserInfo {
+  sub: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  picture?: string;
+  email: string;
+  email_verified: boolean;
+}
+
+export async function handleGoogleAuth(
+  code: string,
+  meta?: { userAgent?: string; ipAddress?: string },
+): Promise<AuthResult> {
+  if (!env.google.clientId || !env.google.clientSecret) {
+    throw AppError.badRequest('Google OAuth credentials not configured on the server', 'GOOGLE_CONFIG_MISSING');
+  }
+
+  // 1. Exchange authorization code for tokens
+  let tokenRes: Response;
+  try {
+    tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: env.google.clientId,
+        client_secret: env.google.clientSecret,
+        redirect_uri: env.google.callbackUrl,
+        grant_type: 'authorization_code',
+      }),
+    });
+  } catch {
+    throw AppError.badRequest('Failed to communicate with Google OAuth servers', 'GOOGLE_NETWORK_ERROR');
+  }
+
+  if (!tokenRes.ok) {
+    throw AppError.badRequest('Google authorization code exchange failed', 'GOOGLE_CODE_INVALID');
+  }
+
+  const tokenData = (await tokenRes.json()) as GoogleTokenResponse;
+
+  // 2. Fetch Google user profile
+  let userRes: Response;
+  try {
+    userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+  } catch {
+    throw AppError.badRequest('Failed to fetch user information from Google', 'GOOGLE_USERINFO_FAILED');
+  }
+
+  if (!userRes.ok) {
+    throw AppError.badRequest('Unable to fetch Google profile', 'GOOGLE_USERINFO_FAILED');
+  }
+
+  const gUser = (await userRes.json()) as GoogleUserInfo;
+  if (!gUser.email) {
+    throw AppError.badRequest('No email provided by Google account', 'GOOGLE_EMAIL_MISSING');
+  }
+
+  // 3. Find or create user in database
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [{ googleId: gUser.sub }, { email: gUser.email.toLowerCase() }],
+    },
+  });
+
+  if (user) {
+    if (!user.isActive) {
+      throw AppError.forbidden('Account is deactivated', 'ACCOUNT_INACTIVE');
+    }
+
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        googleId: user.googleId || gUser.sub,
+        avatarUrl: user.avatarUrl || gUser.picture,
+        name: user.name || gUser.name,
+        isEmailVerified: true,
+        lastLoginAt: new Date(),
+      },
+    });
+  } else {
+    // Generate unique username based on email
+    let baseUsername = (gUser.email.split('@')[0] || 'user').toLowerCase().replace(/[^a-z0-9_]/g, '');
+    if (baseUsername.length < 3) baseUsername = `user_${baseUsername}`;
+    let username = baseUsername;
+    let counter = 1;
+    while (await prisma.user.findUnique({ where: { username } })) {
+      username = `${baseUsername}_${counter++}`;
+    }
+
+    user = await prisma.user.create({
+      data: {
+        email: gUser.email.toLowerCase(),
+        username,
+        name: gUser.name || username,
+        avatarUrl: gUser.picture || null,
+        googleId: gUser.sub,
+        provider: 'GOOGLE',
+        isEmailVerified: true,
+        lastLoginAt: new Date(),
+      },
+    });
+  }
+
+  const result = await issueTokens(user, meta);
+  return { ...result, user: toPublicUser(user) };
 }

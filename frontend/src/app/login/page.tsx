@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card"
 import { GraduationCapIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
+import { GoogleLoginButton } from "@/components/auth/google-login-button"
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -79,6 +80,17 @@ export default function LoginPage() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="flex flex-col gap-4">
+            <GoogleLoginButton />
+
+            <div className="relative my-0.5">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/60" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground font-medium">Or continue with email</span>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
