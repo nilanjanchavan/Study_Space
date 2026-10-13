@@ -7,8 +7,7 @@ const BadgeWork = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
       ref={ref}
       className={cn(
         "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
-        "bg-orange-500/10 text-orange-600 border border-orange-500/15",
-        "dark:text-orange-400 dark:bg-orange-400/10 dark:border-orange-400/20",
+        "bg-primary/10 text-primary border border-primary/20",
         className
       )}
       {...props}

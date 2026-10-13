@@ -78,7 +78,7 @@ export function CompletionCelebration({
         <div className={cn(
           "mx-auto flex size-20 items-center justify-center rounded-2xl mb-6",
           isCompleted
-            ? "bg-gradient-to-br from-violet-500/20 to-violet-500/10 text-violet-500"
+            ? "bg-gradient-to-br from-primary/20 to-primary/10 text-primary"
             : "bg-gradient-to-br from-destructive/20 to-destructive/10 text-destructive"
         )}>
           <PartyPopperIcon size={40} />
@@ -113,13 +113,13 @@ export function CompletionCelebration({
 
         {/* Actions */}
         <div className="flex items-center justify-center gap-3">
-          <Button onClick={onStartAgain} size="lg" className="gap-2">
-            Start Again
-            <RotateCcwIcon size={16} />
+          <Button onClick={onStartAgain} size="lg" className="gap-2.5 h-11 px-6 rounded-xl font-medium shadow-sm">
+            <RotateCcwIcon size={16} className="shrink-0" />
+            <span>Start Again</span>
           </Button>
-          <Button onClick={onGoHome} variant="outline" size="lg" className="gap-2">
-            Dashboard
-            <HomeIcon size={16} />
+          <Button onClick={onGoHome} variant="outline" size="lg" className="gap-2.5 h-11 px-6 rounded-xl font-medium">
+            <HomeIcon size={16} className="shrink-0" />
+            <span>Dashboard</span>
           </Button>
         </div>
       </div>

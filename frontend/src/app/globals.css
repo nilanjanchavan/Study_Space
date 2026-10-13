@@ -791,6 +791,7 @@
   filter: blur(0);
 }
 
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -805,4 +806,59 @@
   html {
     scroll-behavior: auto;
   }
+}
+
+/* ── Font overflow prevention ───────────────────────────────────── */
+/* Ensure flex children holding text have min-width:0 so truncation works */
+.card-title,
+[class*="CardTitle"],
+[class*="card-title"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Stat value cells inside grid cards */
+.stat-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badge labels - allow wrapping but prevent blowout */
+[class*="BadgeWork"],
+[class*="BadgeBreak"],
+[class*="badge"] {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Timer display font sizing constraint */
+.timer-display-text {
+  font-size: clamp(2.5rem, 8vw, 3.25rem);
+  line-height: 1;
+}
+
+/* Pomodoro mode selector buttons - fit inside container */
+.mode-selector-btn {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Music track name truncation */
+.track-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Ensure all flex/grid children that contain text have min-width:0 */
+.min-w-0 {
+  min-width: 0;
 }

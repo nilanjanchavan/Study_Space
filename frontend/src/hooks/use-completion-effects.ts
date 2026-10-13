@@ -31,6 +31,7 @@ const COMPLETION_MESSAGES: Record<string, { title: string; body: string; toastTi
 export function useCompletionEffects(session: PomodoroSessionItem | null) {
   const prevStatusRef = useRef(session?.status)
   const completedIdRef = useRef<string | null>(null)
+  const startedIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!session) {
@@ -41,6 +42,7 @@ export function useCompletionEffects(session: PomodoroSessionItem | null) {
     const prevStatus = prevStatusRef.current
     prevStatusRef.current = session.status
 
+    // ── Session / Break COMPLETED → 2-second alarm ───────────────────
     if (
       prevStatus === "RUNNING" &&
       session.status === "COMPLETED" &&
@@ -53,15 +55,28 @@ export function useCompletionEffects(session: PomodoroSessionItem | null) {
 
       toast.success(msg.toastTitle, { description: msg.toastBody })
 
+      // Play 2-second alarm (auto-stops)
       const soundSrc = COMPLETION_SOUNDS[session.type]
       if (soundSrc) {
-        getAudioManager().play(soundSrc)
+        getAudioManager().playAlarm(soundSrc)
       }
 
       if (document.visibilityState !== "visible") {
         showBrowserNotification(msg.title, msg.body)
         startTitleFlash()
       }
+    }
+
+    // ── New auto-cycled session STARTED → start-chime ───────────────
+    // Detect: previous completed/break → now RUNNING with a NEW session id
+    if (
+      session.status === "RUNNING" &&
+      (prevStatus === "COMPLETED" || prevStatus === "CANCELLED" || prevStatus === "ABANDONED") &&
+      startedIdRef.current !== session.id
+    ) {
+      startedIdRef.current = session.id
+      // 2-second notification sound for new session start
+      getAudioManager().playAlarm("/sounds/notification.mp3")
     }
   }, [session])
 

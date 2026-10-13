@@ -28,7 +28,7 @@ const EVENT_CONFIG: Record<TimelineEvent["type"], {
   icon: React.ComponentType<{ size?: number; className?: string }>
   dotColor: string
 }> = {
-  session_start: { icon: PlayIcon, dotColor: "bg-violet-500" },
+  session_start: { icon: PlayIcon, dotColor: "bg-primary" },
   pomodoro_complete: { icon: CheckCircle2Icon, dotColor: "bg-success" },
   break_start: { icon: CoffeeIcon, dotColor: "bg-emerald-500" },
   break_end: { icon: CoffeeIcon, dotColor: "bg-emerald-500/60" },
@@ -47,7 +47,7 @@ export function FocusTimeline({ events }: FocusTimelineProps) {
       <SectionHeader
         title="Session Timeline"
         subtitle={`${events.length} events`}
-        accent={{ icon: <TargetIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
+        accent={{ icon: <TargetIcon size={14} />, className: "bg-primary/10 text-primary" }}
       />
 
       <div className="mt-3">

@@ -133,21 +133,21 @@ export function DashboardHero({ completedPomodoros, totalFocusMinutes, hasActive
           </div>
 
           {/* Quick Actions */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {hasActiveSession ? (
-              <Button onClick={() => router.push("/pomodoro")} className="gap-2">
-                Resume Session
-                <ArrowRightIcon size={14} />
+              <Button onClick={() => router.push("/pomodoro")} className="gap-2.5 h-10 px-5 rounded-xl font-medium shadow-sm">
+                <ArrowRightIcon size={15} className="shrink-0" />
+                <span>Resume Session</span>
               </Button>
             ) : (
               <>
-                <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2">
-                  Start Pomodoro
-                  <PlayIcon size={14} />
+                <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2.5 h-10 px-5 rounded-xl font-medium shadow-sm">
+                  <PlayIcon size={15} className="shrink-0" />
+                  <span>Start Pomodoro</span>
                 </Button>
-                <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2">
-                  Start Focus
-                  <FocusIcon size={14} />
+                <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2 h-10 px-4 rounded-xl text-sm font-medium">
+                  <FocusIcon size={15} className="shrink-0" />
+                  <span>Start Focus</span>
                 </Button>
               </>
             )}

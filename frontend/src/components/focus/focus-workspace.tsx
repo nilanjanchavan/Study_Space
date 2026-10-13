@@ -216,10 +216,10 @@ export function FocusWorkspace({ session, startNewSession }: FocusWorkspaceProps
                   size="lg"
                   onClick={() => setGiveUpOpen(true)}
                   disabled={isBusy}
-                  className="gap-2"
+                  className="gap-2.5 h-11 px-6 rounded-xl font-medium shadow-sm"
                 >
-                  End Session
-                  <XCircleIcon size={16} />
+                  <XCircleIcon size={16} className="shrink-0" />
+                  <span>End Session</span>
                 </Button>
               </div>
             </div>

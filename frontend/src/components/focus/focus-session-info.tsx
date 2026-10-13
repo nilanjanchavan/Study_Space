@@ -20,7 +20,7 @@ export function FocusSessionInfo({ session }: FocusSessionInfoProps) {
       <SectionHeader
         title="Session Details"
         action={<BadgeRunning>Live</BadgeRunning>}
-        accent={{ icon: <TargetIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
+        accent={{ icon: <TargetIcon size={14} />, className: "bg-primary/10 text-primary" }}
       />
 
       <div className="space-y-2.5">
@@ -30,7 +30,7 @@ export function FocusSessionInfo({ session }: FocusSessionInfoProps) {
               <p className="text-[11px] text-muted-foreground">Goal</p>
               <p className="text-sm font-medium text-foreground leading-snug break-words">{session.goal}</p>
             </div>
-            <TargetIcon size={14} className="text-violet-500 shrink-0 mt-0.5" />
+            <TargetIcon size={14} className="text-primary shrink-0 mt-0.5" />
           </div>
         )}
 

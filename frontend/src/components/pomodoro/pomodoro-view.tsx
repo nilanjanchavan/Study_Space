@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
+import { getAudioManager, POMODORO_ALARM_SOUNDS } from "@/lib/audio-manager"
 import { SettingsIcon, ChevronDownIcon, ChevronUpIcon, QuoteIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PomodoroType, PomodoroSessionItem } from "@/types"
@@ -105,15 +106,23 @@ export function PomodoroView() {
         (completedType === "WORK" && s.autoStartBreaks) ||
         (completedType !== "WORK" && s.autoStartWork)
       if (shouldAutoStart) {
-        startPomodoro.mutate(
-          { type: nextType, durationMinutes: getDurationForType(s, nextType) },
-          {
-            onSuccess: () => {
-              toast.success(`${MODE_LABELS[nextType]} started automatically`)
-            },
-            onError: handleError,
-          }
-        )
+        // Play 2-second transition alarm, then auto-start after it finishes
+        const alarmSrc = completedType === "WORK"
+          ? POMODORO_ALARM_SOUNDS.SESSION_COMPLETE          // work done → break starts
+          : POMODORO_ALARM_SOUNDS.BREAK_END                 // break done → work starts
+        getAudioManager().playAlarm(alarmSrc)
+
+        setTimeout(() => {
+          startPomodoro.mutate(
+            { type: nextType, durationMinutes: getDurationForType(s, nextType) },
+            {
+              onSuccess: () => {
+                toast.success(`${MODE_LABELS[nextType]} started automatically`)
+              },
+              onError: handleError,
+            }
+          )
+        }, 2200) // slight delay so alarm fully plays before new session starts
       }
     },
     [startPomodoro]
@@ -144,7 +153,11 @@ export function PomodoroView() {
     startPomodoro.mutate(
       { type: mode, durationMinutes: getDurationForType(settings, mode) },
       {
-        onSuccess: () => toast.success("Session started"),
+        onSuccess: () => {
+          toast.success("Session started")
+          // 2-second start chime
+          getAudioManager().playAlarm(POMODORO_ALARM_SOUNDS.SESSION_START)
+        },
         onError: handleError,
       }
     )
@@ -248,7 +261,7 @@ export function PomodoroView() {
                 className={cn(
                   "rounded-lg text-[11px] sm:text-xs px-2 sm:px-3 tabular-nums",
                   mode === m
-                    ? "border-rose-500/60 bg-rose-500/10 text-rose-500 hover:bg-rose-500/15 hover:text-rose-500 hover:border-rose-500/60"
+                    ? "border-primary/60 bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary hover:border-primary/60 font-medium"
                     : "hover:border-border"
                 )}
               >
@@ -268,7 +281,7 @@ export function PomodoroView() {
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium text-foreground">Settings</span>
-                <span className="flex size-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
+                <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <SettingsIcon size={14} />
                 </span>
               </div>

@@ -163,25 +163,25 @@ export function HeroSection({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+          <div className="flex flex-wrap items-center gap-2.5 pt-1">
             {hasActiveSession ? (
-              <Button onClick={() => router.push("/pomodoro")} className="gap-2 h-9 px-4">
-                Resume Session
-                <ArrowRightIcon size={15} />
+              <Button onClick={() => router.push("/pomodoro")} className="gap-2.5 h-10 px-5 rounded-xl font-medium shadow-sm">
+                <ArrowRightIcon size={15} className="shrink-0" />
+                <span>Resume Session</span>
               </Button>
             ) : (
-              <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2 h-9 px-4">
-                Start Pomodoro
-                <PlayIcon size={15} />
+              <Button onClick={handleStartPomodoro} disabled={startPomodoro.isPending} className="gap-2.5 h-10 px-5 rounded-xl font-medium shadow-sm">
+                <PlayIcon size={15} className="shrink-0" />
+                <span>Start Pomodoro</span>
               </Button>
             )}
-            <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2 h-9 px-3 text-xs sm:text-sm">
-              <span className="hidden sm:inline">Focus</span>
-              <FocusIcon size={14} />
+            <Button variant="outline" onClick={handleStartFocus} disabled={startFocus.isPending} className="gap-2 h-10 px-4 rounded-xl text-sm font-medium">
+              <FocusIcon size={15} className="shrink-0" />
+              <span>Focus</span>
             </Button>
-            <Button variant="outline" onClick={() => router.push("/todos")} className="gap-2 h-9 px-3 text-xs sm:text-sm">
-              <span className="hidden sm:inline">Todos</span>
-              <ListTodoIcon size={14} />
+            <Button variant="outline" onClick={() => router.push("/todos")} className="gap-2 h-10 px-4 rounded-xl text-sm font-medium">
+              <ListTodoIcon size={15} className="shrink-0" />
+              <span>Todos</span>
             </Button>
           </div>
         </div>

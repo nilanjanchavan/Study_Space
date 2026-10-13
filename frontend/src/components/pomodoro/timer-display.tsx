@@ -157,33 +157,27 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
           cy={CENTER}
           r={RADIUS}
           fill="none"
-          stroke={isComplete ? "currentColor" : "url(#timerArcGradient)"}
+          stroke={isComplete ? "currentColor" : "var(--primary)"}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={strokeDashoffset}
           className={
             isComplete
-              ? "text-green-500 dark:text-green-400"
-              : "text-rose-500"
+              ? "text-success"
+              : "text-primary"
           }
           style={{
             transition: isActive ? "stroke-dashoffset 0.3s linear" : "stroke-dashoffset 0.6s ease-out, stroke 0.3s ease",
           }}
         />
-        <defs>
-          <linearGradient id="timerArcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="oklch(0.712 0.13 25)" />
-            <stop offset="100%" stopColor="oklch(0.62 0.14 25)" />
-          </linearGradient>
-        </defs>
       </svg>
 
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className="font-mono font-bold tracking-tighter text-foreground tabular-nums select-none"
-          style={{ fontSize: "3.25rem", lineHeight: 1 }}
+          style={{ fontSize: "clamp(2.2rem, 8vw, 3.25rem)", lineHeight: 1 }}
         >
           {formatTime(remaining)}
         </span>

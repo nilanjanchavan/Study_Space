@@ -5,16 +5,24 @@ import { useNotificationSettings } from "@/hooks/use-settings"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Volume2Icon } from "lucide-react"
 
 const NOTIFICATION_SOUNDS = [
   { label: "Notification", value: "notification" },
   { label: "Bell", value: "bell" },
-  { label: "Forest", value: "forest" },
   { label: "Digital", value: "digital" },
 ]
 
 export function NotificationSettings() {
   const [settings, updateSettings] = useNotificationSettings()
+
+  const playPreview = (soundName: string) => {
+    const soundFile = soundName === "bell" ? "/sounds/bell.mp3" : soundName === "digital" ? "/sounds/digital.mp3" : "/sounds/notification.mp3"
+    const audio = new Audio(soundFile)
+    audio.volume = Math.max(0, Math.min(1, settings.volume / 100))
+    audio.play().catch(() => {})
+  }
 
   return (
     <SettingsSection
@@ -58,21 +66,33 @@ export function NotificationSettings() {
       </SettingRow>
 
       <SettingRow label="Notification Sound" description="Choose the sound played for alerts">
-        <Select
-          value={settings.notificationSound ?? undefined}
-          onValueChange={(v) => updateSettings({ notificationSound: v ?? "notification" })}
-        >
-          <SelectTrigger className="w-full sm:w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {NOTIFICATION_SOUNDS.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select
+            value={settings.notificationSound ?? undefined}
+            onValueChange={(v) => updateSettings({ notificationSound: v ?? "notification" })}
+          >
+            <SelectTrigger className="w-[140px] sm:w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {NOTIFICATION_SOUNDS.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="size-9 p-0 shrink-0"
+            title="Preview sound"
+            onClick={() => playPreview(settings.notificationSound ?? "notification")}
+          >
+            <Volume2Icon size={14} />
+          </Button>
+        </div>
       </SettingRow>
     </SettingsSection>
   )

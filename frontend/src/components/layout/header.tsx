@@ -8,12 +8,13 @@ import { MenuIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const PAGE_META: Record<string, { title: string; description?: string; dot: string }> = {
-  "/dashboard": { title: "Dashboard", description: "Your day at a glance", dot: "bg-indigo-500" },
-  "/todos": { title: "Todos", description: "Manage your tasks", dot: "bg-emerald-500" },
-  "/pomodoro": { title: "Pomodoro", description: "Focus timer", dot: "bg-rose-500" },
-  "/focus": { title: "Focus", description: "Deep focus sessions", dot: "bg-violet-500" },
-  "/analytics": { title: "Analytics", description: "Your productivity insights", dot: "bg-amber-500" },
-  "/settings": { title: "Settings", description: "Customize your workspace", dot: "bg-slate-500" },
+  "/dashboard": { title: "Dashboard", description: "Your day at a glance", dot: "bg-primary" },
+  "/todos": { title: "Todos", description: "Manage your tasks", dot: "bg-primary" },
+  "/pomodoro": { title: "Pomodoro", description: "Focus timer", dot: "bg-primary" },
+  "/focus": { title: "Focus", description: "Deep focus sessions", dot: "bg-primary" },
+  "/codeforces": { title: "Codeforces", description: "Competitive programming hub", dot: "bg-primary" },
+  "/analytics": { title: "Analytics", description: "Your productivity insights", dot: "bg-primary" },
+  "/settings": { title: "Settings", description: "Customize your workspace", dot: "bg-primary" },
 }
 
 function useCurrentTime() {

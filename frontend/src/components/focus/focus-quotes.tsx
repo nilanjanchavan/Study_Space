@@ -27,7 +27,7 @@ export function FocusQuotes() {
     <GlassCard className="p-4">
       <SectionHeader
         title="Inspiration"
-        accent={{ icon: <QuoteIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
+        accent={{ icon: <QuoteIcon size={14} />, className: "bg-primary/10 text-primary" }}
       />
       <blockquote className="text-sm text-foreground/80 leading-relaxed italic break-words">
         &ldquo;{quote.text}&rdquo;

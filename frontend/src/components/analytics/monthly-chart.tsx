@@ -29,7 +29,7 @@ export function MonthlyChart({ data, isLoading }: MonthlyChartProps) {
         subtitle={data ? `${data.totalFocusHours}h total` : undefined}
         accent={{
           icon: <CalendarRangeIcon size={14} />,
-          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+          className: "bg-primary/10 text-primary",
         }}
       />
       <div className="mt-3">

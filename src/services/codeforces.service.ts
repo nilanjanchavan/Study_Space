@@ -6,6 +6,41 @@ import type { UpsertCodeforcesInput } from '../validators/codeforces.validators'
 // Types
 // ───────────────────────────────────────────────────────────────────────────
 
+export type CodeforcesStats = {
+  totalSolved: number;
+  solvedToday: number;
+  streak: {
+    current: number;
+    longest: number;
+  };
+  calendar: Record<string, number>;
+  ratingHistory: Array<{
+    contestId: number;
+    contestName: string;
+    rank: number;
+    oldRating: number;
+    newRating: number;
+    ratingUpdateTimeSeconds: number;
+  }>;
+  ratingDistribution: Array<{ bracket: string; count: number }>;
+  topicTags: Array<{ tag: string; count: number }>;
+  recentSolved: Array<{
+    id: string;
+    name: string;
+    contestId: number;
+    index: string;
+    rating: number | null;
+    tags: string[];
+    solvedAt: number;
+  }>;
+  upcomingContests: Array<{
+    id: number;
+    name: string;
+    durationSeconds: number;
+    startTimeSeconds: number;
+  }>;
+};
+
 export type CodeforcesProfileItem = {
   id: string;
   codeforcesHandle: string;
@@ -16,12 +51,12 @@ export type CodeforcesProfileItem = {
   contribution: number | null;
   avatar: string | null;
   titlePhoto: string | null;
+  stats: CodeforcesStats | null;
   lastSyncedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
-/** Shape of the relevant fields returned by the CF user.info API. */
 interface CfUserInfo {
   handle?: string;
   rating?: number;
@@ -33,12 +68,52 @@ interface CfUserInfo {
   titlePhoto?: string;
 }
 
-const CF_API_BASE = 'https://codeforces.com/api/user.info';
-const CF_TIMEOUT_MS = 8000;
+interface CfSubmission {
+  id: number;
+  contestId: number;
+  creationTimeSeconds: number;
+  verdict?: string;
+  problem: {
+    contestId?: number;
+    index?: string;
+    name: string;
+    rating?: number;
+    tags?: string[];
+  };
+}
+
+interface CfRatingChange {
+  contestId: number;
+  contestName: string;
+  handle: string;
+  rank: number;
+  ratingUpdateTimeSeconds: number;
+  oldRating: number;
+  newRating: number;
+}
+
+interface CfContest {
+  id: number;
+  name: string;
+  type: string;
+  phase: string;
+  durationSeconds: number;
+  startTimeSeconds: number;
+  relativeTimeSeconds: number;
+}
+
+const CF_TIMEOUT_MS = 10000;
 
 // ───────────────────────────────────────────────────────────────────────────
 // Helpers
 // ───────────────────────────────────────────────────────────────────────────
+
+function getLocalDateStr(date: Date): string {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 function serialize(p: {
   id: string;
@@ -50,6 +125,7 @@ function serialize(p: {
   contribution: number | null;
   avatar: string | null;
   titlePhoto: string | null;
+  statsJson?: unknown;
   lastSyncedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -64,6 +140,7 @@ function serialize(p: {
     contribution: p.contribution,
     avatar: p.avatar,
     titlePhoto: p.titlePhoto,
+    stats: (p.statsJson as CodeforcesStats) ?? null,
     lastSyncedAt: p.lastSyncedAt?.toISOString() ?? null,
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
@@ -80,7 +157,7 @@ export async function getProfile(userId: string): Promise<CodeforcesProfileItem 
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// PUT — save/update handle (no sync)
+// PUT — save/update handle + sync immediately
 // ───────────────────────────────────────────────────────────────────────────
 
 export async function upsertProfile(
@@ -89,26 +166,28 @@ export async function upsertProfile(
 ): Promise<CodeforcesProfileItem> {
   const { handle } = input;
 
-  // Check handle uniqueness across users (handles are globally unique on CF).
-  const conflict = await prisma.codeforcesProfile.findFirst({
-    where: { codeforcesHandle: handle, NOT: { userId } },
-    select: { userId: true },
+  // If the handle was previously bound to another account, release it so the user can claim it
+  await prisma.codeforcesProfile.deleteMany({
+    where: { codeforcesHandle: { equals: handle, mode: 'insensitive' }, NOT: { userId } },
   });
-  if (conflict) {
-    throw AppError.conflict('Codeforces handle is already linked to another account', 'HANDLE_TAKEN');
-  }
 
-  const profile = await prisma.codeforcesProfile.upsert({
+  await prisma.codeforcesProfile.upsert({
     where: { userId },
     update: { codeforcesHandle: handle },
     create: { userId, codeforcesHandle: handle },
   });
 
-  return serialize(profile);
+  // Automatically attempt full sync
+  try {
+    return await syncProfile(userId);
+  } catch {
+    const saved = await prisma.codeforcesProfile.findUniqueOrThrow({ where: { userId } });
+    return serialize(saved);
+  }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// POST /sync — fetch from CF API + cache
+// POST /sync — fetch from CF API + cache all stats
 // ───────────────────────────────────────────────────────────────────────────
 
 export async function syncProfile(userId: string): Promise<CodeforcesProfileItem> {
@@ -120,7 +199,26 @@ export async function syncProfile(userId: string): Promise<CodeforcesProfileItem
     );
   }
 
-  const info = await fetchCodeforcesUser(existing.codeforcesHandle);
+  const handle = existing.codeforcesHandle;
+
+  // Run all fetches in parallel
+  const [userInfoResult, submissionsResult, ratingResult, contestResult] = await Promise.allSettled([
+    fetchCodeforcesUser(handle),
+    fetchCodeforcesSubmissions(handle),
+    fetchCodeforcesRatingHistory(handle),
+    fetchCodeforcesUpcomingContests(),
+  ]);
+
+  if (userInfoResult.status === 'rejected') {
+    throw userInfoResult.reason;
+  }
+
+  const info = userInfoResult.value;
+  const submissions = submissionsResult.status === 'fulfilled' ? submissionsResult.value : [];
+  const ratingHistory = ratingResult.status === 'fulfilled' ? ratingResult.value : [];
+  const upcomingContests = contestResult.status === 'fulfilled' ? contestResult.value : [];
+
+  const stats = computeStats(submissions, ratingHistory, upcomingContests);
 
   const updated = await prisma.codeforcesProfile.update({
     where: { userId },
@@ -132,6 +230,7 @@ export async function syncProfile(userId: string): Promise<CodeforcesProfileItem
       contribution: info.contribution ?? null,
       avatar: info.avatar ?? null,
       titlePhoto: info.titlePhoto ?? null,
+      statsJson: stats as object,
       lastSyncedAt: new Date(),
     },
   });
@@ -152,12 +251,191 @@ export async function deleteProfile(userId: string): Promise<void> {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// CF API fetch with robust error handling
+// Stats computation
+// ───────────────────────────────────────────────────────────────────────────
+
+function computeStats(
+  submissions: CfSubmission[],
+  ratingHistory: CfRatingChange[],
+  upcomingContests: CfContest[],
+): CodeforcesStats {
+  const solvedMap = new Map<string, CfSubmission>();
+
+  for (const sub of submissions) {
+    if (sub.verdict === 'OK' && sub.problem?.contestId && sub.problem?.index) {
+      const key = `${sub.problem.contestId}-${sub.problem.index}`;
+      const existing = solvedMap.get(key);
+      if (!existing || sub.creationTimeSeconds < existing.creationTimeSeconds) {
+        solvedMap.set(key, sub);
+      }
+    }
+  }
+
+  const calendar: Record<string, number> = {};
+  for (const sub of solvedMap.values()) {
+    const dStr = getLocalDateStr(new Date(sub.creationTimeSeconds * 1000));
+    calendar[dStr] = (calendar[dStr] || 0) + 1;
+  }
+
+  const todayStr = getLocalDateStr(new Date());
+  const solvedToday = calendar[todayStr] || 0;
+
+  // Streak calculation
+  let currentStreak = 0;
+  const checkDate = new Date();
+  let checkStr = getLocalDateStr(checkDate);
+  if ((calendar[checkStr] || 0) === 0) {
+    checkDate.setUTCDate(checkDate.getUTCDate() - 1);
+    checkStr = getLocalDateStr(checkDate);
+  }
+  while ((calendar[checkStr] || 0) > 0) {
+    currentStreak++;
+    checkDate.setUTCDate(checkDate.getUTCDate() - 1);
+    checkStr = getLocalDateStr(checkDate);
+  }
+
+  // Longest streak
+  const sortedDates = Object.keys(calendar).sort();
+  let longestStreak = 0;
+  let tempStreak = 0;
+  let prevDate: Date | null = null;
+  for (const dStr of sortedDates) {
+    const curDate = new Date(dStr + 'T00:00:00Z');
+    if (prevDate) {
+      const diffDays = Math.round((curDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) {
+        tempStreak++;
+      } else {
+        tempStreak = 1;
+      }
+    } else {
+      tempStreak = 1;
+    }
+    prevDate = curDate;
+    if (tempStreak > longestStreak) {
+      longestStreak = tempStreak;
+    }
+  }
+  longestStreak = Math.max(longestStreak, currentStreak);
+
+  // Rating bracket distribution
+  const brackets = [
+    { label: '800-1000', min: 800, max: 1000 },
+    { label: '1100-1200', min: 1100, max: 1200 },
+    { label: '1300-1400', min: 1300, max: 1400 },
+    { label: '1500-1600', min: 1500, max: 1600 },
+    { label: '1700-1800', min: 1700, max: 1800 },
+    { label: '1900-2000', min: 1900, max: 2000 },
+    { label: '2100+', min: 2100, max: 9999 },
+  ];
+  const ratingDistribution = brackets.map((b) => ({ bracket: b.label, count: 0 }));
+  let unratedCount = 0;
+  const tagCounts: Record<string, number> = {};
+
+  for (const sub of solvedMap.values()) {
+    const r = sub.problem.rating;
+    if (typeof r === 'number') {
+      const found = brackets.find((b) => r >= b.min && r <= b.max);
+      if (found) {
+        const item = ratingDistribution.find((d) => d.bracket === found.label);
+        if (item) item.count++;
+      }
+    } else {
+      unratedCount++;
+    }
+    if (Array.isArray(sub.problem.tags)) {
+      for (const t of sub.problem.tags) {
+        tagCounts[t] = (tagCounts[t] || 0) + 1;
+      }
+    }
+  }
+  if (unratedCount > 0) {
+    ratingDistribution.push({ bracket: 'Unrated', count: unratedCount });
+  }
+
+  const topicTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([tag, count]) => ({ tag, count }));
+
+  // Recent solved problems
+  const recentSolved = Array.from(solvedMap.values())
+    .sort((a, b) => b.creationTimeSeconds - a.creationTimeSeconds)
+    .slice(0, 15)
+    .map((sub) => ({
+      id: `${sub.problem.contestId}-${sub.problem.index}`,
+      name: sub.problem.name,
+      contestId: sub.problem.contestId!,
+      index: sub.problem.index!,
+      rating: sub.problem.rating ?? null,
+      tags: sub.problem.tags || [],
+      solvedAt: sub.creationTimeSeconds * 1000,
+    }));
+
+  return {
+    totalSolved: solvedMap.size,
+    solvedToday,
+    streak: {
+      current: currentStreak,
+      longest: longestStreak,
+    },
+    calendar,
+    ratingHistory: ratingHistory.map((rh) => ({
+      contestId: rh.contestId,
+      contestName: rh.contestName,
+      rank: rh.rank,
+      oldRating: rh.oldRating,
+      newRating: rh.newRating,
+      ratingUpdateTimeSeconds: rh.ratingUpdateTimeSeconds,
+    })),
+    ratingDistribution,
+    topicTags,
+    recentSolved,
+    upcomingContests: upcomingContests.map((c) => ({
+      id: c.id,
+      name: c.name,
+      durationSeconds: c.durationSeconds,
+      startTimeSeconds: c.startTimeSeconds,
+    })),
+  };
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// CF API fetchers with robust error handling
 // ───────────────────────────────────────────────────────────────────────────
 
 async function fetchCodeforcesUser(handle: string): Promise<CfUserInfo> {
-  const url = `${CF_API_BASE}?handles=${encodeURIComponent(handle)}`;
+  const url = `https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`;
+  const envelope = await cfFetch<{ status: string; result?: CfUserInfo[]; comment?: string }>(url);
+  if (envelope.status !== 'OK' || !Array.isArray(envelope.result) || envelope.result.length === 0) {
+    throw AppError.badRequest(envelope.comment ?? 'Codeforces handle not found', 'CF_HANDLE_NOT_FOUND');
+  }
+  return envelope.result[0];
+}
 
+async function fetchCodeforcesSubmissions(handle: string): Promise<CfSubmission[]> {
+  const url = `https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=2000`;
+  const envelope = await cfFetch<{ status: string; result?: CfSubmission[] }>(url);
+  return envelope.status === 'OK' && Array.isArray(envelope.result) ? envelope.result : [];
+}
+
+async function fetchCodeforcesRatingHistory(handle: string): Promise<CfRatingChange[]> {
+  const url = `https://codeforces.com/api/user.rating?handle=${encodeURIComponent(handle)}`;
+  const envelope = await cfFetch<{ status: string; result?: CfRatingChange[] }>(url);
+  return envelope.status === 'OK' && Array.isArray(envelope.result) ? envelope.result : [];
+}
+
+async function fetchCodeforcesUpcomingContests(): Promise<CfContest[]> {
+  const url = `https://codeforces.com/api/contest.list?gym=false`;
+  const envelope = await cfFetch<{ status: string; result?: CfContest[] }>(url);
+  if (envelope.status !== 'OK' || !Array.isArray(envelope.result)) return [];
+  return envelope.result
+    .filter((c) => c.phase === 'BEFORE')
+    .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
+    .slice(0, 5);
+}
+
+async function cfFetch<T>(url: string): Promise<T> {
   let res: Response;
   try {
     res = await fetch(url, {
@@ -165,39 +443,19 @@ async function fetchCodeforcesUser(handle: string): Promise<CfUserInfo> {
       headers: { Accept: 'application/json' },
     });
   } catch (err) {
-    // Network error or timeout — do NOT crash.
     if (err instanceof Error && err.name === 'TimeoutError') {
-      throw AppError.badRequest(
-        'Codeforces API request timed out; please try again later',
-        'CF_API_TIMEOUT',
-      );
+      throw AppError.badRequest('Codeforces API request timed out', 'CF_API_TIMEOUT');
     }
-    throw AppError.badRequest(
-      'Unable to reach Codeforces API; please try again later',
-      'CF_API_UNAVAILABLE',
-    );
+    throw AppError.badRequest('Unable to reach Codeforces API', 'CF_API_UNAVAILABLE');
   }
 
   if (!res.ok) {
-    throw AppError.badRequest(
-      `Codeforces API returned HTTP ${res.status}`,
-      'CF_API_HTTP_ERROR',
-    );
+    throw AppError.badRequest(`Codeforces API returned HTTP ${res.status}`, 'CF_API_HTTP_ERROR');
   }
 
-  let body: unknown;
   try {
-    body = await res.json();
+    return (await res.json()) as T;
   } catch {
     throw AppError.badRequest('Codeforces API returned malformed JSON', 'CF_API_MALFORMED');
   }
-
-  // CF API envelope: { status: 'OK'|'FAILED', result: [...], comment?: '...' }
-  const envelope = body as { status?: string; result?: CfUserInfo[]; comment?: string };
-  if (envelope.status !== 'OK' || !Array.isArray(envelope.result) || envelope.result.length === 0) {
-    const comment = envelope.comment ?? 'Codeforces API reported the handle was not found';
-    throw AppError.badRequest(comment, 'CF_HANDLE_NOT_FOUND');
-  }
-
-  return envelope.result[0];
 }

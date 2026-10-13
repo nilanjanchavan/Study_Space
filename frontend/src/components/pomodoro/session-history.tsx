@@ -25,8 +25,8 @@ function HistoryRow({ session }: { session: PomodoroSessionItem }) {
           {session.plannedMinutes}min {config.label}
         </p>
       </div>
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10">
-        <Icon size={13} className="text-rose-500" />
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+        <Icon size={13} className="text-primary" />
       </div>
       <span className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap shrink-0">
         {formatDistanceToNow(new Date(session.endedAt ?? session.updatedAt), { addSuffix: true })}
@@ -53,7 +53,7 @@ export function SessionHistory() {
     <GlassCard className="p-4">
       <SectionHeader
         title="Recent Sessions"
-        accent={{ icon: <HistoryIcon size={14} />, className: "bg-rose-500/10 text-rose-500" }}
+        accent={{ icon: <HistoryIcon size={14} />, className: "bg-primary/10 text-primary" }}
       />
 
       {isLoading ? (
@@ -64,7 +64,7 @@ export function SessionHistory() {
         </div>
       ) : sessions.length === 0 ? (
         <div className="flex flex-col items-center py-6 text-center">
-          <CheckCircle2Icon size={24} className="text-rose-500/20 mb-2" />
+          <CheckCircle2Icon size={24} className="text-primary/20 mb-2" />
           <p className="text-sm text-muted-foreground">No sessions yet</p>
           <p className="text-xs text-muted-foreground/60 mt-0.5">Complete a pomodoro to see your history</p>
         </div>

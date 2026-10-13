@@ -82,9 +82,9 @@ export function FocusSummaryDialog({
 
         <div className="flex flex-col gap-3">
           {session.goal && (
-            <div className="flex items-center gap-2 rounded-lg bg-violet-500/5 border border-violet-500/15 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2">
               <span className="text-sm truncate">{session.goal}</span>
-              <TargetIcon size={14} className="text-violet-500 shrink-0" />
+              <TargetIcon size={14} className="text-primary shrink-0" />
             </div>
           )}
 

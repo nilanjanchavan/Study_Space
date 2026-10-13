@@ -32,7 +32,7 @@ function SummaryStat({
           <p className="text-sm font-semibold text-foreground tabular-nums">{value}</p>
         </div>
         {sub && (
-          <span className="shrink-0 text-[10px] text-amber-600/80 dark:text-amber-400/80 bg-amber-500/10 rounded-md px-1.5 py-0.5 tabular-nums">
+          <span className="shrink-0 text-[10px] text-primary bg-primary/10 rounded-md px-1.5 py-0.5 tabular-nums">
             {sub}
           </span>
         )}
@@ -52,28 +52,28 @@ export function ProductivitySummary({ data, isLoading }: ProductivitySummaryProp
           value: data.pomodoros.totalFocusMinutes >= 60
             ? `${Math.floor(data.pomodoros.totalFocusMinutes / 60)}h ${data.pomodoros.totalFocusMinutes % 60}m`
             : `${data.pomodoros.totalFocusMinutes}m`,
-          accent: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          accent: "bg-primary/10 text-primary",
         },
         {
           icon: CoffeeIcon,
           label: "Pomodoros",
           value: data.pomodoros.completedPomodoros,
           sub: `avg ${data.pomodoros.averagePomodoroLength}m`,
-          accent: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          accent: "bg-primary/10 text-primary",
         },
         {
           icon: CheckSquareIcon,
           label: "Todos",
           value: `${data.todos.completedTodos}/${data.todos.totalTodos}`,
           sub: `${data.todos.totalTodos > 0 ? Math.round((data.todos.completedTodos / data.todos.totalTodos) * 100) : 0}%`,
-          accent: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          accent: "bg-primary/10 text-primary",
         },
         {
           icon: TargetIcon,
           label: "Focus Sessions",
           value: data.focusSessions.completedFocusSessions,
           sub: `${data.focusSessions.totalFocusSessions} total`,
-          accent: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          accent: "bg-primary/10 text-primary",
         },
         {
           icon: CircleDotIcon,
@@ -83,7 +83,7 @@ export function ProductivitySummary({ data, isLoading }: ProductivitySummaryProp
             : data.current.activeFocusSession
               ? data.current.activeFocusSession.mode
               : "None",
-          accent: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          accent: "bg-primary/10 text-primary",
         },
       ]
     : []
@@ -94,7 +94,7 @@ export function ProductivitySummary({ data, isLoading }: ProductivitySummaryProp
         title="Productivity Summary"
         accent={{
           icon: <GaugeIcon size={14} />,
-          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+          className: "bg-primary/10 text-primary",
         }}
       />
       <div className="mt-3 space-y-1.5">

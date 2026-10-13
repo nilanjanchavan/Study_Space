@@ -72,7 +72,7 @@ export function CodeforcesSettings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground">Connected</span>
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-400">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <CheckCircle2Icon size={14} />
               </span>
             </div>
@@ -148,6 +148,24 @@ export function CodeforcesSettings() {
           </div>
         </div>
       )}
+
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 px-3 py-2.5 dark:bg-white/[0.03]">
+        <div>
+          <p className="text-sm font-medium text-foreground">Daily Question Goal</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Target questions to solve each day</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            min={1}
+            max={30}
+            value={settings.dailyGoal ?? 3}
+            onChange={(e) => updateSettings({ dailyGoal: Math.max(1, Number(e.target.value) || 1) })}
+            className="w-16 h-8 text-center tabular-nums"
+          />
+          <span className="text-xs text-muted-foreground">/ day</span>
+        </div>
+      </div>
 
       <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-card/50 px-3 py-2.5 dark:bg-white/[0.03]">
         <div>

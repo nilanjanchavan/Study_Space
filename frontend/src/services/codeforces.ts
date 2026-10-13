@@ -1,5 +1,40 @@
 import api from "@/lib/api"
 
+export interface CodeforcesStats {
+  totalSolved: number
+  solvedToday: number
+  streak: {
+    current: number
+    longest: number
+  }
+  calendar: Record<string, number>
+  ratingHistory: Array<{
+    contestId: number
+    contestName: string
+    rank: number
+    oldRating: number
+    newRating: number
+    ratingUpdateTimeSeconds: number
+  }>
+  ratingDistribution: Array<{ bracket: string; count: number }>
+  topicTags: Array<{ tag: string; count: number }>
+  recentSolved: Array<{
+    id: string
+    name: string
+    contestId: number
+    index: string
+    rating: number | null
+    tags: string[]
+    solvedAt: number
+  }>
+  upcomingContests: Array<{
+    id: number
+    name: string
+    durationSeconds: number
+    startTimeSeconds: number
+  }>
+}
+
 export interface CodeforcesProfile {
   id: string
   codeforcesHandle: string
@@ -10,6 +45,7 @@ export interface CodeforcesProfile {
   contribution: number | null
   avatar: string | null
   titlePhoto: string | null
+  stats: CodeforcesStats | null
   lastSyncedAt: string | null
   createdAt: string
   updatedAt: string

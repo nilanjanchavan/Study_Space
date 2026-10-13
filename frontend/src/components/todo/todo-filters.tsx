@@ -40,7 +40,7 @@ export function TodoFilters({ params, onChange }: TodoFiltersProps) {
   const chipBase =
     "rounded-full border px-2.5 py-1 text-xs font-medium transition-all duration-150"
   const chipActive =
-    "bg-emerald-500/10 text-emerald-600 border-emerald-500/25 dark:bg-emerald-400/10 dark:text-emerald-400 dark:border-emerald-400/30"
+    "bg-primary/10 text-primary border-primary/25 font-medium"
   const chipIdle =
     "bg-card/50 text-muted-foreground border-border/50 hover:bg-muted/50 hover:text-foreground"
 

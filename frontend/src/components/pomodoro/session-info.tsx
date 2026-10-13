@@ -31,7 +31,7 @@ export function SessionInfo({
       <div className="space-y-4">
         <SectionHeader
           title="Today's Progress"
-          accent={{ icon: <TimerIcon size={14} />, className: "bg-rose-500/10 text-rose-500" }}
+          accent={{ icon: <TimerIcon size={14} />, className: "bg-primary/10 text-primary" }}
         />
 
         <div className="flex items-center justify-center py-2">
@@ -39,7 +39,7 @@ export function SessionInfo({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <StatItem icon={<TimerIcon size={12} className="text-rose-500" />} label="Sessions" value={String(todayCount)} />
+          <StatItem icon={<TimerIcon size={12} className="text-primary" />} label="Sessions" value={String(todayCount)} />
           <StatItem icon={<TargetIcon size={12} className="text-green-500" />} label="Goal" value={`${percent}%`} />
           <StatItem icon={<FlameIcon size={12} className="text-orange-500" />} label="Streak" value={String(streak)} />
           <StatItem icon={<ZapIcon size={12} className="text-blue-500" />} label="Next Break" value={String(remaining)} />
@@ -54,7 +54,7 @@ export function SessionInfo({
         </div>
 
         {completedSessions > 0 && (
-          <div className="rounded-xl bg-rose-500/5 border border-rose-500/15 p-3 text-center">
+          <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 text-center">
             <p className="text-xs text-muted-foreground">Total Focus Time</p>
             <p className="text-sm font-semibold text-foreground mt-0.5 tabular-nums">
               {completedSessions * 25} min

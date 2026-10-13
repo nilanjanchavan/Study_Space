@@ -7,12 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+import { TRACKS } from "@/lib/tracks"
+
 const AMBIENT_TRACKS = [
   { label: "None", value: "none" },
-  { label: "Lo-Fi", value: "lofi" },
-  { label: "Nature", value: "nature" },
-  { label: "White Noise", value: "white_noise" },
-  { label: "Custom", value: "custom" },
+  ...TRACKS.map((t) => ({ label: t.name, value: t.id })),
 ]
 
 export function MusicSettings() {

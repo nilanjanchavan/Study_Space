@@ -23,7 +23,7 @@ const HeroTimer = forwardRef<HTMLDivElement, HeroTimerProps>(
         {/* Glow effect when running */}
         {isRunning && (
           <div
-            className="absolute inset-0 rounded-full animate-pulse-soft bg-violet-500/10"
+            className="absolute inset-0 rounded-full animate-pulse-soft bg-primary/10"
             style={{ filter: "blur(40px)" }}
           />
         )}
@@ -52,14 +52,14 @@ const HeroTimer = forwardRef<HTMLDivElement, HeroTimerProps>(
               cy={size / 2}
               r={radius}
               fill="none"
-              stroke={accentColor ? "url(#heroTimerGradient)" : "currentColor"}
+              stroke={accentColor ? "var(--primary)" : "currentColor"}
               strokeWidth={strokeWidth}
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={offset}
               className={cn(
                 "transition-all duration-1000 ease-linear",
-                accentColor ? "text-violet-500" : "text-muted-foreground/30"
+                accentColor ? "text-primary" : "text-muted-foreground/30"
               )}
             />
             <defs>

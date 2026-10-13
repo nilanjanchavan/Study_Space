@@ -53,10 +53,10 @@ export function TimerControls({
         size="lg"
         onClick={onStart}
         disabled={isBusy}
-        className="h-11 px-6 rounded-xl gap-2"
+        className="h-11 px-7 rounded-xl gap-2.5 font-medium shadow-sm"
       >
-        Start Session
-        {isStarting ? <Spinner size={18} /> : <PlayIcon size={18} />}
+        {isStarting ? <Spinner size={18} className="shrink-0" /> : <PlayIcon size={18} className="shrink-0" />}
+        <span>Start Session</span>
       </Button>
     )
   }
@@ -69,19 +69,19 @@ export function TimerControls({
           size="lg"
           onClick={onPause}
           disabled={isBusy}
-          className="h-11 px-4 sm:px-5 rounded-xl gap-2"
+          className="h-11 px-5 rounded-xl gap-2 font-medium"
         >
-          Pause
-          {isPausing ? <Spinner size={14} /> : <PauseIcon size={14} />}
+          {isPausing ? <Spinner size={15} className="shrink-0" /> : <PauseIcon size={15} className="shrink-0" />}
+          <span>Pause</span>
         </Button>
         <Button
           size="lg"
           onClick={onComplete}
           disabled={isBusy}
-          className="h-11 px-4 sm:px-5 rounded-xl gap-2"
+          className="h-11 px-5 rounded-xl gap-2 font-medium shadow-sm"
         >
-          Complete
-          {isCompleting ? <Spinner size={14} /> : <CheckIcon size={14} />}
+          {isCompleting ? <Spinner size={15} className="shrink-0" /> : <CheckIcon size={15} className="shrink-0" />}
+          <span>Complete</span>
         </Button>
         <Button
           variant="ghost"
@@ -91,7 +91,7 @@ export function TimerControls({
           className="h-11 w-11 rounded-xl text-muted-foreground hover:text-destructive"
           title="Cancel session"
         >
-          {isCancelling ? <Spinner size={14} /> : <StopCircleIcon size={16} />}
+          {isCancelling ? <Spinner size={15} className="shrink-0" /> : <StopCircleIcon size={16} className="shrink-0" />}
         </Button>
       </div>
     )
@@ -104,10 +104,10 @@ export function TimerControls({
           size="lg"
           onClick={onResume}
           disabled={isBusy}
-          className="h-11 px-6 rounded-xl gap-2"
+          className="h-11 px-7 rounded-xl gap-2.5 font-medium shadow-sm"
         >
-          Resume
-          {isResuming ? <Spinner size={16} /> : <PlayIcon size={16} />}
+          {isResuming ? <Spinner size={16} className="shrink-0" /> : <PlayIcon size={16} className="shrink-0" />}
+          <span>Resume</span>
         </Button>
         <Button
           variant="ghost"
@@ -117,7 +117,7 @@ export function TimerControls({
           className="h-11 w-11 rounded-xl text-muted-foreground hover:text-destructive"
           title="Cancel session"
         >
-          {isCancelling ? <Spinner size={16} /> : <StopCircleIcon size={16} />}
+          {isCancelling ? <Spinner size={15} className="shrink-0" /> : <StopCircleIcon size={16} className="shrink-0" />}
         </Button>
       </div>
     )
@@ -130,10 +130,10 @@ export function TimerControls({
         size="lg"
         onClick={onStart}
         disabled={isBusy}
-        className="h-11 px-6 rounded-xl gap-2"
+        className="h-11 px-7 rounded-xl gap-2.5 font-medium shadow-sm"
       >
-        {label}
-        {isStarting ? <Spinner size={18} /> : <SkipForwardIcon size={18} />}
+        {isStarting ? <Spinner size={18} className="shrink-0" /> : <SkipForwardIcon size={18} className="shrink-0" />}
+        <span>{label}</span>
       </Button>
     )
   }

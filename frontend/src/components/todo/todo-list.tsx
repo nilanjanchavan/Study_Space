@@ -81,12 +81,12 @@ export function TodoList() {
         subtitle={`${pagination?.total ?? 0} tasks`}
         accent={{
           icon: <CheckSquareIcon size={14} />,
-          className: "bg-emerald-500/10 text-emerald-500",
+          className: "bg-primary/10 text-primary",
         }}
         action={
-          <Button size="lg" onClick={() => setFormOpen(true)} className="gap-2">
-            New todo
-            <PlusIcon size={14} />
+          <Button size="lg" onClick={() => setFormOpen(true)} className="gap-2 h-10 px-5 rounded-xl font-medium shadow-sm">
+            <PlusIcon size={15} className="shrink-0" />
+            <span>New todo</span>
           </Button>
         }
       />
@@ -105,7 +105,7 @@ export function TodoList() {
             icon={<CheckSquareIcon size={24} />}
             title="No todos yet"
             description="Create your first task to get started"
-            accent="bg-emerald-500/10 text-emerald-500"
+            accent="bg-primary/10 text-primary"
             action={{
               label: "Create todo",
               onClick: () => setFormOpen(true),

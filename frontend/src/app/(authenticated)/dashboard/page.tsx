@@ -11,6 +11,7 @@ import { ResumeSessionWidget } from "@/components/dashboard/resume-session-widge
 import { MusicWidget } from "@/components/dashboard/music-widget"
 import { TodaysTasks } from "@/components/dashboard/todays-tasks"
 import { WeeklyGoals } from "@/components/dashboard/weekly-goals"
+import { CodeforcesWidget } from "@/components/dashboard/codeforces-widget"
 import { DailyQuote } from "@/components/dashboard/daily-quote"
 import { WeeklyHeatmap } from "@/components/dashboard/weekly-heatmap"
 import { ProductivityScore } from "@/components/dashboard/productivity-score"
@@ -61,7 +62,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Row 3: Tasks | Goals | Quote */}
+      {/* Row 3: Tasks | Goals | Codeforces */}
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <TodaysTasks />
@@ -70,7 +71,7 @@ export default function DashboardPage() {
           <WeeklyGoals />
         </div>
         <div className="lg:col-span-3">
-          <DailyQuote />
+          <CodeforcesWidget />
         </div>
       </div>
 
@@ -87,7 +88,8 @@ export default function DashboardPage() {
         <div className="lg:col-span-5">
           <Insights />
         </div>
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 flex flex-col gap-5">
+          <DailyQuote />
           <AchievementsPreview />
         </div>
       </div>

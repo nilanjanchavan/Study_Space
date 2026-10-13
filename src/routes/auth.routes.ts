@@ -15,10 +15,8 @@ const router = Router();
  * Auth routes — all rate-limited to mitigate brute-force / credential stuffing.
  * Refresh token is read from the httpOnly cookie primarily.
  */
-router.use(authRateLimiter);
-
-router.post('/register', validate(registerSchema, 'body'), register);
-router.post('/login', validate(loginSchema, 'body'), login);
+router.post('/register', authRateLimiter, validate(registerSchema, 'body'), register);
+router.post('/login', authRateLimiter, validate(loginSchema, 'body'), login);
 router.post('/refresh', validate(refreshSchema, 'body'), refresh);
 router.post('/logout', logout);
 

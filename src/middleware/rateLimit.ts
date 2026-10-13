@@ -9,7 +9,13 @@ import { env } from '../config/env';
  */
 export const authRateLimiter = rateLimit({
   windowMs: env.rateLimit.authWindowMs,
-  max: env.rateLimit.authMax,
+  max: env.isDevelopment ? 1000 : env.rateLimit.authMax,
+  skip: (req) => {
+    // In development or from localhost, do not lock out developer
+    if (env.isDevelopment) return true;
+    const ip = req.ip || req.socket.remoteAddress;
+    return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  },
   standardHeaders: true,
   legacyHeaders: false,
   message: {

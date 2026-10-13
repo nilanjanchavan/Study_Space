@@ -96,7 +96,7 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
         title="Insights"
         accent={{
           icon: <LightbulbIcon size={14} />,
-          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+          className: "bg-primary/10 text-primary",
         }}
       />
       <div className="mt-3">
@@ -118,7 +118,7 @@ export function Insights({ dashboard, weekly, streak, isLoading }: InsightsProps
             {insights.map((insight, i) => (
               <div key={i} className="flex items-start gap-3 rounded-xl border border-border/50 bg-card/50 px-3 py-2.5 transition-colors hover:bg-muted/30 dark:bg-white/[0.03]">
                 <p className="text-sm text-foreground leading-relaxed flex-1">{insight.text}</p>
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                   <LightbulbIcon size={13} />
                 </span>
               </div>

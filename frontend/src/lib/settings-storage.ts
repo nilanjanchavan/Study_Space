@@ -119,10 +119,12 @@ const CODEFORCES_KEY = "settings-codeforces"
 
 export interface CodeforcesSettings {
   autoSync: boolean
+  dailyGoal: number
 }
 
 export const DEFAULT_CODEFORCES_SETTINGS: CodeforcesSettings = {
   autoSync: false,
+  dailyGoal: 3,
 }
 
 // ── Generic localStorage helpers ───────────────────────────────────────────

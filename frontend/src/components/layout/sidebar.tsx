@@ -8,6 +8,7 @@ import {
   CheckSquare,
   Timer,
   Focus,
+  Trophy,
   BarChart3,
   Settings,
 } from "lucide-react"
@@ -26,47 +27,54 @@ const baseNavItems: NavItem[] = [
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
-    active: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-    indicator: "bg-indigo-500 dark:bg-indigo-400",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
   {
     label: "Todos",
     href: "/todos",
     icon: CheckSquare,
-    active: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    indicator: "bg-emerald-500 dark:bg-emerald-400",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
   {
     label: "Pomodoro",
     href: "/pomodoro",
     icon: Timer,
-    active: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
-    indicator: "bg-rose-500 dark:bg-rose-400",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
   {
     label: "Focus",
     href: "/focus",
     icon: Focus,
-    active: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-    indicator: "bg-violet-500 dark:bg-violet-400",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
+  },
+  {
+    label: "Codeforces",
+    href: "/codeforces",
+    icon: Trophy,
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
   {
     label: "Analytics",
     href: "/analytics",
     icon: BarChart3,
-    active: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    indicator: "bg-amber-500 dark:bg-amber-400",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
   {
     label: "Settings",
     href: "/settings",
     icon: Settings,
-    active: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
-    indicator: "bg-slate-500 dark:bg-slate-300",
+    active: "bg-primary/10 text-primary font-medium",
+    indicator: "bg-primary",
   },
 ] as const
 
-const FOCUS_LOCKED_ROUTES = ["/dashboard", "/todos", "/analytics", "/settings"]
+const FOCUS_LOCKED_ROUTES = ["/dashboard", "/todos", "/codeforces", "/analytics", "/settings"]
 
 interface SidebarProps {
   className?: string

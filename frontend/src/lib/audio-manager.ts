@@ -1,9 +1,10 @@
 import { toast } from "sonner"
 
+// Alarm sounds per pomodoro event (2-second clips)
 const SOUND_SOURCES: Record<string, string> = {
-  WORK: "/sounds/notification.mp3",
-  SHORT_BREAK: "/sounds/bell.mp3",
-  LONG_BREAK: "/sounds/forest.mp3",
+  WORK: "/sounds/digital.mp3",         // session complete → digital beep
+  SHORT_BREAK: "/sounds/bell.mp3",    // break complete → bell
+  LONG_BREAK: "/sounds/bell.mp3",     // long break complete → bell
 }
 
 export type FocusSoundEvent =
@@ -19,14 +20,21 @@ export type FocusSoundEvent =
 
 export const FOCUS_EVENT_SOUNDS: Record<FocusSoundEvent, string> = {
   WORK_START: "/sounds/notification.mp3",
-  WORK_END: "/sounds/notification.mp3",
+  WORK_END: "/sounds/digital.mp3",
   SHORT_BREAK_START: "/sounds/bell.mp3",
   SHORT_BREAK_END: "/sounds/bell.mp3",
-  LONG_BREAK_START: "/sounds/forest.mp3",
-  LONG_BREAK_END: "/sounds/forest.mp3",
+  LONG_BREAK_START: "/sounds/bell.mp3",
+  LONG_BREAK_END: "/sounds/bell.mp3",
   FOCUS_COMPLETE: "/sounds/digital.mp3",
   FOCUS_ABANDON: "/sounds/bell.mp3",
   STRICT_FAIL: "/sounds/notification.mp3",
+}
+
+// Alarm sounds for pomodoro start/transition events (2-second alarm)
+export const POMODORO_ALARM_SOUNDS: Record<string, string> = {
+  SESSION_COMPLETE: "/sounds/digital.mp3",   // session/break finishes
+  SESSION_START: "/sounds/notification.mp3", // new session begins
+  BREAK_END: "/sounds/bell.mp3",             // break ends → back to work
 }
 
 class AudioManager {
@@ -83,6 +91,41 @@ class AudioManager {
     })
   }
 
+  /**
+   * Play an alarm sound for exactly 2 seconds then auto-stop.
+   * Safe to call from any pomodoro lifecycle event.
+   */
+  playAlarm(src: string): void {
+    if (typeof Audio === "undefined") return
+    this.stop()
+
+    let audio = this.pool.get(src)
+    if (!audio) {
+      audio = new Audio(src)
+      audio.preload = "auto"
+      this.pool.set(src, audio)
+    }
+
+    audio.currentTime = 0
+    audio.loop = false
+    this.activeSound = audio
+
+    const timer = setTimeout(() => {
+      audio!.pause()
+      audio!.currentTime = 0
+    }, 2000)
+
+    audio.play().catch(() => {
+      clearTimeout(timer)
+      if (!this.userInteracted) {
+        toast.info("Sound blocked", {
+          description: "Click anywhere to enable alarm sounds.",
+          duration: 4000,
+        })
+      }
+    })
+  }
+
   stop(): void {
     if (this.activeSound) {
       this.activeSound.pause()
@@ -107,6 +150,7 @@ export function getAudioManager(): AudioManager {
     const allSounds = [
       ...Object.values(SOUND_SOURCES),
       ...Object.values(FOCUS_EVENT_SOUNDS),
+      ...Object.values(POMODORO_ALARM_SOUNDS),
     ]
     instance.preload([...new Set(allSounds)])
   }

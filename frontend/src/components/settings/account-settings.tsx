@@ -30,8 +30,8 @@ export function AccountSettings() {
       description="Manage your account settings"
     >
       <div className="flex items-center gap-4">
-        <Avatar className="size-12 ring-2 ring-slate-500/15">
-          <AvatarFallback className="bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-300 font-semibold">
+        <Avatar className="size-12 ring-2 ring-primary/20">
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
             {initials}
           </AvatarFallback>
         </Avatar>
@@ -61,10 +61,10 @@ export function AccountSettings() {
         variant="destructive"
         onClick={handleLogout}
         disabled={logoutMutation.isPending}
-        className="gap-2"
+        className="gap-2 h-10 px-5 rounded-xl font-medium"
       >
-        {logoutMutation.isPending ? "Logging out..." : "Log Out"}
-        <LogOutIcon size={14} />
+        <LogOutIcon size={15} className="shrink-0" />
+        <span>{logoutMutation.isPending ? "Logging out..." : "Log Out"}</span>
       </Button>
 
       <div className="border-t border-border/50 pt-4">
@@ -73,7 +73,7 @@ export function AccountSettings() {
           <SoftCard className="p-3 opacity-60">
             <div className="flex items-center gap-2 mb-1">
               <p className="text-xs font-medium text-foreground">Change Password</p>
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-500/10 text-slate-500 dark:bg-slate-400/10 dark:text-slate-400">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                 <LockIcon size={12} />
               </span>
             </div>
@@ -82,7 +82,7 @@ export function AccountSettings() {
           <SoftCard className="p-3 opacity-60">
             <div className="flex items-center gap-2 mb-1">
               <p className="text-xs font-medium text-foreground">Edit Avatar</p>
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-500/10 text-slate-500 dark:bg-slate-400/10 dark:text-slate-400">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                 <ImageIcon size={12} />
               </span>
             </div>

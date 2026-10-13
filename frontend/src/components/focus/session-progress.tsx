@@ -34,7 +34,7 @@ export function SessionProgress({
     <GlassCard className="p-4">
       <SectionHeader
         title="Session Progress"
-        accent={{ icon: <ZapIcon size={14} />, className: "bg-violet-500/10 text-violet-500" }}
+        accent={{ icon: <ZapIcon size={14} />, className: "bg-primary/10 text-primary" }}
       />
 
       {/* Overall progress */}

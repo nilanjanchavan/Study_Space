@@ -42,7 +42,7 @@ export function TodayActivity({ data, isLoading }: TodayActivityProps) {
         title="Today's Activity"
         accent={{
           icon: <SunIcon size={14} />,
-          className: "bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400",
+          className: "bg-primary/10 text-primary",
         }}
       />
       <div className="mt-3">
@@ -60,10 +60,10 @@ export function TodayActivity({ data, isLoading }: TodayActivityProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2">
-            <StatItem icon={TimerIcon} label="Focus Time" value={data?.focusMinutes ?? 0} unit="min" accent="bg-amber-500/10 text-amber-600 dark:text-amber-400" />
-            <StatItem icon={CoffeeIcon} label="Pomodoros" value={data?.completedPomodoros ?? 0} accent="bg-amber-500/10 text-amber-600 dark:text-amber-400" />
-            <StatItem icon={CheckCircleIcon} label="Todos Done" value={data?.completedTodos ?? 0} accent="bg-amber-500/10 text-amber-600 dark:text-amber-400" />
-            <StatItem icon={PercentIcon} label="Completion" value={`${data?.completionRate ?? 0}%`} accent="bg-amber-500/10 text-amber-600 dark:text-amber-400" />
+            <StatItem icon={TimerIcon} label="Focus Time" value={data?.focusMinutes ?? 0} unit="min" accent="bg-primary/10 text-primary" />
+            <StatItem icon={CoffeeIcon} label="Pomodoros" value={data?.completedPomodoros ?? 0} accent="bg-primary/10 text-primary" />
+            <StatItem icon={CheckCircleIcon} label="Todos Done" value={data?.completedTodos ?? 0} accent="bg-primary/10 text-primary" />
+            <StatItem icon={PercentIcon} label="Completion" value={`${data?.completionRate ?? 0}%`} accent="bg-primary/10 text-primary" />
           </div>
         )}
       </div>

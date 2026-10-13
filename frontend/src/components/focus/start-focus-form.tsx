@@ -93,7 +93,7 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
     <div className="w-full max-w-lg mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-500 mb-4">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
           <TargetIcon size={28} />
         </div>
         <h2 className="text-heading text-foreground">Start Deep Focus</h2>
@@ -140,8 +140,8 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
               onClick={() => setMinutes(m)}
               className={`flex-1 h-9 rounded-lg border px-2 text-xs font-medium tabular-nums transition-all duration-150 ${
                 minutes === m
-                  ? "border-violet-500 bg-violet-500/10 text-violet-500"
-                  : "border-border/50 bg-muted/20 text-muted-foreground hover:border-violet-300/60 hover:bg-muted/40 dark:hover:border-violet-400/40"
+                  ? "border-primary bg-primary/10 text-primary font-medium"
+                  : "border-border/50 bg-muted/20 text-muted-foreground hover:border-primary/60 hover:bg-muted/40"
               }`}
             >
               {m}m
@@ -178,7 +178,7 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
           >
             <div className="flex items-center gap-2">
               <span className="font-medium text-foreground">Pomodoro Settings</span>
-              <span className="flex size-7 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <SettingsIcon size={14} />
               </span>
             </div>
@@ -270,9 +270,9 @@ export function StartFocusForm({ onSuccess }: StartFocusFormProps) {
         </div>
 
         {/* Submit */}
-        <Button type="submit" size="lg" disabled={isPending} className="w-full h-11 rounded-xl gap-2">
-          {isPending ? "Starting..." : "Start Deep Focus"}
-          {isPending ? <Spinner size={18} /> : <PlayIcon size={18} />}
+        <Button type="submit" size="lg" disabled={isPending} className="w-full h-11 rounded-xl gap-2.5 font-medium shadow-sm">
+          {isPending ? <Spinner size={18} className="shrink-0" /> : <PlayIcon size={18} className="shrink-0" />}
+          <span>{isPending ? "Starting..." : "Start Deep Focus"}</span>
         </Button>
       </form>
     </div>

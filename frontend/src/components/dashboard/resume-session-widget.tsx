@@ -76,14 +76,14 @@ export function ResumeSessionWidget() {
   return (
     <GlassCard className="p-4">
       <SectionHeader title="Start Something" />
-      <div className="mt-3 flex gap-2">
-        <Button onClick={() => router.push("/pomodoro")} variant="outline" className="flex-1 gap-2">
-          Pomodoro
-          <PlayIcon size={14} />
+      <div className="mt-3 flex gap-2.5">
+        <Button onClick={() => router.push("/pomodoro")} variant="outline" className="flex-1 h-10 rounded-xl gap-2 font-medium text-sm">
+          <PlayIcon size={15} className="shrink-0" />
+          <span>Pomodoro</span>
         </Button>
-        <Button onClick={() => router.push("/focus")} variant="outline" className="flex-1 gap-2">
-          Focus
-          <FocusIcon size={14} />
+        <Button onClick={() => router.push("/focus")} variant="outline" className="flex-1 h-10 rounded-xl gap-2 font-medium text-sm">
+          <FocusIcon size={15} className="shrink-0" />
+          <span>Focus</span>
         </Button>
       </div>
     </GlassCard>

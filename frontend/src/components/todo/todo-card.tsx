@@ -56,7 +56,7 @@ export function TodoCard({ todo, onEdit, onDelete }: TodoCardProps) {
             ? "text-success hover:text-success/70"
             : isInProgress
               ? "text-blue-500 hover:text-blue-400"
-              : "border-2 border-transparent text-muted-foreground/40 hover:border-emerald-400/60 hover:bg-emerald-500/[0.06] hover:text-emerald-500/60"
+              : "border-2 border-transparent text-muted-foreground/40 hover:border-primary/60 hover:bg-primary/[0.06] hover:text-primary/70"
         )}
         aria-label={isDone ? "Mark as todo" : "Mark as done"}
       >
