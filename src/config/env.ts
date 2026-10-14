@@ -25,7 +25,7 @@ export const env = {
   // ── Rate limiting ───────────────────────────────────────
   rateLimit: {
     authWindowMs: parseInt(process.env.AUTH_RATE_WINDOW_MS ?? String(15 * 60 * 1000), 10),
-    authMax: parseInt(process.env.AUTH_RATE_MAX ?? '10', 10),
+    authMax: parseInt(process.env.AUTH_RATE_MAX ?? '100', 10),
   },
 
   // ── Google OAuth ─────────────────────────────────────────

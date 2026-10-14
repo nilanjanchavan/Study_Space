@@ -23,6 +23,10 @@ import { notFoundHandler } from './middleware/notFound';
 export function createApp(): Express {
   const app = express();
 
+  // Trust first proxy (Render, Railway, Vercel, Cloudflare, etc.)
+  // Required so req.ip and rate-limiting identify actual client IPs instead of the reverse proxy
+  app.set('trust proxy', 1);
+
   // ── Global middleware ────────────────────────────────
   app.use(helmet());
   // Cookies must be allowed for our auth flow when front-end runs elsewhere.

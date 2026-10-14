@@ -10,6 +10,7 @@ import { env } from '../config/env';
 export const authRateLimiter = rateLimit({
   windowMs: env.rateLimit.authWindowMs,
   max: env.isDevelopment ? 1000 : env.rateLimit.authMax,
+  skipSuccessfulRequests: true,
   skip: (req) => {
     // In development or from localhost, do not lock out developer
     if (env.isDevelopment) return true;
@@ -21,7 +22,7 @@ export const authRateLimiter = rateLimit({
   message: {
     success: false,
     error: {
-      message: 'Too many requests from this IP, please try again later.',
+      message: 'Too many failed attempts from this IP, please try again in 15 minutes.',
       code: 'RATE_LIMIT_EXCEEDED',
     },
   },
