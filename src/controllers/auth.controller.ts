@@ -79,11 +79,38 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
   return sendSuccess(res, { user });
 });
 
-// ── GET /api/auth/google ───────────────────────────────────────────────────
-export const googleRedirect = asyncHandler(async (_req: Request, res: Response) => {
-  if (!env.google.clientId) {
-    return res.redirect(`${env.frontendUrl}/login?error=GOOGLE_NOT_CONFIGURED`);
+function getFrontendRedirectUrl(req: Request): string {
+  // If FRONTEND_URL is explicitly set to a production domain, prefer it
+  if (env.frontendUrl && !env.frontendUrl.includes('localhost')) {
+    return env.frontendUrl;
   }
+
+  // Otherwise fallback to Referer or Origin header so deployed clients aren't sent to localhost
+  const referer = req.headers.referer || (req.headers.origin as string | undefined);
+  if (referer && typeof referer === 'string') {
+    try {
+      const url = new URL(referer);
+      if (url.origin && (url.protocol === 'http:' || url.protocol === 'https:')) {
+        return url.origin;
+      }
+    } catch {
+      // ignore parse error
+    }
+  }
+
+  return env.frontendUrl;
+}
+
+// ── GET /api/auth/google ───────────────────────────────────────────────────
+export const googleRedirect = asyncHandler(async (req: Request, res: Response) => {
+  const targetFrontend = getFrontendRedirectUrl(req);
+
+  if (!env.google.clientId) {
+    return res.redirect(`${targetFrontend}/login?error=GOOGLE_NOT_CONFIGURED`);
+  }
+
+  const statePayload = Buffer.from(JSON.stringify({ returnTo: targetFrontend })).toString('base64url');
+
   const params = new URLSearchParams({
     client_id: env.google.clientId,
     redirect_uri: env.google.callbackUrl,
@@ -91,6 +118,7 @@ export const googleRedirect = asyncHandler(async (_req: Request, res: Response) 
     scope: 'openid email profile',
     access_type: 'offline',
     prompt: 'select_account',
+    state: statePayload,
   });
   return res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
 });
@@ -99,18 +127,34 @@ export const googleRedirect = asyncHandler(async (_req: Request, res: Response) 
 export const googleCallback = asyncHandler(async (req: Request, res: Response) => {
   const code = req.query.code as string | undefined;
   const error = req.query.error as string | undefined;
+  const state = req.query.state as string | undefined;
+
+  let targetFrontend = env.frontendUrl;
+  if (state) {
+    try {
+      const parsed = JSON.parse(Buffer.from(state, 'base64url').toString('utf8'));
+      if (parsed.returnTo && typeof parsed.returnTo === 'string') {
+        const url = new URL(parsed.returnTo);
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          targetFrontend = url.origin;
+        }
+      }
+    } catch {
+      // fallback
+    }
+  }
 
   if (error || !code) {
-    return res.redirect(`${env.frontendUrl}/login?error=${encodeURIComponent(error || 'ACCESS_DENIED')}`);
+    return res.redirect(`${targetFrontend}/login?error=${encodeURIComponent(error || 'ACCESS_DENIED')}`);
   }
 
   try {
     const result = await handleGoogleAuth(code, reqMeta(req));
     const maxAge = result.refreshToken.expiresAt.getTime() - Date.now();
     res.cookie(REFRESH_COOKIE_NAME, result.refreshToken.token, refreshCookieOptions(maxAge));
-    return res.redirect(`${env.frontendUrl}/login/callback?token=${encodeURIComponent(result.accessToken)}`);
+    return res.redirect(`${targetFrontend}/login/callback?token=${encodeURIComponent(result.accessToken)}`);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Authentication failed';
-    return res.redirect(`${env.frontendUrl}/login?error=${encodeURIComponent(message)}`);
+    return res.redirect(`${targetFrontend}/login?error=${encodeURIComponent(message)}`);
   }
 });

@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -21,6 +21,28 @@ import {
 import { GraduationCapIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { GoogleLoginButton } from "@/components/auth/google-login-button"
+
+function AuthErrorNotification() {
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const error = searchParams.get("error")
+    if (!error) return
+
+    if (error === "GOOGLE_NOT_CONFIGURED") {
+      toast.error("Google Sign-In is not configured", {
+        description: "GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET need to be set in your backend environment variables.",
+        duration: 7000,
+      })
+    } else {
+      toast.error("Sign-in failed", {
+        description: error.replace(/_/g, " "),
+      })
+    }
+  }, [searchParams])
+
+  return null
+}
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -70,6 +92,9 @@ export default function LoginPage() {
 
   return (
     <div className="page-ambient module-indigo flex flex-1 items-center justify-center bg-background px-4 py-12">
+      <Suspense fallback={null}>
+        <AuthErrorNotification />
+      </Suspense>
       <Card className="relative w-full max-w-md bg-white/[0.72] shadow-soft backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:rounded-t-2xl before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent dark:bg-white/[0.05] dark:shadow-soft dark:before:via-white/10">
         <CardHeader className="text-center">
           <div className="mx-auto mb-1 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-violet-600 text-white shadow-soft ring-1 ring-white/10">
