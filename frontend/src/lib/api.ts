@@ -12,6 +12,13 @@ let accessToken: string | null = null
 
 export function setAccessToken(token: string | null) {
   accessToken = token
+  if (typeof window !== "undefined") {
+    if (token) {
+      localStorage.setItem("accessToken", token)
+    } else {
+      localStorage.removeItem("accessToken")
+    }
+  }
   console.log(
     "[auth] accessToken set:",
     token ? token.slice(0, 20) + "..." : null
@@ -19,12 +26,16 @@ export function setAccessToken(token: string | null) {
 }
 
 export function getAccessToken() {
+  if (!accessToken && typeof window !== "undefined") {
+    accessToken = localStorage.getItem("accessToken")
+  }
   return accessToken
 }
 
 api.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
+  const token = getAccessToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })

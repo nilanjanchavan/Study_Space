@@ -10,11 +10,16 @@ export const REFRESH_COOKIE_NAME = 'rt';
  * - sameSite 'lax': CSRF protection while allowing top-level navigations
  * - path '/api/auth': scoped so only auth endpoints receive it
  */
+const isCrossSiteProd =
+  env.isProduction ||
+  Boolean(process.env.RENDER) ||
+  (Boolean(env.frontendUrl) && !env.frontendUrl.includes('localhost'));
+
 export function refreshCookieOptions(maxAgeMs: number): CookieOptions {
   return {
     httpOnly: true,
-    secure: env.isProduction,
-    sameSite: env.isProduction ? 'none' : 'lax',
+    secure: isCrossSiteProd,
+    sameSite: isCrossSiteProd ? 'none' : 'lax',
     path: '/api/auth',
     maxAge: maxAgeMs,
   };
@@ -23,7 +28,7 @@ export function refreshCookieOptions(maxAgeMs: number): CookieOptions {
 /** Cookie options used when clearing the refresh token on logout. */
 export const clearRefreshCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: env.isProduction,
-  sameSite: env.isProduction ? 'none' : 'lax',
+  secure: isCrossSiteProd,
+  sameSite: isCrossSiteProd ? 'none' : 'lax',
   path: '/api/auth',
 };

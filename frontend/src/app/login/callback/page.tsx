@@ -3,7 +3,7 @@
 import { useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
-import api from "@/lib/api"
+import api, { setAccessToken } from "@/lib/api"
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react"
 
@@ -33,8 +33,7 @@ function GoogleCallbackContent() {
 
     if (token) {
       try {
-        localStorage.setItem("accessToken", token)
-        api.defaults.headers.common.Authorization = `Bearer ${token}`
+        setAccessToken(token)
         queryClient.invalidateQueries({ queryKey: ["auth", "me"] })
         toast.success("Signed in successfully with Google!")
         router.replace("/dashboard")
