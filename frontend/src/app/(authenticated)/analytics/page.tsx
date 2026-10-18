@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
 
   if (!isLoading && !hasAnyData) {
     return (
-      <div className="flex flex-col gap-8 max-w-5xl">
+      <div className="flex flex-col gap-8 max-w-5xl mx-auto w-full">
         <SectionHeader
           title="Analytics"
           subtitle="Track your productivity over time"
@@ -46,7 +46,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-5xl">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       <SectionHeader
         title="Analytics"
         subtitle="Track your productivity over time"

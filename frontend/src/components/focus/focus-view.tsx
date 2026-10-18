@@ -26,7 +26,7 @@ export function FocusView() {
 
   if (hasActiveSession) {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
         <ActiveFocusView session={session!} startNewSession={handleStartNewSession} />
       </div>
     )

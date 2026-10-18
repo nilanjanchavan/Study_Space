@@ -49,7 +49,7 @@ export default function CodeforcesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 max-w-6xl">
+      <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
         <SectionHeader
           title="Codeforces"
           subtitle="Monitor problem solving consistency, contest ratings, and upcoming rounds"
@@ -66,7 +66,7 @@ export default function CodeforcesPage() {
 
   if (!profile || !profile.codeforcesHandle) {
     return (
-      <div className="flex flex-col gap-6 max-w-6xl">
+      <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
         <SectionHeader
           title="Codeforces"
           subtitle="Monitor problem solving consistency, contest ratings, and upcoming rounds"
@@ -80,7 +80,7 @@ export default function CodeforcesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-6xl pb-10">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full pb-10">
       <SectionHeader
         title="Codeforces"
         subtitle="Monitor problem solving consistency, contest ratings, and upcoming rounds"
