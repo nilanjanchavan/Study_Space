@@ -9,6 +9,7 @@ const api = axios.create({
 })
 
 let accessToken: string | null = null
+let refreshToken: string | null = null
 
 export function setAccessToken(token: string | null) {
   accessToken = token
@@ -30,6 +31,33 @@ export function getAccessToken() {
     accessToken = localStorage.getItem("accessToken")
   }
   return accessToken
+}
+
+export function setRefreshToken(token: string | null) {
+  refreshToken = token
+  if (typeof window !== "undefined") {
+    if (token) {
+      localStorage.setItem("refreshToken", token)
+    } else {
+      localStorage.removeItem("refreshToken")
+    }
+  }
+  console.log(
+    "[auth] refreshToken set:",
+    token ? token.slice(0, 20) + "..." : null
+  )
+}
+
+export function getRefreshToken() {
+  if (!refreshToken && typeof window !== "undefined") {
+    refreshToken = localStorage.getItem("refreshToken")
+  }
+  return refreshToken
+}
+
+export function clearAuthTokens() {
+  setAccessToken(null)
+  setRefreshToken(null)
 }
 
 api.interceptors.request.use((config) => {
@@ -96,12 +124,13 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // Only attempt refresh if we actually had a session (access token)
+    // Only attempt refresh if we actually had a session (access token or refresh token)
+    const hasExistingSession = !!(getAccessToken() || getRefreshToken())
     if (
       status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
-      accessToken
+      hasExistingSession
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -113,17 +142,22 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
+        const storedRefresh = getRefreshToken()
         const { data } = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
-          {},
+          { refreshToken: storedRefresh },
           {
             withCredentials: true,
           }
         )
 
         const newToken = data.data.accessToken
+        const newRefreshToken = data.data.refreshToken
 
         setAccessToken(newToken)
+        if (newRefreshToken) {
+          setRefreshToken(newRefreshToken)
+        }
 
         processQueue(null)
 
@@ -133,7 +167,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         console.warn("[auth] Refresh failed, clearing session")
 
-        setAccessToken(null)
+        clearAuthTokens()
 
         processQueue(refreshError)
 

@@ -29,3 +29,7 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# Private documentation
+docs/problems_faced_and_solutions.md
+

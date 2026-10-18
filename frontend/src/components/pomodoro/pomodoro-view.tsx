@@ -5,7 +5,7 @@ import { useCurrentPomodoro, useStartPomodoro, usePausePomodoro, useResumePomodo
 import { useCompletionEffects } from "@/hooks/use-completion-effects"
 import { usePomodoroMusic } from "@/hooks/use-pomodoro-music"
 import { useStreakAnalytics } from "@/hooks/use-analytics"
-import { startTitleTimer, stopTitleTimer } from "@/lib/page-title"
+import { startTitleTimer, stopTitleTimer, startTitleFlash, stopTitleFlash } from "@/lib/page-title"
 import { getDurationForType } from "@/lib/pomodoro-settings"
 import {
   loadPomodoroSettings,
@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
-import { getAudioManager, POMODORO_ALARM_SOUNDS } from "@/lib/audio-manager"
+import { getAudioManager, POMODORO_ALARM_SOUNDS, notifyPomodoroComplete, requestNotificationPermission } from "@/lib/audio-manager"
 import { SettingsIcon, ChevronDownIcon, ChevronUpIcon, QuoteIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { PomodoroType, PomodoroSessionItem } from "@/types"
@@ -97,22 +97,45 @@ export function PomodoroView() {
     }
   }, [session])
 
-  // Auto-cycle after completion
-  const autoCycle = useCallback(
-    (completedType: PomodoroType) => {
+  // Auto-cycle transition logic after completion
+  const triggerCompletionFlow = useCallback(
+    (completedType: PomodoroType, sessionId?: string) => {
+      if (sessionId) {
+        if (completedIdRef.current === sessionId) return
+        completedIdRef.current = sessionId
+      }
+
+      // 1. Advance quote & cycle state immediately
+      advanceQuoteIndex()
+      setQuoteIndex(getQuoteIndex())
+      if (completedType === "WORK") {
+        incrementWorkInCycle()
+      } else if (completedType === "LONG_BREAK") {
+        resetCycleState()
+      }
+
+      // 2. Play alarm sound, desktop notification, flash page title
+      const alarmSrc =
+        completedType === "WORK"
+          ? POMODORO_ALARM_SOUNDS.SESSION_COMPLETE
+          : POMODORO_ALARM_SOUNDS.BREAK_END
+      getAudioManager().playAlarm(alarmSrc)
+      notifyPomodoroComplete(completedType)
+      startTitleFlash()
+
+      // 3. Immediately switch mode to the next step in the cycle
       const s = loadPomodoroSettings()
       const nextType = getNextPomodoroType(completedType, s)
+      setMode(nextType)
+
+      // 4. Auto-start next cycle if configured
       const shouldAutoStart =
         (completedType === "WORK" && s.autoStartBreaks) ||
         (completedType !== "WORK" && s.autoStartWork)
-      if (shouldAutoStart) {
-        // Play 2-second transition alarm, then auto-start after it finishes
-        const alarmSrc = completedType === "WORK"
-          ? POMODORO_ALARM_SOUNDS.SESSION_COMPLETE          // work done → break starts
-          : POMODORO_ALARM_SOUNDS.BREAK_END                 // break done → work starts
-        getAudioManager().playAlarm(alarmSrc)
 
+      if (shouldAutoStart) {
         setTimeout(() => {
+          stopTitleFlash()
           startPomodoro.mutate(
             { type: nextType, durationMinutes: getDurationForType(s, nextType) },
             {
@@ -122,34 +145,34 @@ export function PomodoroView() {
               onError: handleError,
             }
           )
-        }, 2200) // slight delay so alarm fully plays before new session starts
+        }, 2200)
       }
     },
     [startPomodoro]
   )
 
-  // Detect completion and advance quote
+  // Detect completion from backend status change if completed externally
   useEffect(() => {
     if (!session) return
     const prev = prevStatusRef.current
-    const shouldTrigger = prev === "RUNNING" && session.status === "COMPLETED" && completedIdRef.current !== session.id
+    const shouldTrigger =
+      prev === "RUNNING" &&
+      session.status === "COMPLETED" &&
+      completedIdRef.current !== session.id
     prevStatusRef.current = session.status
     if (shouldTrigger) {
-      completedIdRef.current = session.id
-      advanceQuoteIndex()
-      setQuoteIndex(getQuoteIndex())
-      if (session.type === "WORK") {
-        incrementWorkInCycle()
-      } else if (session.type === "LONG_BREAK") {
-        resetCycleState()
-      }
-      autoCycle(session.type as PomodoroType)
+      triggerCompletionFlow(session.type as PomodoroType, session.id)
     }
-  }, [session, autoCycle])
+  }, [session, triggerCompletionFlow])
 
-  const handleModeChange = (newMode: PomodoroType) => setMode(newMode)
+  const handleModeChange = (newMode: PomodoroType) => {
+    stopTitleFlash()
+    setMode(newMode)
+  }
 
   const handleStart = () => {
+    requestNotificationPermission()
+    stopTitleFlash()
     startPomodoro.mutate(
       { type: mode, durationMinutes: getDurationForType(settings, mode) },
       {
@@ -181,16 +204,20 @@ export function PomodoroView() {
     if (!session) return
     const completedType = session.type as PomodoroType
     const completedId = session.id
+
+    // Immediately trigger alarm, cycle advancement, and mode switch
+    triggerCompletionFlow(completedType, completedId)
+
+    // Notify backend of completion asynchronously
     try {
       await completePomodoro.mutateAsync(undefined)
-      completedIdRef.current = completedId
-      autoCycle(completedType)
     } catch (err) {
-      handleError(err)
+      console.warn("[pomodoro] complete API call error:", err)
     }
-  }, [session, completePomodoro, autoCycle])
+  }, [session, completePomodoro, triggerCompletionFlow])
 
   const handleCancel = () => {
+    stopTitleFlash()
     cancelPomodoro.mutate(undefined, {
       onSuccess: () => toast.success("Session cancelled"),
       onError: handleError,
@@ -236,6 +263,7 @@ export function PomodoroView() {
         <TimerControls
           status={displayStatus}
           completedType={completedType}
+          currentMode={displayMode}
           isStarting={startPomodoro.isPending}
           isPausing={pausePomodoro.isPending}
           isResuming={resumePomodoro.isPending}

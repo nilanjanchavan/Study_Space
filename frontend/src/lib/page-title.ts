@@ -1,5 +1,8 @@
+import { workerTimer } from "./worker-timer"
+
 const SITE_TITLE = "Study Workspace"
 let titleAnimationFrame: ReturnType<typeof requestAnimationFrame> | null = null
+let titleWorkerUnsubscribe: (() => void) | null = null
 let visibilityHandler: (() => void) | null = null
 let flashAnimationFrame: ReturnType<typeof requestAnimationFrame> | null = null
 
@@ -44,12 +47,10 @@ export function startTitleTimer(
     }
   }
 
-  const tick = () => {
+  update()
+  titleWorkerUnsubscribe = workerTimer.subscribe(() => {
     update()
-    titleAnimationFrame = requestAnimationFrame(tick)
-  }
-
-  titleAnimationFrame = requestAnimationFrame(tick)
+  })
 
   visibilityHandler = () => {
     if (document.visibilityState === "visible") {
@@ -62,6 +63,10 @@ export function startTitleTimer(
 }
 
 export function stopTitleTimer(): void {
+  if (titleWorkerUnsubscribe) {
+    titleWorkerUnsubscribe()
+    titleWorkerUnsubscribe = null
+  }
   if (titleAnimationFrame) {
     cancelAnimationFrame(titleAnimationFrame)
     titleAnimationFrame = null

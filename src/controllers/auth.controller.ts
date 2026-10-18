@@ -32,7 +32,11 @@ function respondWithTokens(
 ) {
   const maxAge = data.refreshToken.expiresAt.getTime() - Date.now();
   res.cookie(REFRESH_COOKIE_NAME, data.refreshToken.token, refreshCookieOptions(maxAge));
-  return sendSuccess(res, { user: data.user, accessToken: data.accessToken }, 201);
+  return sendSuccess(
+    res,
+    { user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken.token },
+    201,
+  );
 }
 
 // ── POST /api/auth/register ────────────────────────────────────────────────
@@ -59,12 +63,17 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
   const result = await refreshTokens(rawToken);
   const maxAge = result.refreshToken.expiresAt.getTime() - Date.now();
   res.cookie(REFRESH_COOKIE_NAME, result.refreshToken.token, refreshCookieOptions(maxAge));
-  return sendSuccess(res, { user: result.user, accessToken: result.accessToken });
+  return sendSuccess(res, {
+    user: result.user,
+    accessToken: result.accessToken,
+    refreshToken: result.refreshToken.token,
+  });
 });
 
 // ── POST /api/auth/logout ──────────────────────────────────────────────────
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const rawToken = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
+  const rawToken =
+    (req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined) || req.body?.refreshToken;
   await logoutUser(rawToken);
   res.clearCookie(REFRESH_COOKIE_NAME, clearRefreshCookieOptions);
   return sendSuccess(res, { message: 'Logged out successfully' });
@@ -152,7 +161,9 @@ export const googleCallback = asyncHandler(async (req: Request, res: Response) =
     const result = await handleGoogleAuth(code, reqMeta(req));
     const maxAge = result.refreshToken.expiresAt.getTime() - Date.now();
     res.cookie(REFRESH_COOKIE_NAME, result.refreshToken.token, refreshCookieOptions(maxAge));
-    return res.redirect(`${targetFrontend}/login/callback?token=${encodeURIComponent(result.accessToken)}`);
+    return res.redirect(
+      `${targetFrontend}/login/callback?token=${encodeURIComponent(result.accessToken)}&refreshToken=${encodeURIComponent(result.refreshToken.token)}`,
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Authentication failed';
     return res.redirect(`${targetFrontend}/login?error=${encodeURIComponent(message)}`);

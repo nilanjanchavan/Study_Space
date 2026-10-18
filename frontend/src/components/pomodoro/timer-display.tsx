@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react"
 import type { PomodoroSessionItem } from "@/types"
 
+import { workerTimer } from "@/lib/worker-timer"
+
 interface TimerDisplayProps {
   session: PomodoroSessionItem | null
   plannedMinutes: number
@@ -35,10 +37,10 @@ function formatTime(ms: number): string {
 function computeDisplay(session: PomodoroSessionItem | null, plannedMs: number, now: number, overrideStartedMs?: number) {
   if (!session) return { remaining: plannedMs, progress: 0 }
   if (session.status === "COMPLETED" || session.status === "CANCELLED" || session.status === "ABANDONED") {
-    return { remaining: 0, progress: 100 }
+    return { remaining: plannedMs, progress: 0 }
   }
   const remaining = computeRemaining(session, plannedMs, now, overrideStartedMs)
-  const progress = Math.round(((plannedMs - remaining) / plannedMs) * 100)
+  const progress = Math.min(100, Math.max(0, Math.round(((plannedMs - remaining) / plannedMs) * 100)))
   return { remaining, progress }
 }
 
@@ -64,24 +66,23 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
 
   useEffect(() => {
     if (!isActive) {
-      const rafId = requestAnimationFrame(() => {
-        const d = computeDisplay(session, plannedMs, Date.now(), overrideStartedMs)
-        setRemaining(d.remaining)
-        setProgress(d.progress)
-      })
-      return () => cancelAnimationFrame(rafId)
+      setRemaining(plannedMs)
+      setProgress(0)
+      firedRef.current = false
     }
+  }, [isActive, plannedMs])
+
+  useEffect(() => {
+    if (!isActive) return
 
     if (session && session.id !== firedSessionIdRef.current) {
       firedRef.current = false
       firedSessionIdRef.current = session.id
     }
 
-    let rafId: number
     let lastSecond = -1
 
-    const tick = () => {
-      const now = Date.now()
+    const tick = (now: number) => {
       const d = computeDisplay(session, plannedMs, now, overrideStartedMs)
       const currentSecond = Math.ceil(d.remaining / 1000)
       if (currentSecond !== lastSecond) {
@@ -93,31 +94,27 @@ export function TimerDisplay({ session, plannedMinutes, focusStartedAt, onFinish
         firedRef.current = true
         onFinished?.()
       }
-      rafId = requestAnimationFrame(tick)
     }
 
-    rafId = requestAnimationFrame(tick)
+    tick(Date.now())
+
+    // Subscribe to Web Worker timer so this fires continuously even when tab is backgrounded
+    const unsubscribeWorker = workerTimer.subscribe((now) => {
+      tick(now)
+    })
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
-        const now = Date.now()
-        const d = computeDisplay(session, plannedMs, now, overrideStartedMs)
-        lastSecond = Math.ceil(d.remaining / 1000)
-        setRemaining(d.remaining)
-        setProgress(d.progress)
-        if (session?.status === "RUNNING" && d.remaining <= 0 && !firedRef.current) {
-          firedRef.current = true
-          onFinished?.()
-        }
+        tick(Date.now())
       }
     }
     document.addEventListener("visibilitychange", handleVisibility)
 
     return () => {
-      cancelAnimationFrame(rafId)
+      unsubscribeWorker()
       document.removeEventListener("visibilitychange", handleVisibility)
     }
-  }, [session, plannedMs, overrideStartedMs, onFinished]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [session, plannedMs, overrideStartedMs, isActive, onFinished]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="relative flex items-center justify-center">

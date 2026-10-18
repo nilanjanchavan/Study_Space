@@ -13,6 +13,7 @@ import {
 interface TimerControlsProps {
   status: string
   completedType: string | null
+  currentMode?: string
   isStarting: boolean
   isPausing: boolean
   isResuming: boolean
@@ -34,6 +35,7 @@ const NEXT_LABELS: Record<string, string> = {
 export function TimerControls({
   status,
   completedType,
+  currentMode,
   isStarting,
   isPausing,
   isResuming,
@@ -48,6 +50,13 @@ export function TimerControls({
   const isBusy = isStarting || isPausing || isResuming || isCompleting || isCancelling
 
   if (status === "IDLE") {
+    const idleLabel =
+      currentMode === "SHORT_BREAK"
+        ? "Start Short Break"
+        : currentMode === "LONG_BREAK"
+        ? "Start Long Break"
+        : "Start Focus Session"
+
     return (
       <Button
         size="lg"
@@ -56,7 +65,7 @@ export function TimerControls({
         className="h-11 px-7 rounded-xl gap-2.5 font-medium shadow-sm"
       >
         {isStarting ? <Spinner size={18} className="shrink-0" /> : <PlayIcon size={18} className="shrink-0" />}
-        <span>Start Session</span>
+        <span>{idleLabel}</span>
       </Button>
     )
   }

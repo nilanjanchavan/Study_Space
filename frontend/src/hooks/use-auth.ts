@@ -2,20 +2,25 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { authApi } from "@/services/auth"
-import { setAccessToken, getAccessToken } from "@/lib/api"
+import { setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, clearAuthTokens } from "@/lib/api"
 import type { LoginRequest, RegisterRequest, User } from "@/types"
 import axios from "axios"
 
 /**
- * Attempt to restore a session by calling POST /api/auth/refresh
- * using the httpOnly refresh-token cookie. Returns the user on success,
- * or null if no valid session exists.
- *
- * This is a plain async function — NOT a hook — so it can be called
- * once during provider initialization without triggering re-renders.
+ * Attempt to restore a session.
+ * Fast-path: If neither accessToken nor refreshToken exists in storage,
+ * returns null immediately (0ms) without waiting on a sleeping backend.
  */
 export async function hydrateAuth(): Promise<User | null> {
-  if (getAccessToken()) {
+  const token = getAccessToken()
+  const refreshToken = getRefreshToken()
+
+  if (!token && !refreshToken) {
+    console.log("[auth] No local tokens found, instant skip hydration")
+    return null
+  }
+
+  if (token) {
     try {
       const response = await authApi.getMe()
       console.log("[auth] hydrated from existing token")
@@ -29,17 +34,22 @@ export async function hydrateAuth(): Promise<User | null> {
     console.log("[auth] attempting refresh on startup")
     const { data } = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
-      {},
-      { withCredentials: true }
+      { refreshToken: getRefreshToken() },
+      { withCredentials: true, timeout: 6000 }
     )
     const newToken: string = data.data.accessToken
+    const newRefreshToken: string | undefined = data.data.refreshToken
     const user: User = data.data.user
+
     setAccessToken(newToken)
+    if (newRefreshToken) {
+      setRefreshToken(newRefreshToken)
+    }
     console.log("[auth] refresh succeeded, session restored")
     return user
   } catch {
     console.log("[auth] no valid session")
-    setAccessToken(null)
+    clearAuthTokens()
     return null
   }
 }
@@ -64,6 +74,9 @@ export function useRegister() {
     mutationFn: (data: RegisterRequest) => authApi.register(data),
     onSuccess: (response) => {
       setAccessToken(response.data.accessToken)
+      if (response.data.refreshToken) {
+        setRefreshToken(response.data.refreshToken)
+      }
       queryClient.setQueryData(["auth", "me"], response.data.user)
     },
   })
@@ -76,6 +89,9 @@ export function useLogin() {
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
       setAccessToken(response.data.accessToken)
+      if (response.data.refreshToken) {
+        setRefreshToken(response.data.refreshToken)
+      }
       queryClient.setQueryData(["auth", "me"], response.data.user)
     },
   })
@@ -87,7 +103,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => authApi.logout(),
     onSettled: () => {
-      setAccessToken(null)
+      clearAuthTokens()
       queryClient.setQueryData(["auth", "me"], null)
     },
   })

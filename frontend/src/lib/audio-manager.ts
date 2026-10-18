@@ -91,13 +91,43 @@ class AudioManager {
     })
   }
 
+  playSynthChime(): void {
+    if (typeof window === "undefined") return
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      if (!AudioCtx) return
+      const ctx = new AudioCtx()
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {})
+      }
+      const tones = [587.33, 880, 1174.66] // D5, A5, D6 cheerful chime
+      tones.forEach((freq, idx) => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = "sine"
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.18)
+        gain.gain.setValueAtTime(0.35, ctx.currentTime + idx * 0.18)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.18 + 0.5)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(ctx.currentTime + idx * 0.18)
+        osc.stop(ctx.currentTime + idx * 0.18 + 0.55)
+      })
+    } catch {
+      // AudioContext not supported
+    }
+  }
+
   /**
    * Play an alarm sound for exactly 2 seconds then auto-stop.
-   * Safe to call from any pomodoro lifecycle event.
+   * Plays the audio element and synthetic chime to ensure sound plays even if audio fails.
    */
   playAlarm(src: string): void {
     if (typeof Audio === "undefined") return
     this.stop()
+
+    // Always trigger synthetic chime as reliable guarantee
+    this.playSynthChime()
 
     let audio = this.pool.get(src)
     if (!audio) {
@@ -113,7 +143,7 @@ class AudioManager {
     const timer = setTimeout(() => {
       audio!.pause()
       audio!.currentTime = 0
-    }, 2000)
+    }, 2500)
 
     audio.play().catch(() => {
       clearTimeout(timer)
@@ -155,6 +185,32 @@ export function getAudioManager(): AudioManager {
     instance.preload([...new Set(allSounds)])
   }
   return instance
+}
+
+export function requestNotificationPermission() {
+  if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission().catch(() => {})
+  }
+}
+
+export function notifyPomodoroComplete(type: string) {
+  if (typeof window === "undefined" || !("Notification" in window)) return
+  if (Notification.permission === "granted") {
+    try {
+      const isWork = type === "WORK"
+      const title = isWork ? "🍅 Focus Session Complete!" : "☕ Break Finished!"
+      const body = isWork
+        ? "Great work! Time to step back and take a break."
+        : "Break is over. Ready to focus again?"
+      new Notification(title, {
+        body,
+        icon: "/favicon.ico",
+        tag: "pomodoro-complete",
+      })
+    } catch {
+      // Notification failed
+    }
+  }
 }
 
 export const COMPLETION_SOUNDS: Record<string, string> = SOUND_SOURCES
